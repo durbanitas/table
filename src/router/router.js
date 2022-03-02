@@ -3,14 +3,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/table',
-    name: 'Table', component: () => import('../views/Table.vue')
+    name: 'Table', component: () => import('../views/TableWrapper.vue')
   },
   {
     path: '/',
     redirect: '/table'
   },
   {
-    path: "/:catchAll(.*)", // unknown path redirect to /table
+    path: "/:catchAll(.*)", // unknown path redirects to /table
     redirect: '/table'
   }
 ]

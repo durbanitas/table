@@ -13,15 +13,6 @@ h1 {
   color: var(--font-color)
 }
 html {
-  // https://unsplash.com/photos/vs3750jk0nc
-  // background-image: radial-gradient(
-  //   rgba(0, 0, 0, 0.7), 
-  //   rgba(0, 0, 0, 0.9)
-  // ), url('../../public/bg.jpg');
-  // background-repeat: no-repeat;
-  // background-attachment: fixed;
-  // background-position: center;
-  // background-size: cover;
   background: var(--bg-color1);
 }
 html, body {
@@ -51,17 +42,8 @@ h5 {
   justify-content: space-between;
 }
 .shadow {
-  box-shadow:  0 6px 8px rgba(247, 247, 247, 0.301);
+  box-shadow:  0 2px 4px 0px rgba(0, 0, 0, 0.2);
 }
-// .hscroll {
-//         position: relative;
-//         // padding: 5px 20px 13px 20px;
-//         background: #fff;
-//         margin: 0% auto;
-//         overflow-x: scroll;
-//         text-align: center;
-//         width: 90%;
-// }
 .text-center {
   text-align: center !important;
 }
