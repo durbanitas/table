@@ -363,3 +363,11 @@ export const DEMO_PLANETS = [
     "url": "https://swapi.dev/api/planets/20/"
   }
 ]
+
+// unused
+const planetUrls = [
+  'https://swapi.dev/api/planets/1/',
+  'https://swapi.dev/api/planets/2/',
+  'https://swapi.dev/api/planets/4/',
+  'https://swapi.dev/api/planets/8/'
+]

@@ -25,12 +25,11 @@ body {
   color: var(--font-color);
 }
 .container {
-  max-width: 800px;
+  max-width: 900px;
   position: relative;
-  padding: 5px;
+  padding: 4px;
   margin: auto;
   overflow-x: auto;
-  width: 90%;
 }
 
 // HELPERS
