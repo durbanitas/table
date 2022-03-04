@@ -5,9 +5,12 @@ import { ref, onBeforeMount } from 'vue'
 import { getData } from '../utils/helpers.js'
 // demo data
 import { DEMO_CHARACTERS, DEMO_PLANETS } from '../utils/demo_data.js'
+// TODO: all macros
+// import { $ref } from 'vue/macros'
 
 // Settings
-const CHARACTER_INFOS = ref([
+// TODO: minimize character_infos
+const CHARACTER_INFOS = [
   {
     value: 'name',
     type: 'String',
@@ -38,79 +41,46 @@ const CHARACTER_INFOS = ref([
     type: 'String',
     name: 'Homeworld'
   },
-])
+]
 const PLANET_INFOS = ['name', 'diameter', 'climate', 'population', 'url']
 
 const isDev = true
+let loading = ref(true)
 let characters = ref([])
 let planets = ref([])
 
 if (isDev) {
-  setTimeout(() => {
-    characters.value = DEMO_CHARACTERS
-    setTimeout(() => {
-      planets.value = DEMO_PLANETS
-    }, 200);
-  }, 300);
+  setTimeout(() => characters.value = DEMO_CHARACTERS, 300);
+  setTimeout(() => planets.value = DEMO_PLANETS, 200);
+  setTimeout(() => loading.value = false, 600);
 }
-
-const planetTestUrls = [
-  'https://swapi.dev/api/planets/1/',
-  'https://swapi.dev/api/planets/2/',
-  'https://swapi.dev/api/planets/4100/',
-  'https://swapi.dev/api/planets/8/'
-]
-// response
-// [
-//   {
-//     "name": "Tatooine",
-//     // [...]
-//   },
-//   {
-//     "name": "Alderaan",
-//     // [...]
-//   },
-//   {
-//     "detail": "Not found"
-//   },
-//   {
-//     "name": "Naboo",
-//     // [...]
-//   }
-// ]
-
 onBeforeMount(() => {
   if (isDev) return
-  const chararcterUrls = ['https://swapi.dev/api/people']
-  getData(chararcterUrls).then(data => {
-    console.log(data.results[0].results);
+  const urls = ['https://swapi.dev/api/people/']
+  getData(urls).then(data => {
     characters.value = data.results[0].results
-    const planetUrls = data.results[0].results.map(ch => ch.homeworld)
-    const uniqueUrls = [...new Set(planetUrls)]
-    if (data.results) {
-      // planetTestUrls
-      getData(uniqueUrls).then(res => {
-        console.log(res.results);
-        planets.value = res.results
-      })
+    if (!data.error) {
+      const planetUrls = ['https://swapi.dev/api/planets/']
+      getData(planetUrls)
+        .then(data => planets.value = data.results[0].results)
+        .then(() => loading.value = false)
     }
   })
 })
 
-const count = ref(0)
-const sortDirection = ref(1) // 1 & -1
 const sortedHeader = ref({
   value: 'height',
   type: 'Number'
 }) // name, height, mass
+// TODO: add filter tags
 const searchName = ref('')
-function sort (head) {
-  sortDirection.value *= -1
-  sortedHeader.value = head
 
-  // FIXME: handle reactivity
-  count.value++
+const sortDirection = ref(1) // 1 & -1
+function sort (headObj, d) {
+  sortDirection.value = d
+  sortedHeader.value = headObj
 }
+
 </script>
 
 <template>
@@ -119,9 +89,10 @@ function sort (head) {
     :headers="CHARACTER_INFOS"
     :tableData="characters"
     :fiterTags="[]"
-    :sortedDirection="sortDirection"
     :sortedHeader="sortedHeader"
+    :sortDirection="sortDirection"
+    :defaultSortDirection="1"
+    :loading="loading"
     @onHeaderSort="sort"
-    :key="count"
   />
 </template>

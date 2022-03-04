@@ -1,46 +1,58 @@
 <script setup>
-import { defineProps, defineEmits, computed, ref } from 'vue'
-// TODO: add a loading state or placeholder data
+import { computed, ref } from 'vue'
 
 const props = defineProps({
+  loading: Boolean,
+  // rendered data
   headers: Array,
   tableData: Array,
+  // filter table
   fiterTags: Array,
+  // sort table
   sortedHeader: Object,
-  sortedDirection: Number
+  sortDirection: Number,
+  defaultSortDirection: Number,
 })
 
 // sort methods
-const sortMethod = {
-  'String': props.sortedDirection === 1 ?
-    (char1, char2) => char2[props.sortedHeader.value].toLowerCase() > char1[props.sortedHeader.value].toLowerCase() ? -1 : char1[props.sortedHeader.value].toLowerCase() > char2[props.sortedHeader.value].toLowerCase() ? 1 : 0 :
-    (char1, char2) => char1[props.sortedHeader.value].toLowerCase() > char2[props.sortedHeader.value].toLowerCase() ? -1 : char2[props.sortedHeader.value].toLowerCase() > char1[props.sortedHeader.value].toLowerCase() ? 1 : 0,
-  'Number': props.sortedDirection === 1 ?
-    (char1, char2) => char2[props.sortedHeader.value] - char1[props.sortedHeader.value] :
-    (char1, char2) => char1[props.sortedHeader.value] - char2[props.sortedHeader.value],
-  "Date": props.sortedDirection === 1 ?
-    (char1, char2) => new Date(char2[props.sortedHeader.value]) - new Date(char1[props.sortedHeader.value]) :
-    (char1, char2) => new Date(char1[props.sortedHeader.value]) - new Date(char2[props.sortedHeader.value])
+const sortMethod = (type, head, direction) => {
+  if (type === 'String') {
+    return direction === 1 ?
+      (char1, char2) => char2[head].toLowerCase() > char1[head].toLowerCase() ? -1 : char1[head].toLowerCase() > char2[head].toLowerCase() ? 1 : 0 :
+      (char1, char2) => char1[head].toLowerCase() > char2[head].toLowerCase() ? -1 : char2[head].toLowerCase() > char1[head].toLowerCase() ? 1 : 0
+  } else if (type === 'Number') {
+    return direction === 1 ?
+      (char1, char2) => char2[head] - char1[head] :
+      (char1, char2) => char1[head] - char2[head]
+  } else if (type === 'Date') {
+    return direction === 1 ?
+      (char1, char2) => new Date(char2[head]) - new Date(char1[head]) :
+      (char1, char2) => new Date(char1[head]) - new Date(char2[head])
+  }
 }
 // sort events
 const emit = defineEmits(['onHeaderSort'])
-function sort (head) {
-  emit('onHeaderSort', head)
+function sort (headObj) {
+  const { sortedHeader, defaultSortDirection, sortDirection } = props
+  const newHeader = headObj.value !== sortedHeader.value
+  const direction = newHeader ? defaultSortDirection : sortDirection * -1
+  emit('onHeaderSort', headObj, direction)
 }
 // filtered results
 const filteredTable = computed(() => {
+  const type = props.sortedHeader.type
+  const head = props.sortedHeader.value
+  const direction = props.sortDirection
+
   return props.tableData.filter(el => {
     return el
-  }).sort(sortMethod[props.sortedHeader.type])
+  }).sort(sortMethod(type, head, direction))
 })
 </script>
 
 <template>
   <div class="table-container">
-    <div v-if="!tableData.length">
-      loading ...
-    </div>
-    <table v-else>
+    <table>
       <!-- headers -->
       <thead>
         <tr>
@@ -49,35 +61,60 @@ const filteredTable = computed(() => {
             :key="head.id"
             @click="sort(head)"
           >
-            {{ head.name }}
+            <div class="space-center">
+              <div>{{ head.name }}</div>
+              <div class="pl-6">
+                <div
+                  class="up-arrow"
+                  :class="{ 'active-up': head.name === props.sortedHeader.name && sortDirection === 'up' }"
+                />
+                <div
+                  class="down-arrow"
+                  :class="{ 'active-down': head.name === props.sortedHeader.name && sortDirection === 'down' }"
+                />
+              </div>
+            </div>
+
           </th>
         </tr>
       </thead>
       <!-- BODY -->
       <tbody>
-        <template v-if="filteredTable.length">
-          <tr
-            v-for="(n, i) in filteredTable"
-            :key="n.id"
-          >
-            <td v-for="(head, idx) in headers">
-              <span>
-                {{ n[head.value] }}
-              </span>
-            </td>
-          </tr>
-        </template>
-
-        <!-- handle no results -->
-        <template v-else>
+        <!-- LOADING DATA -->
+        <template v-if="props.loading">
           <tr>
             <td
               :colspan="props.headers.length"
-              v-text="'No results'"
+              v-text="'Loading data...'"
             />
           </tr>
         </template>
+        <!-- RENDER DATA -->
+        <template v-else>
 
+          <template v-if="filteredTable.length">
+            <tr
+              v-for="(n, i) in filteredTable"
+              :key="n.id"
+            >
+              <td v-for="(head, idx) in headers">
+                <span>
+                  {{ n[head.value] }}
+                </span>
+              </td>
+            </tr>
+          </template>
+          <!-- handle no results -->
+          <template v-else>
+            <tr>
+              <td
+                :colspan="props.headers.length"
+                v-text="'No results'"
+              />
+            </tr>
+          </template>
+
+        </template>
       </tbody>
     </table>
   </div>
@@ -88,6 +125,11 @@ const filteredTable = computed(() => {
 // TODO: cross cell highlighting row & column & cell
 // - use mouseover events & JS
 // custom cell width
+.space-center {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .table-container {
   position: relative;
   max-height: 400px;
@@ -95,49 +137,24 @@ const filteredTable = computed(() => {
   overflow: scroll;
 }
 
-table {
-  border-collapse: collapse; // removes border-spacing
-  font-family: helvetica;
-  // cell settings & sizes
-  td,
-  th {
-    border: 0;
-    padding: 10px;
-    min-width: auto;
-    // background: #fff;
-    box-sizing: border-box;
-    text-align: left;
-  }
-  // custom headers
-  thead th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background: #ffbf9f;
-    cursor: pointer;
-    user-select: none;
-    &:first-child {
-      left: 0;
-      z-index: 3;
-    }
-  }
-  // border settings & sizes
-  tbody {
-    overflow: scroll;
-    height: 200px;
-    text-transform: capitalize;
-    // sticky left row
-    tr > :first-child {
-      position: sticky;
-      background: #c2c2c2;
-      left: 0;
-    }
-    & tr:nth-child(odd) {
-      background: #ddd;
-    }
-    & tr:hover {
-      background: yellow;
-    }
-  }
+// sortings
+.up-arrow {
+  width: 0;
+  height: 0;
+  border: solid 5px transparent;
+  background: transparent;
+  border-bottom: solid 7px #999;
+  border-top-width: 0;
+  cursor: pointer;
+}
+.down-arrow {
+  width: 0;
+  height: 0;
+  border: solid 5px transparent;
+  background: transparent;
+  border-top: solid 7px #999;
+  border-bottom-width: 0;
+  margin-top: 1px;
+  cursor: pointer;
 }
 </style>
