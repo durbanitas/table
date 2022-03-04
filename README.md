@@ -1,20 +1,8 @@
 # Vue 3 + Vite
 
-Deadline: Samstag 16 Uhr
-- search for all todos and fix them
+- https://github.com/vuejs/rfcs/discussions/369
 
-<!-- https://github.com/vuejs/rfcs/discussions/369 -->
-
-- TODO:
-- loading state
-- date with time
-- remove demo data
-
----
-
-Styling:
-- theming (get from browser settings)
-- svg planetary popup icons
+- https://mui.com/components/tables/
 
 ---
 

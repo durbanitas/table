@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   loading: Boolean,
@@ -11,7 +11,16 @@ const props = defineProps({
   // sort table
   sortedHeader: Object,
   sortDirection: Number,
-  defaultSortDirection: Number,
+  defaultSortDirection: {
+    type: Number,
+    default: 1
+  },
+  // customize layout
+  // swapLayout: String,
+  // densePadding: Boolean,
+  // Pagination: null,
+  // scrollSnapToCell: Boolean,
+  // customCellWidth: null
 })
 
 // sort methods
@@ -34,16 +43,16 @@ const sortMethod = (type, head, direction) => {
 const emit = defineEmits(['onHeaderSort'])
 function sort (headObj) {
   const { sortedHeader, defaultSortDirection, sortDirection } = props
-  const newHeader = headObj.value !== sortedHeader.value
+  const newHeader = headObj.key !== sortedHeader.key
   const direction = newHeader ? defaultSortDirection : sortDirection * -1
   emit('onHeaderSort', headObj, direction)
 }
 // filtered results
-const filteredTable = computed(() => {
+const filteredData = computed(() => {
   const type = props.sortedHeader.type
-  const head = props.sortedHeader.value
+  const head = props.sortedHeader.key
   const direction = props.sortDirection
-
+  // return filtered and sorted data
   return props.tableData.filter(el => {
     return el
   }).sort(sortMethod(type, head, direction))
@@ -62,15 +71,15 @@ const filteredTable = computed(() => {
             @click="sort(head)"
           >
             <div class="space-center">
-              <div>{{ head.name }}</div>
+              <div>{{ head.label}}</div>
               <div class="pl-6">
                 <div
                   class="up-arrow"
-                  :class="{ 'active-up': head.name === props.sortedHeader.name && sortDirection === 'up' }"
+                  :class="{ 'active-up': head.label=== props.sortedHeader.label&& sortDirection === 1 }"
                 />
                 <div
                   class="down-arrow"
-                  :class="{ 'active-down': head.name === props.sortedHeader.name && sortDirection === 'down' }"
+                  :class="{ 'active-down': head.label=== props.sortedHeader.label&& sortDirection === -1 }"
                 />
               </div>
             </div>
@@ -92,14 +101,14 @@ const filteredTable = computed(() => {
         <!-- RENDER DATA -->
         <template v-else>
 
-          <template v-if="filteredTable.length">
+          <template v-if="filteredData.length">
             <tr
-              v-for="(n, i) in filteredTable"
+              v-for="(n, i) in filteredData"
               :key="n.id"
             >
               <td v-for="(head, idx) in headers">
                 <span>
-                  {{ n[head.value] }}
+                  {{ n[head.key] }}
                 </span>
               </td>
             </tr>
@@ -130,6 +139,10 @@ const filteredTable = computed(() => {
   justify-content: space-between;
   align-items: center;
 }
+thead {
+  user-select: none;
+  cursor: pointer;
+}
 .table-container {
   position: relative;
   max-height: 400px;
@@ -156,5 +169,11 @@ const filteredTable = computed(() => {
   border-bottom-width: 0;
   margin-top: 1px;
   cursor: pointer;
+}
+.active-up {
+  border-bottom: solid 7px red;
+}
+.active-down {
+  border-top: solid 7px red;
 }
 </style>

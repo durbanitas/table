@@ -1,54 +1,54 @@
 <script setup>
 import Table from '../components/Table.vue'
 import InputNames from '../components/InputNames.vue'
-import { ref, onBeforeMount } from 'vue'
+import { ref, onBeforeMount, watchEffect } from 'vue'
 import { getData } from '../utils/helpers.js'
 // demo data
 import { DEMO_CHARACTERS, DEMO_PLANETS } from '../utils/demo_data.js'
-// TODO: all macros
+// TODO: add macros
 // import { $ref } from 'vue/macros'
 
 // Settings
 // TODO: minimize character_infos
 const CHARACTER_INFOS = [
   {
-    value: 'name',
+    key: 'name',
     type: 'String',
-    name: 'Name'
+    label: 'Name'
   },
   {
-    value: 'height',
+    key: 'height',
     type: 'Number',
-    name: 'Height (cm)'
+    label: 'Height (cm)'
   },
   {
-    value: 'mass',
+    key: 'mass',
     type: 'Number',
-    name: 'Mass (kg)'
+    label: 'Mass (kg)'
   },
   {
-    value: 'created',
+    key: 'created',
     type: 'Date',
-    name: 'Created'
+    label: 'Created'
   },
   {
-    value: 'edited',
+    key: 'edited',
     type: 'Date',
-    name: 'Edited'
+    label: 'Edited'
   },
   {
-    value: 'homeworld',
+    key: 'homeworld',
     type: 'String',
-    name: 'Homeworld'
+    label: 'Homeworld'
   },
 ]
 const PLANET_INFOS = ['name', 'diameter', 'climate', 'population', 'url']
 
-const isDev = true
+const isDev = false
 let loading = ref(true)
 let characters = ref([])
 let planets = ref([])
-
+// get data
 if (isDev) {
   setTimeout(() => characters.value = DEMO_CHARACTERS, 300);
   setTimeout(() => planets.value = DEMO_PLANETS, 200);
@@ -64,23 +64,25 @@ onBeforeMount(() => {
       getData(planetUrls)
         .then(data => planets.value = data.results[0].results)
         .then(() => loading.value = false)
+    } else {
+      console.error(data.error)
     }
   })
 })
-
+// user interaction - sorting
 const sortedHeader = ref({
-  value: 'height',
+  key: 'height',
   type: 'Number'
 }) // name, height, mass
-// TODO: add filter tags
-const searchName = ref('')
 
 const sortDirection = ref(1) // 1 & -1
 function sort (headObj, d) {
   sortDirection.value = d
   sortedHeader.value = headObj
 }
-
+// user interaction - filters
+// TODO: add filter tags
+const searchName = ref('')
 </script>
 
 <template>
@@ -91,8 +93,8 @@ function sort (headObj, d) {
     :fiterTags="[]"
     :sortedHeader="sortedHeader"
     :sortDirection="sortDirection"
-    :defaultSortDirection="1"
     :loading="loading"
     @onHeaderSort="sort"
+    :defaultSortDirection="1"
   />
 </template>
