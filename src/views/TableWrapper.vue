@@ -1,13 +1,10 @@
 <script setup>
 import Table from '../components/Table.vue'
 import InputNames from '../components/InputNames.vue'
-import { ref, onBeforeMount, watchEffect } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 import { getData } from '../utils/helpers.js'
 // demo data
 import { DEMO_CHARACTERS, DEMO_PLANETS } from '../utils/demo_data.js'
-// TODO: add macros
-// import { $ref } from 'vue/macros'
-
 // Settings
 // TODO: minimize character_infos
 const CHARACTER_INFOS = [
@@ -44,41 +41,38 @@ const CHARACTER_INFOS = [
 ]
 const PLANET_INFOS = ['name', 'diameter', 'climate', 'population', 'url']
 
-const isDev = false
-let loading = ref(true)
-let characters = ref([])
-let planets = ref([])
+const isDev = true
+let loading = $ref(true)
+let characters = $ref([])
+let planets = $ref([])
 // get data
 if (isDev) {
-  setTimeout(() => characters.value = DEMO_CHARACTERS, 300);
-  setTimeout(() => planets.value = DEMO_PLANETS, 200);
-  setTimeout(() => loading.value = false, 600);
+  setTimeout(() => characters = DEMO_CHARACTERS, 300);
+  setTimeout(() => planets = DEMO_PLANETS, 200);
+  setTimeout(() => loading = false, 600);
 }
 onBeforeMount(() => {
   if (isDev) return
   const urls = ['https://swapi.dev/api/people/']
   getData(urls).then(data => {
-    characters.value = data.results[0].results
+    characters = data.results[0].results
     if (!data.error) {
       const planetUrls = ['https://swapi.dev/api/planets/']
       getData(planetUrls)
-        .then(data => planets.value = data.results[0].results)
-        .then(() => loading.value = false)
+        .then(data => planets = data.results[0].results)
+        .then(() => loading = false)
     } else {
       console.error(data.error)
     }
   })
 })
 // user interaction - sorting
-const sortedHeader = ref({
-  key: 'height',
-  type: 'Number'
-}) // name, height, mass
+const sortedHeader = $ref(CHARACTER_INFOS[1]) // name, height, mass
 
-const sortDirection = ref(1) // 1 & -1
+const sortDirection = $ref(1) // 1 & -1
 function sort (headObj, d) {
-  sortDirection.value = d
-  sortedHeader.value = headObj
+  sortDirection = d
+  sortedHeader = headObj
 }
 // user interaction - filters
 // TODO: add filter tags
@@ -86,7 +80,7 @@ const searchName = ref('')
 </script>
 
 <template>
-  <InputNames v-model="searchName" />
+  <!-- <InputNames v-model="searchName" /> -->
   <Table
     :headers="CHARACTER_INFOS"
     :tableData="characters"
@@ -94,7 +88,7 @@ const searchName = ref('')
     :sortedHeader="sortedHeader"
     :sortDirection="sortDirection"
     :loading="loading"
-    @onHeaderSort="sort"
     :defaultSortDirection="1"
+    @onHeaderSort="sort"
   />
 </template>

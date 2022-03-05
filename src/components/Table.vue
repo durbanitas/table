@@ -72,14 +72,14 @@ const filteredData = computed(() => {
           >
             <div class="space-center">
               <div>{{ head.label}}</div>
-              <div class="pl-6">
+              <div class="pl-8">
                 <div
                   class="up-arrow"
-                  :class="{ 'active-up': head.label=== props.sortedHeader.label&& sortDirection === 1 }"
+                  :class="{ 'active-up': head.label=== props.sortedHeader.label&& sortDirection === -1 }"
                 />
                 <div
                   class="down-arrow"
-                  :class="{ 'active-down': head.label=== props.sortedHeader.label&& sortDirection === -1 }"
+                  :class="{ 'active-down': head.label=== props.sortedHeader.label&& sortDirection === 1 }"
                 />
               </div>
             </div>
@@ -106,7 +106,10 @@ const filteredData = computed(() => {
               v-for="(n, i) in filteredData"
               :key="n.id"
             >
-              <td v-for="(head, idx) in headers">
+              <td
+                v-for="(head, idx) in headers"
+                :class=" { 'text-right': head.type === 'Number' }"
+              >
                 <span>
                   {{ n[head.key] }}
                 </span>
@@ -127,27 +130,79 @@ const filteredData = computed(() => {
       </tbody>
     </table>
   </div>
-</template>
 
+  <!-- footer -->
+  <div class="space-between">
+    <div>
+      {{ filteredData.length }} of {{ props.tableData.length }} entries</div>
+    <div>
+      Pagination
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 // TODO: cross cell highlighting row & column & cell
 // - use mouseover events & JS
 // custom cell width
-.space-center {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-thead {
-  user-select: none;
-  cursor: pointer;
-}
+
+// thead {
+//   user-select: none;
+//   cursor: pointer;
+// }
 .table-container {
   position: relative;
   max-height: 400px;
   width: 100%;
-  overflow: scroll;
+  overflow: auto;
+}
+
+table {
+  border-collapse: collapse; // removes border-spacing
+  font-family: helvetica;
+  // cell settings & sizes
+  td,
+  th {
+    border: 0;
+    padding: 10px;
+    min-width: auto;
+    // background: #fff;
+    box-sizing: border-box;
+    text-align: left;
+  }
+  // custom headers
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #ffbf9f;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+    user-select: none;
+    &:first-child {
+      left: 0;
+      z-index: 3;
+    }
+  }
+  // border settings & sizes
+  tbody {
+    overflow: scroll;
+    height: 200px;
+    text-transform: capitalize;
+    // sticky left row
+    tr > :first-child {
+      position: sticky;
+      background: #c2c2c2;
+      left: 0;
+    }
+    & tr:nth-child(odd) {
+      background: #ddd;
+    }
+    & tr:hover {
+      background: yellow;
+    }
+  }
 }
 
 // sortings
@@ -167,7 +222,7 @@ thead {
   background: transparent;
   border-top: solid 7px #999;
   border-bottom-width: 0;
-  margin-top: 1px;
+  margin-top: 2px;
   cursor: pointer;
 }
 .active-up {
@@ -175,5 +230,22 @@ thead {
 }
 .active-down {
   border-top: solid 7px red;
+}
+
+// HELPERS
+.text-right {
+  text-align: right;
+}
+.space-center {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.space-between {
+  display: flex;
+  justify-content: space-between;
+}
+.pl-8 {
+  padding-left: 8px;
 }
 </style>
