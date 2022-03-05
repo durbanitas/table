@@ -7,7 +7,7 @@ const props = defineProps({
   headers: Array,
   tableData: Array,
   // filter table
-  fiterTags: Array,
+  filterTags: Array,
   // sort table
   sortedHeader: Object,
   sortDirection: Number,
@@ -16,11 +16,19 @@ const props = defineProps({
     default: 1
   },
   // customize layout
+  densePadding: {
+    type: Boolean,
+    default: false
+  }
+  // show grid (horizontal, vertical, all, none)
   // swapLayout: String,
-  // densePadding: Boolean,
-  // Pagination: null,
+  // pagination
+  // pagination: ...,
+  // interaction
   // scrollSnapToCell: Boolean,
-  // customCellWidth: null
+  // customCellWidth: (resizeEvent, px width)
+  // themingColors: (primary-color, secondary-color, ...)
+  // crossCellHighlighting: Boolean
 })
 
 // sort methods
@@ -44,19 +52,26 @@ const emit = defineEmits(['onHeaderSort'])
 function sort (headObj) {
   const { sortedHeader, defaultSortDirection, sortDirection } = props
   const newHeader = headObj.key !== sortedHeader.key
-  const direction = newHeader ? defaultSortDirection : sortDirection * -1
-  emit('onHeaderSort', headObj, direction)
+  const newDirection = newHeader ? defaultSortDirection : sortDirection * -1
+  emit('onHeaderSort', headObj, newDirection)
 }
 // filtered results
 const filteredData = computed(() => {
-  const type = props.sortedHeader.type
-  const head = props.sortedHeader.key
-  const direction = props.sortDirection
+  const { sortedHeader, sortDirection } = props
+  const type = sortedHeader.type
+  const head = sortedHeader.key
+  const direction = sortDirection
   // return filtered and sorted data
   return props.tableData.filter(el => {
     return el
   }).sort(sortMethod(type, head, direction))
 })
+
+// template styles
+const tdPadding = computed(() => ({
+  'padding-dense': props.densePadding,
+  'padding-full': !props.densePadding
+}))
 </script>
 
 <template>
@@ -94,6 +109,7 @@ const filteredData = computed(() => {
           <tr>
             <td
               :colspan="props.headers.length"
+              :class="tdPadding"
               v-text="'Loading data...'"
             />
           </tr>
@@ -103,15 +119,18 @@ const filteredData = computed(() => {
 
           <template v-if="filteredData.length">
             <tr
-              v-for="(n, i) in filteredData"
-              :key="n.id"
+              v-for="(data, i) in filteredData"
+              :key="data.id"
             >
               <td
                 v-for="(head, idx) in headers"
-                :class=" { 'text-right': head.type === 'Number' }"
+                :class="[
+                  tdPadding, 
+                  { 'text-right': head.type === 'Number' }
+                ]"
               >
                 <span>
-                  {{ n[head.key] }}
+                  {{ data[head.key] }}
                 </span>
               </td>
             </tr>
@@ -142,14 +161,6 @@ const filteredData = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-// TODO: cross cell highlighting row & column & cell
-// - use mouseover events & JS
-// custom cell width
-
-// thead {
-//   user-select: none;
-//   cursor: pointer;
-// }
 .table-container {
   position: relative;
   max-height: 400px;
@@ -164,9 +175,8 @@ table {
   td,
   th {
     border: 0;
-    padding: 10px;
+    // padding: 10px;
     min-width: auto;
-    // background: #fff;
     box-sizing: border-box;
     text-align: left;
   }
@@ -177,9 +187,9 @@ table {
     z-index: 2;
     background: #ffbf9f;
     white-space: nowrap;
-    overflow: hidden;
     cursor: pointer;
     user-select: none;
+    padding: 8px;
     &:first-child {
       left: 0;
       z-index: 3;
@@ -195,6 +205,8 @@ table {
       position: sticky;
       background: #c2c2c2;
       left: 0;
+      max-width: 150px;
+      min-width: 100px;
     }
     & tr:nth-child(odd) {
       background: #ddd;
@@ -230,6 +242,14 @@ table {
 }
 .active-down {
   border-top: solid 7px red;
+}
+
+// ADAPTIVE STYLES
+.padding-dense {
+  padding: 2px 10px 2px 10px;
+}
+.padding-full {
+  padding: 10px;
 }
 
 // HELPERS

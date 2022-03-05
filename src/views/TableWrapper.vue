@@ -1,7 +1,7 @@
 <script setup>
 import Table from '../components/Table.vue'
 import InputNames from '../components/InputNames.vue'
-import { ref, onBeforeMount } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { getData } from '../utils/helpers.js'
 // demo data
 import { DEMO_CHARACTERS, DEMO_PLANETS } from '../utils/demo_data.js'
@@ -39,7 +39,6 @@ const CHARACTER_INFOS = [
     label: 'Homeworld'
   },
 ]
-const PLANET_INFOS = ['name', 'diameter', 'climate', 'population', 'url']
 
 const isDev = true
 let loading = $ref(true)
@@ -47,9 +46,9 @@ let characters = $ref([])
 let planets = $ref([])
 // get data
 if (isDev) {
-  setTimeout(() => characters = DEMO_CHARACTERS, 300);
-  setTimeout(() => planets = DEMO_PLANETS, 200);
-  setTimeout(() => loading = false, 600);
+  setTimeout(() => characters = DEMO_CHARACTERS, 300)
+  setTimeout(() => planets = DEMO_PLANETS, 200)
+  setTimeout(() => loading = false, 600)
 }
 onBeforeMount(() => {
   if (isDev) return
@@ -66,12 +65,12 @@ onBeforeMount(() => {
     }
   })
 })
-// user interaction - sorting
-const sortedHeader = $ref(CHARACTER_INFOS[1]) // name, height, mass
 
+// user interaction - sorting
+const sortedHeader = $ref(CHARACTER_INFOS[1]) // default height
 const sortDirection = $ref(1) // 1 & -1
-function sort (headObj, d) {
-  sortDirection = d
+function sort (headObj, newDirection) {
+  sortDirection = newDirection
   sortedHeader = headObj
 }
 // user interaction - filters
@@ -80,12 +79,12 @@ const searchName = ref('')
 </script>
 
 <template>
-  <!-- <InputNames v-model="searchName" /> -->
+  <InputNames v-model="searchName" />
   <Table
     :headers="CHARACTER_INFOS"
-    :tableData="characters"
-    :fiterTags="[]"
     :sortedHeader="sortedHeader"
+    :tableData="characters"
+    :filterTags="[]"
     :sortDirection="sortDirection"
     :loading="loading"
     :defaultSortDirection="1"
