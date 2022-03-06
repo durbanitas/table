@@ -56,7 +56,7 @@ export const DEMO_CHARACTERS = [
     "url": "https://swapi.dev/api/people/2/"
   },
   {
-    "name": "R2-D2",
+    "name": "r2-D2",
     "height": "96",
     "mass": "32",
     "hair_color": "n/a",
@@ -133,7 +133,7 @@ export const DEMO_CHARACTERS = [
     "url": "https://swapi.dev/api/people/5/"
   },
   {
-    "name": "Owen Lars",
+    "name": "owen Lars",
     "height": "178",
     "mass": "120",
     "hair_color": "brown, grey",
@@ -254,6 +254,7 @@ export const DEMO_CHARACTERS = [
     "url": "https://swapi.dev/api/people/10/"
   }
 ]
+// export const DEMO_CHARACTERS = []
 export const DEMO_PLANETS = [
   {
     "name": "Tatooine",

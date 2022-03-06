@@ -36,6 +36,11 @@ body {
 h5 {
   font-size: 1.15rem;
 }
+.align-center {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 .space-between {
   display: flex;
   justify-content: space-between;

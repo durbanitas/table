@@ -1,52 +1,28 @@
 <script setup>
-import { computed } from 'vue'
-
 const props = defineProps({
-  loading: Boolean,
-  // rendered data
-  headers: Array,
-  tableData: Array,
-  // filter table
-  filterTags: Array,
+  headers: {
+    type: Array,
+    required: true
+  },
+  tableData: {
+    type: Array,
+    required: true
+  },
   // sort table
-  sortedHeader: Object,
-  sortDirection: Number,
+  sortedHeader: {
+    type: Object,
+    required: true
+  },
+  sortDirection: {
+    type: Number,
+    required: true
+  },
   defaultSortDirection: {
     type: Number,
     default: 1
-  },
-  // customize layout
-  densePadding: {
-    type: Boolean,
-    default: false
   }
-  // show grid (horizontal, vertical, all, none)
-  // swapLayout: String,
-  // pagination
-  // pagination: ...,
-  // interaction
-  // scrollSnapToCell: Boolean,
-  // customCellWidth: (resizeEvent, px width)
-  // themingColors: (primary-color, secondary-color, ...)
-  // crossCellHighlighting: Boolean
 })
 
-// sort methods
-const sortMethod = (type, head, direction) => {
-  if (type === 'String') {
-    return direction === 1 ?
-      (char1, char2) => char2[head].toLowerCase() > char1[head].toLowerCase() ? -1 : char1[head].toLowerCase() > char2[head].toLowerCase() ? 1 : 0 :
-      (char1, char2) => char1[head].toLowerCase() > char2[head].toLowerCase() ? -1 : char2[head].toLowerCase() > char1[head].toLowerCase() ? 1 : 0
-  } else if (type === 'Number') {
-    return direction === 1 ?
-      (char1, char2) => char2[head] - char1[head] :
-      (char1, char2) => char1[head] - char2[head]
-  } else if (type === 'Date') {
-    return direction === 1 ?
-      (char1, char2) => new Date(char2[head]) - new Date(char1[head]) :
-      (char1, char2) => new Date(char1[head]) - new Date(char2[head])
-  }
-}
 // sort events
 const emit = defineEmits(['onHeaderSort'])
 function sort (headObj) {
@@ -55,33 +31,18 @@ function sort (headObj) {
   const newDirection = newHeader ? defaultSortDirection : sortDirection * -1
   emit('onHeaderSort', headObj, newDirection)
 }
-// filtered results
-const filteredData = computed(() => {
-  const { sortedHeader, sortDirection } = props
-  const type = sortedHeader.type
-  const head = sortedHeader.key
-  const direction = sortDirection
-  // return filtered and sorted data
-  return props.tableData.filter(el => {
-    return el
-  }).sort(sortMethod(type, head, direction))
-})
 
-// template styles
-const tdPadding = computed(() => ({
-  'padding-dense': props.densePadding,
-  'padding-full': !props.densePadding
-}))
+// json scheme
 </script>
 
 <template>
-  <div class="table-container">
+  <div class="table-wrapper">
     <table>
       <!-- headers -->
       <thead>
         <tr>
           <th
-            v-for="(head, idx) in props.headers"
+            v-for="(head, idx) in headers"
             :key="head.id"
             @click="sort(head)"
           >
@@ -90,11 +51,11 @@ const tdPadding = computed(() => ({
               <div class="pl-8">
                 <div
                   class="up-arrow"
-                  :class="{ 'active-up': head.label=== props.sortedHeader.label&& sortDirection === -1 }"
+                  :class="{ 'active-up': head.label=== sortedHeader.label&& sortDirection === -1 }"
                 />
                 <div
                   class="down-arrow"
-                  :class="{ 'active-down': head.label=== props.sortedHeader.label&& sortDirection === 1 }"
+                  :class="{ 'active-down': head.label=== sortedHeader.label&& sortDirection === 1 }"
                 />
               </div>
             </div>
@@ -104,28 +65,14 @@ const tdPadding = computed(() => ({
       </thead>
       <!-- BODY -->
       <tbody>
-        <!-- LOADING DATA -->
-        <template v-if="props.loading">
-          <tr>
-            <td
-              :colspan="props.headers.length"
-              :class="tdPadding"
-              v-text="'Loading data...'"
-            />
-          </tr>
-        </template>
-        <!-- RENDER DATA -->
-        <template v-else>
-
-          <template v-if="filteredData.length">
+          <template v-if="tableData.length">
             <tr
-              v-for="(data, i) in filteredData"
+              v-for="(data, i) in tableData"
               :key="data.id"
             >
               <td
                 v-for="(head, idx) in headers"
                 :class="[
-                  tdPadding, 
                   { 'text-right': head.type === 'Number' }
                 ]"
               >
@@ -139,29 +86,18 @@ const tdPadding = computed(() => ({
           <template v-else>
             <tr>
               <td
-                :colspan="props.headers.length"
+                :colspan="headers.length"
                 v-text="'No results'"
               />
             </tr>
-          </template>
-
         </template>
       </tbody>
     </table>
   </div>
-
-  <!-- footer -->
-  <div class="space-between">
-    <div>
-      {{ filteredData.length }} of {{ props.tableData.length }} entries</div>
-    <div>
-      Pagination
-    </div>
-  </div>
 </template>
 
 <style lang="scss" scoped>
-.table-container {
+.table-wrapper {
   position: relative;
   max-height: 400px;
   width: 100%;
@@ -175,7 +111,7 @@ table {
   td,
   th {
     border: 0;
-    // padding: 10px;
+    padding: 8px;
     min-width: auto;
     box-sizing: border-box;
     text-align: left;
@@ -189,7 +125,6 @@ table {
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    padding: 8px;
     &:first-child {
       left: 0;
       z-index: 3;
@@ -242,14 +177,6 @@ table {
 }
 .active-down {
   border-top: solid 7px red;
-}
-
-// ADAPTIVE STYLES
-.padding-dense {
-  padding: 2px 10px 2px 10px;
-}
-.padding-full {
-  padding: 10px;
 }
 
 // HELPERS
