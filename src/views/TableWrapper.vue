@@ -5,39 +5,52 @@ import { getData } from '../utils/helpers.js'
 // demo data
 import { DEMO_CHARACTERS, DEMO_PLANETS } from '../utils/demo_data.js'
 
+// TODO: handle resize events
+// pagination vs. scroll
+// reactive rows per page / client viewheight
+
 // Settings
-// TODO: minimize character_infos
-const CHARACTER_INFOS = [
+const HEADERS = [
   {
     key: 'name',
     type: 'String',
-    label: 'Name'
+    label: 'Name',
+    align: 'start', // start, center, end
+    sortable: true,
   },
   {
     key: 'height',
     type: 'Number',
-    label: 'Height (cm)'
+    label: 'Height (cm)',
+    sortable: true,
   },
   {
     key: 'mass',
     type: 'Number',
-    label: 'Mass (kg)'
+    label: 'Mass (kg)',
+    sortable: true,
   },
   {
     key: 'created',
     type: 'Date',
-    label: 'Created'
+    label: 'Created',
+    format: (date) => new Date(date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: '2-digit', day: 'numeric', hour: 'numeric' }),
+    sortable: true,
   },
   {
     key: 'edited',
     type: 'Date',
-    label: 'Edited'
+    label: 'Edited',
+    format: (date) => new Date(date).toLocaleDateString(),
+    sortable: true,
   },
-  // {
-  //   key: 'homeworld',
-  //   type: 'String',
-  //   label: 'Homeworld'
-  // },
+  {
+    key: 'homeworld',
+    type: 'String',
+    label: 'Homeworld',
+    format: (obj) => obj.name,
+    sortable: false,
+  },
 ]
 
 const isDev = true
@@ -75,25 +88,30 @@ onBeforeMount(() => {
 })
 // replace the url with a dataset planet
 function mergeCharacterHomeworlds(homeworlds) {
- characters.forEach(char => char.homeworld = homeworlds.filter(hw => hw.url === char.homeworld)[0])
+  characters.forEach(char => char.homeworld = homeworlds.filter(hw => hw.url === char.homeworld)[0])
 }
 </script>
 
 <template>
-<div v-if="loading" class="align-center table-size">
+<div 
+  v-if="loading" 
+  class="align-center table-size"
+>
   loading table
 </div>
 <div v-else>
   <TableParent
-    :headers="CHARACTER_INFOS"
+    :headers="HEADERS"
     :tableData="characters"
     :defaultSortDirection="-1"
     :sortingLowerUpperCase="true"
   />
+  <!-- :navigation="'scroll' || 'pagination'" -->
   <!-- optional -->
-  <!-- :defaultSortDirection="-1" -->
-  <!-- :sortingLowerUpperCase="true" -->
+  <!-- defaultSortDirection -->
+  <!-- sortingLowerUpperCase-->
   <!-- defaultSortByHeader -->
+  <!-- pagination? rowsPerSide -->
 </div>
 </template>
 

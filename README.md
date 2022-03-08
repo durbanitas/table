@@ -6,6 +6,16 @@
 
 - https://material.io/components/data-tables#anatomy
 
+- https://vuetifyjs.com/en/components/data-tables/
+
+## Todo:
+
+- scroll
+  - virtualization
+
+- url
+  - share table with applied filters, pagination, sorting
+
 ---
 
 Impressions:
@@ -13,6 +23,7 @@ Impressions:
 
 Read:
 https://www.w3.org/TR/wai-aria-practices/examples/table/table.html
+
 
 
 ---

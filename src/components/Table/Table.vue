@@ -44,11 +44,12 @@ function sort (headObj) {
           <th
             v-for="(head, idx) in headers"
             :key="head.id"
-            @click="sort(head)"
+            :class="{ 'cursor-pointer': head.sortable  }"
+            v-on="head.sortable ? { click: () => sort(head) } : {}"
           >
             <div class="space-center">
               <div>{{ head.label}}</div>
-              <div class="pl-8">
+              <div class="pl-8" v-if="head.sortable">
                 <div
                   class="up-arrow"
                   :class="{ 'active-up': head.label=== sortedHeader.label&& sortDirection === -1 }"
@@ -76,7 +77,10 @@ function sort (headObj) {
                   { 'text-right': head.type === 'Number' }
                 ]"
               >
-                <span>
+                <span v-if="head.format">
+                  {{ head.format(data[head.key]) }}
+                </span>
+                <span v-else>
                   {{ data[head.key] }}
                 </span>
               </td>
@@ -99,7 +103,7 @@ function sort (headObj) {
 <style lang="scss" scoped>
 .table-wrapper {
   position: relative;
-  max-height: 400px;
+  height: 300px;
   width: 100%;
   overflow: auto;
 }
@@ -107,6 +111,7 @@ function sort (headObj) {
 table {
   border-collapse: collapse; // removes border-spacing
   font-family: helvetica;
+  width: 100%;
   // cell settings & sizes
   td,
   th {
@@ -123,7 +128,6 @@ table {
     z-index: 2;
     background: #ffbf9f;
     white-space: nowrap;
-    cursor: pointer;
     user-select: none;
     &:first-child {
       left: 0;
@@ -133,14 +137,14 @@ table {
   // border settings & sizes
   tbody {
     overflow: scroll;
-    height: 200px;
+    // height: 200px;
     text-transform: capitalize;
+    white-space: nowrap;
     // sticky left row
     tr > :first-child {
       position: sticky;
-      background: #c2c2c2;
+      background: #ccc;
       left: 0;
-      max-width: 150px;
       min-width: 100px;
     }
     & tr:nth-child(odd) {
@@ -148,11 +152,17 @@ table {
     }
     & tr:hover {
       background: yellow;
+      & :first-child {
+        background: yellow;
+      }
     }
   }
 }
 
 // sortings
+.cursor-pointer {
+  cursor: pointer;
+}
 .up-arrow {
   width: 0;
   height: 0;

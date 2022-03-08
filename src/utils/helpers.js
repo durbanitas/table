@@ -9,7 +9,7 @@ export const getData = async urls => {
   await Promise.all(promises)
     .then(res => data.results = res)
     .catch(err => data.error = err.status + ' ' + err.message)
-
+  // throw new Error(err)
   return data
   // use Promise.allSettled for multiple async API calls that are not dependent on each other
 }

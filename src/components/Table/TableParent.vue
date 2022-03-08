@@ -1,5 +1,6 @@
 <script setup>
 import Table from './Table.vue'
+import Pagination from './Pagination.vue'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -64,20 +65,32 @@ const sortMethod = (type, head, direction) => {
 // FILTERING
 
 // PAGINATION
+// slice filtered data
+const selectedRows = $ref(5)
+function changeRows(val) {
+  selectedRows = val
+}
+const pages = $ref({
+  start: 0,
+  end: selectedRows
+})
+function changePage(val) {
+  pages = val
+}
 
 // RENDERED DATA
 const filteredData = computed(() => {
   const type = sortedHeader.type
   const head = sortedHeader.key
   // return filtered and sorted data
-  return props.tableData.sort(sortMethod(type, head, sortDirection))
+  return props.tableData.sort(sortMethod(type, head, sortDirection)).slice(pages.start, pages.end)
 })
 </script>
 
 <script>
 // property validation messages
 function validationMessage (type, value, prop) {
-  console.log(type);
+  // console.log(type);
   switch (type) {
     case 'Array': {
       if (!value.length) {
@@ -100,7 +113,6 @@ function validationMessage (type, value, prop) {
     // }
     // FIXME: unreachable if value !== Boolean?
     case 'Boolean': {
-      console.log(typeof value !== 'boolean');
       if (typeof value !== 'boolean') {
         console.error(prop + ' must be a boolean')
         return false
@@ -121,5 +133,10 @@ function validationMessage (type, value, prop) {
     :sortedHeader="sortedHeader"
     @onHeaderSort="sort"
   />
-  <!-- Pagination.vue -->
+  <Pagination 
+    :entries="tableData.length"
+    :rowsPerPage="[1,2,4,5]"
+    @onRowsPerPage="changeRows"
+    @onChangePage="changePage"
+  />
 </template>
