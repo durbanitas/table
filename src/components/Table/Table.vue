@@ -103,7 +103,8 @@ function sort (headObj) {
 <style lang="scss" scoped>
 .table-wrapper {
   position: relative;
-  height: 300px;
+  min-height: 400px;
+  height: auto;
   width: 100%;
   overflow: auto;
 }

@@ -93,10 +93,7 @@ function mergeCharacterHomeworlds(homeworlds) {
 </script>
 
 <template>
-<div 
-  v-if="loading" 
-  class="align-center table-size"
->
+<div v-if="loading" class="align-center loading-table-size">
   loading table
 </div>
 <div v-else>
@@ -104,19 +101,14 @@ function mergeCharacterHomeworlds(homeworlds) {
     :headers="HEADERS"
     :tableData="characters"
     :defaultSortDirection="-1"
-    :sortingLowerUpperCase="true"
+    :defaultSortByHeader="1"
+    :rowsPerPage="120"
   />
-  <!-- :navigation="'scroll' || 'pagination'" -->
-  <!-- optional -->
-  <!-- defaultSortDirection -->
-  <!-- sortingLowerUpperCase-->
-  <!-- defaultSortByHeader -->
-  <!-- pagination? rowsPerSide -->
 </div>
 </template>
 
 <style>
-.table-size {
+.loading-table-size {
   height: 400px;
   border: 1px solid #ccc;
 }

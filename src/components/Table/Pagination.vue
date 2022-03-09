@@ -6,82 +6,61 @@ const props = defineProps({
     type: Number,
     required: true
   },
-  rowsPerPage: {
-    type: Array,
-    default: [1, 5, 10, 25]
-  },
-  selectedRow: {
+  selectedRows: {
     type: Number,
-    default: 5
+    default: 10
   }
   // currentPage: Number,
 })
 
-const selectedRows = $ref(props.selectedRow)
 const currentPage = $ref(1)
-
-const emit = defineEmits(['onRowsPerPage', 'onChangePage'])
-function changeRows() {
-  emit('onRowsPerPage', selectedRows)
-}
 
 // currentPage in parent?
 // TODO: update displayList when selectedRows changes
+const emit = defineEmits(['onChangePage'])
 function displayList(direction) {
+  const { entries, selectedRows  } = props
   if (direction === 'prev') {
     if (currentPage <= 0) return
     currentPage--
   } else if (direction === 'next') {
-    const maxEnd = props.entries / selectedRows
+    const maxEnd = entries / selectedRows
     if (currentPage >= maxEnd - 1) return
     currentPage++
   }
-  const start = selectedRows * currentPage
-  const end = start + selectedRows
-  emit('onChangePage', { start, end })
+  const startIdx = selectedRows * currentPage
+  const endIdx = startIdx + selectedRows
+  emit('onChangePage', { startIdx, endIdx })
 }
 
 // template
 const currentPageView = computed(() => {
-  return `${selectedRows * currentPage + 1}-${(selectedRows * currentPage) + selectedRows}`
+  return `${props.selectedRows * (currentPage)}-${(props.selectedRows * currentPage) + props.selectedRows}`
 })
 </script>
 
 <template>
   <div class="pagination-wrapper space-between">
-    <div>{{ currentPageView }} of {{ entries }} entries</div>
-    <!-- rows per page -->
+
+    <!-- navigation -->
     <div>
-      <label 
-        for="rows-per-page" 
-        v-text="'Rows per page: '" 
-      />
-      <select 
-        name="rows-per-page" 
-        v-model="selectedRows" 
-        @change="changeRows"
-      >
-        <option 
-          v-for="n in props.rowsPerPage" 
-          :key="n.id" 
-          :value="n"
-          >
-          {{ n }}
-        </option>
-      </select>
-      <!-- navigation -->
-      <!-- ASK: show current page indicator? -->
+      Page: {{ currentPage +1 }}
       <!-- <span class="icon"> &#171; </span> -->
       <span class="icon" @click="displayList('prev')"> &#8249; </span>
       <span class="icon" @click="displayList('next')"> &#8250; </span>
       <!-- <span class="icon"> &#187; </span> -->
     </div>
+
+    <!-- entries -->
+
+    <div>{{ currentPageView }} of {{ entries }} entries</div>
+    <!-- rows per page -->
   </div>
 </template>
 
 <style lang="scss" scoped>
 .pagination-wrapper {
-  padding: 8px 0 8px 0;
+  padding: 8px;
   border: 1px solid #ccc;
 }
 .space-between {

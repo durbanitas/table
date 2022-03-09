@@ -4,32 +4,79 @@ import Pagination from './Pagination.vue'
 import { computed } from 'vue'
 
 const props = defineProps({
-  tableData: {
-    type: Array,
-    required: true,
-    validator: arr => validationMessage('Array', arr, 'tableData')
-  },
+  // required props
   headers: {
     type: Array,
     required: true,
-    validator: arr => validationMessage('Array', arr, 'headers')
+    default: [
+        {
+          key: 'name',
+          type: 'String',
+          label: 'Name',
+          align: 'start', // start, center, end
+          sortable: true,
+        },
+        {
+          key: 'height',
+          type: 'Number',
+          label: 'Height (cm)',
+          sortable: true,
+        },
+        {
+          key: 'edited',
+          type: 'Date',
+          label: 'Edited',
+          format: (date) => new Date(date).toLocaleDateString(),
+          sortable: false,
+        }
+    ],
+    validator: arr => {
+      const gotLength = arr.length
+      if (!gotLength) console.error('Please provide a length for: headers')
+      // TODO: validate keys
+      return gotLength
+    },
   },
-  // optional
+  tableData: {
+    type: Array,
+    required: true,
+    default: [
+      {
+        'name': 'Luke Skywalker',
+        'height': 175,
+        'created': '2014-12-09T13:50:51.644000Z'
+      }
+    ],
+    validator: arr => {
+      const gotLength = arr.length
+      if (!gotLength) console.error('Please provide a length for: tableData')
+      // TODO: validate keys
+      return gotLength
+    },
+  },
+  // optional props
   defaultSortDirection: {
     type: Number,
-    default: 1,
-    validator: num => validationMessage('Index', num, 'defaultSortDirection')
+    default: 1, // 1 or -1
+    validator: num => {
+      const isIndice = num === 1 || num === -1
+      if (!isIndice) console.error('Wrong index value for: defaultSortDirection')
+      return isIndice
+    }
   },
   defaultSortByHeader: {
     type: Number,
-    default: 1,
-    // validator: num => validationMessage('Range', num, 'defaultSortByHeader')
-    // Use type: String? like 'name'?
+    default: 1, // references to headers index
+    // Use type String? like 'name'?
   },
-  sortingLowerUpperCase: {
-    type: Boolean,
-    default: true,
-    validator: val => validationMessage('Boolean', val, 'sortingLowerUpperCase')
+  rowsPerPage: {
+    type: Number,
+    default: 10,
+    validator: num => {
+      const isOverZero = num > 1
+      if (!isOverZero) console.error('rowsPerPage must be greater then 0');
+      return isOverZero
+    }
   }
 })
 
@@ -41,14 +88,11 @@ function sort(headObj, newDirection) {
   sortedHeader = headObj
 }
 // sort methods
+// TODO: sort key
 const sortMethod = (type, head, direction) => {
   switch (type) {
     case 'String':
-      return props.sortingLowerUpperCase ? 
-        direction === 1 ?
-          (char1, char2) => char2[head].toLowerCase() > char1[head].toLowerCase() ? -1 : char1[head].toLowerCase() > char2[head].toLowerCase() ? 1 : 0 :
-          (char1, char2) => char1[head].toLowerCase() > char2[head].toLowerCase() ? -1 : char2[head].toLowerCase() > char1[head].toLowerCase() ? 1 : 0 :
-        direction === 1 ?
+      return direction === 1 ?
           (char1, char2) => char2[head] > char1[head] ? -1 : char1[head] > char2[head] ? 1 : 0 :
           (char1, char2) => char1[head] > char2[head] ? -1 : char2[head] > char1[head] ? 1 : 0 
     case 'Number':
@@ -66,13 +110,10 @@ const sortMethod = (type, head, direction) => {
 
 // PAGINATION
 // slice filtered data
-const selectedRows = $ref(5)
-function changeRows(val) {
-  selectedRows = val
-}
+const selectedRows = $ref(props.rowsPerPage)
 const pages = $ref({
-  start: 0,
-  end: selectedRows
+  startIdx: 0,
+  endIdx: selectedRows
 })
 function changePage(val) {
   pages = val
@@ -83,45 +124,8 @@ const filteredData = computed(() => {
   const type = sortedHeader.type
   const head = sortedHeader.key
   // return filtered and sorted data
-  return props.tableData.sort(sortMethod(type, head, sortDirection)).slice(pages.start, pages.end)
+  return props.tableData.sort(sortMethod(type, head, sortDirection)).slice(pages.startIdx, pages.endIdx)
 })
-</script>
-
-<script>
-// property validation messages
-function validationMessage (type, value, prop) {
-  // console.log(type);
-  switch (type) {
-    case 'Array': {
-      if (!value.length) {
-        console.error('Please provide a length for: ' + prop)
-        return false
-      } else {
-        return true
-      }
-    }
-    case 'Index': {
-      if (value !== 1 && value !== -1) {
-        console.error('Wrong index value for: ' + prop)
-        return false
-      } else {
-        return true
-      }
-    }
-    // case 'Range': {
-    //  // reference props.headers.length
-    // }
-    // FIXME: unreachable if value !== Boolean?
-    case 'Boolean': {
-      if (typeof value !== 'boolean') {
-        console.error(prop + ' must be a boolean')
-        return false
-      } else {
-        return true
-      }
-    }
-  }
-}
 </script>
 
 <template>
@@ -131,12 +135,13 @@ function validationMessage (type, value, prop) {
     :tableData="filteredData"
     :sortDirection="sortDirection"
     :sortedHeader="sortedHeader"
+    :defaultSortDirection="defaultSortDirection"
     @onHeaderSort="sort"
   />
-  <Pagination 
+  <Pagination
+    v-if="tableData.length > rowsPerPage"
     :entries="tableData.length"
-    :rowsPerPage="[1,2,4,5]"
-    @onRowsPerPage="changeRows"
+    :selectedRows="rowsPerPage"
     @onChangePage="changePage"
   />
 </template>
