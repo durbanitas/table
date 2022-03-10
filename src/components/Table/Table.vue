@@ -10,7 +10,7 @@ const props = defineProps({
   },
   // sort table
   sortedHeader: {
-    type: Object,
+    type: String,
     required: true
   },
   sortDirection: {
@@ -25,11 +25,11 @@ const props = defineProps({
 
 // sort events
 const emit = defineEmits(['onHeaderSort'])
-function sort (headObj) {
+function sort (head) {
   const { sortedHeader, defaultSortDirection, sortDirection } = props
-  const newHeader = headObj.key !== sortedHeader.key
+  const newHeader = head !== sortedHeader
   const newDirection = newHeader ? defaultSortDirection : sortDirection * -1
-  emit('onHeaderSort', headObj, newDirection)
+  emit('onHeaderSort', head, newDirection)
 }
 
 // json scheme
@@ -42,21 +42,20 @@ function sort (headObj) {
       <thead>
         <tr>
           <th
-            v-for="(head, idx) in headers"
+            v-for="head in headers"
             :key="head.id"
-            :class="{ 'cursor-pointer': head.sortable  }"
-            v-on="head.sortable ? { click: () => sort(head) } : {}"
+            @click="sort(head)"
           >
             <div class="space-center">
-              <div>{{ head.label}}</div>
-              <div class="pl-8" v-if="head.sortable">
+              <div>{{ head }}</div>
+              <div class="pl-8">
                 <div
                   class="up-arrow"
-                  :class="{ 'active-up': head.label=== sortedHeader.label&& sortDirection === -1 }"
+                  :class="{ 'active-up': head === sortedHeader && sortDirection === -1 }"
                 />
                 <div
                   class="down-arrow"
-                  :class="{ 'active-down': head.label=== sortedHeader.label&& sortDirection === 1 }"
+                  :class="{ 'active-down': head === sortedHeader && sortDirection === 1 }"
                 />
               </div>
             </div>
@@ -66,34 +65,26 @@ function sort (headObj) {
       </thead>
       <!-- BODY -->
       <tbody>
-          <template v-if="tableData.length">
-            <tr
-              v-for="(data, i) in tableData"
-              :key="data.id"
-            >
+        <template v-if="tableData.length">
+          <template v-for="n in tableData[0].length">
+            <tr>
               <td
-                v-for="(head, idx) in headers"
-                :class="[
-                  { 'text-right': head.type === 'Number' }
-                ]"
-              >
-                <span v-if="head.format">
-                  {{ head.format(data[head.key]) }}
-                </span>
-                <span v-else>
-                  {{ data[head.key] }}
-                </span>
+                v-for="data in tableData" 
+                :key="data.id"
+              > 
+                {{ data[n - 1] }}
               </td>
             </tr>
           </template>
-          <!-- handle no results -->
-          <template v-else>
-            <tr>
-              <td
-                :colspan="headers.length"
-                v-text="'No results'"
-              />
-            </tr>
+        </template>
+        <!-- handle no results -->
+        <template v-else>
+          <tr>
+            <td
+              :colspan="headers.length"
+              v-text="'No results'"
+            />
+          </tr>
         </template>
       </tbody>
     </table>

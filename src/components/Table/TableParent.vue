@@ -8,32 +8,10 @@ const props = defineProps({
   headers: {
     type: Array,
     required: true,
-    default: [
-        {
-          key: 'name',
-          type: 'String',
-          label: 'Name',
-          align: 'start', // start, center, end
-          sortable: true,
-        },
-        {
-          key: 'height',
-          type: 'Number',
-          label: 'Height (cm)',
-          sortable: true,
-        },
-        {
-          key: 'edited',
-          type: 'Date',
-          label: 'Edited',
-          format: (date) => new Date(date).toLocaleDateString(),
-          sortable: false,
-        }
-    ],
+    default: ['name', 'height', 'mass'],
     validator: arr => {
       const gotLength = arr.length
       if (!gotLength) console.error('Please provide a length for: headers')
-      // TODO: validate keys
       return gotLength
     },
   },
@@ -41,16 +19,14 @@ const props = defineProps({
     type: Array,
     required: true,
     default: [
-      {
-        'name': 'Luke Skywalker',
-        'height': 175,
-        'created': '2014-12-09T13:50:51.644000Z'
-      }
+      ['luke', 'yoda'],
+      [175, 65],
+      [89, 45]
     ],
     validator: arr => {
       const gotLength = arr.length
       if (!gotLength) console.error('Please provide a length for: tableData')
-      // TODO: validate keys
+      // TODO: validate nested array
       return gotLength
     },
   },
@@ -65,9 +41,9 @@ const props = defineProps({
     }
   },
   defaultSortByHeader: {
-    type: Number,
-    default: 1, // references to headers index
-    // Use type String? like 'name'?
+    type: String,
+    default: 'name',
+    // validator: val => val
   },
   rowsPerPage: {
     type: Number,
@@ -81,14 +57,14 @@ const props = defineProps({
 })
 
 // SORTING
-const sortedHeader = $ref(props.headers[props.defaultSortByHeader])
+const sortedHeader = $ref(props.defaultSortByHeader)
 const sortDirection = $ref(1)
-function sort(headObj, newDirection) {
+function sort(newHeader, newDirection) {
   sortDirection = newDirection
-  sortedHeader = headObj
+  sortedHeader = newHeader
 }
 // sort methods
-// TODO: sort key
+// TODO: use sort key
 const sortMethod = (type, head, direction) => {
   switch (type) {
     case 'String':
@@ -105,7 +81,23 @@ const sortMethod = (type, head, direction) => {
         (char1, char2) => new Date(char1[head]) - new Date(char2[head])
   }
 }
+const sortedArray = $computed(() => {
+  // get index of sorted header
+  // sort the column data
+  // get new arranged indices
+  // create copies of the tableData
+  // rearrange all other columns based on the new indices
+  // return data
 
+  const headIdx = props.headers.indexOf(props.defaultSortByHeader)
+  // TODO: handle sorting
+  const sortedArr = [...props.tableData[headIdx]].sort()
+  const newIndices = sortedArr.map(el => props.tableData[headIdx].indexOf(el))
+
+  const copiedArr = [...props.tableData]
+  // re-arrange nested data
+  return copiedArr
+})
 // FILTERING
 
 // PAGINATION
@@ -121,10 +113,8 @@ function changePage(val) {
 
 // RENDERED DATA
 const filteredData = computed(() => {
-  const type = sortedHeader.type
-  const head = sortedHeader.key
   // return filtered and sorted data
-  return props.tableData.sort(sortMethod(type, head, sortDirection)).slice(pages.startIdx, pages.endIdx)
+  return sortedArray
 })
 </script>
 

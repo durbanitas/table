@@ -3,68 +3,36 @@ import TableParent from '../components/Table/TableParent.vue'
 import { onBeforeMount } from 'vue'
 import { getData } from '../utils/helpers.js'
 // demo data
-import { DEMO_CHARACTERS, DEMO_PLANETS } from '../utils/demo_data.js'
+import { DEMO_CHARACTERS } from '../utils/demo_data.js'
 
-// TODO: handle resize events
-// pagination vs. scroll
-// reactive rows per page / client viewheight
+const HEADERS = ['name', 'height', 'mass', 'created']
 
-// Settings
-const HEADERS = [
-  {
-    key: 'name',
-    type: 'String',
-    label: 'Name',
-    align: 'start', // start, center, end
-    sortable: true,
-  },
-  {
-    key: 'height',
-    type: 'Number',
-    label: 'Height (cm)',
-    sortable: true,
-  },
-  {
-    key: 'mass',
-    type: 'Number',
-    label: 'Mass (kg)',
-    sortable: true,
-  },
-  {
-    key: 'created',
-    type: 'Date',
-    label: 'Created',
-    format: (date) => new Date(date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: '2-digit', day: 'numeric', hour: 'numeric' }),
-    sortable: true,
-  },
-  {
-    key: 'edited',
-    type: 'Date',
-    label: 'Edited',
-    format: (date) => new Date(date).toLocaleDateString(),
-    sortable: true,
-  },
-  {
-    key: 'homeworld',
-    type: 'String',
-    label: 'Homeworld',
-    format: (obj) => obj.name,
-    sortable: false,
-  },
-]
+// Alternativ: 
+// const HEADERS = [
+//   {
+//     key: 'name',
+//     type: 'String', // String, Number, Date
+//     label: 'Name',
+//     align: 'start', // start, center, end
+//     sortable: true,
+//   }
+// ]
 
 const isDev = true
 let loading = $ref(true)
 let characters = $ref([])
+let tableData = $ref({})
 
 // get data
 if (isDev) {
   setTimeout(() => characters = DEMO_CHARACTERS, 200)
-  setTimeout(() => mergeCharacterHomeworlds(DEMO_PLANETS), 300)
+  setTimeout(() => tableData.headers = HEADERS, 100)
+  setTimeout(() => tableData.data = createDataset(HEADERS, characters), 300)
   setTimeout(() => loading = false, 1000)
 }
 onBeforeMount(() => {
   if (isDev) return
+  tableData.headers = HEADERS
   const urls = ['https://swapi.dev/api/people/']
   getData(urls).then(data => {
     if (!data.error) {
@@ -75,7 +43,7 @@ onBeforeMount(() => {
       getData(uniqueUrls)
         .then(data => {
           if (!data.error) {
-            mergeCharacterHomeworlds(data.results)
+            tableData.data = createDataset(HEADERS, characters)
             loading = false
           } else {
             console.error(data.error)
@@ -86,9 +54,9 @@ onBeforeMount(() => {
     }
   })
 })
-// replace the url with a dataset planet
-function mergeCharacterHomeworlds(homeworlds) {
-  characters.forEach(char => char.homeworld = homeworlds.filter(hw => hw.url === char.homeworld)[0])
+
+function createDataset(headers, characters) {
+  return headers.map(head => characters.map(c => c[head]))
 }
 </script>
 
@@ -98,11 +66,11 @@ function mergeCharacterHomeworlds(homeworlds) {
 </div>
 <div v-else>
   <TableParent
-    :headers="HEADERS"
-    :tableData="characters"
+    :headers="tableData.headers"
+    :tableData="tableData.data"
     :defaultSortDirection="-1"
-    :defaultSortByHeader="1"
-    :rowsPerPage="120"
+    :defaultSortByHeader="'name'"
+    :rowsPerPage="40"
   />
 </div>
 </template>
