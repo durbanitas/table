@@ -5,7 +5,8 @@ import { getData } from '../utils/helpers.js'
 // demo data
 import { DEMO_CHARACTERS } from '../utils/demo_data.js'
 
-// Alternativ: 
+const isDev = true
+
 const HEADERS = [
   {
     key: 'name',
@@ -37,7 +38,6 @@ const HEADERS = [
   }
 ]
 
-const isDev = true
 let characters = $ref([])
 let tableData = $ref({})
 let apiStates = $ref({

@@ -10,7 +10,7 @@ const props = defineProps({
     default: {
       headers: [
         {
-          key: 'name',
+          key: 'name', // represents data[[key1], [key2]]
           type: 'string', // string, number, date
           label: 'Name',
           align: 'start', // start, center, end
@@ -31,11 +31,12 @@ const props = defineProps({
     },
     validator: obj => {
       const sameHeaderColumn = obj.headers.length === obj.data.length
-      const sameDataRowLength = [...new Set(obj.data.map(el => el.length))].length === 1
+      const equalRowsLength = [...new Set(obj.data.map(el => el.length))].length === 1
       // TODO: validate same typeof each entries
+      // TODO: validate missing data?
       if (!sameHeaderColumn) console.error('headers and data must be the same length')
-      if (!sameDataRowLength) console.error('row entries must be the same length')
-      return sameHeaderColumn && sameDataRowLength
+      if (!equalRowsLength) console.error('row entries must be the same length')
+      return sameHeaderColumn && equalRowsLength
     }
   },
   // optional props
@@ -74,51 +75,50 @@ const sortDirection = $ref(1)
 // get initial sort header
 // TODO: validate if default sort header is in props
 function getHeaderObj (headers) {
-  return headers.filter(head => head.key === props.defaultSortByHeader)[0]
+  return headers.filter(h => h.key === props.defaultSortByHeader)[0]
 }
 function sort(newHeader, newDirection) {
   sortDirection = newDirection
   sortedHeader = newHeader
 }
-function getHeaderIdx (headers, key) {
-  return headers.map(el => el.key).indexOf(key)
-}
 
 // sort methods
+// TODO: simplify
 const sortedArray = $computed(() => {
-  const headIdx = getHeaderIdx(props.tableData.headers, sortedHeader.key)
-  const columnData = props.tableData.data[headIdx].slice().sort()
-  console.log(columnData);
-  return columnData
-
+  const dataObjects = createMergeDataset(props.tableData.data, props.tableData.headers)
+  const sortedArray = sortData(dataObjects)
+  return seperate(sortedArray, props.tableData.headers)
 })
 
-// const sortedArray = $computed(() => {
-//   // get index of sorted header
-//   // sort the column data
-//   // get new arranged indices
-//   // create copies of the tableData
-//   // rearrange all other columns based on the new indices
-//   // return data
+function createMergeDataset(data, headers) {
+  // returns [{name: 'name1', mass: 82}, {...}]
+  return data[0].map((_, idx) => {
+    const obj = {}
+    headers.forEach((head, i) => Object.assign(obj, { [head.key]: data[i][idx] }))
+    return obj
+  })
+}
+function sortData(data) {
+  // TODO: add sort direction
+  // TODO: handle sorting type
+  return data.sort((a, b) => {
+    return ((a[sortedHeader.key] < b[sortedHeader.key]) ? -1 : ((a[sortedHeader.key] == b[sortedHeader.key]) ? 0 : 1))
+  })
+}
+function seperate(arr, headers) {
+  const tableData = []
+  headers.forEach(_ => tableData.push([]))
+  // push each value back to his initial nested array structure
+  arr.forEach((char, i) => headers.forEach((head, idx) => tableData[idx][i] = char[head.key]))
+  return tableData
+}
 
-//   const headIdx = props.tableData.headers.indexOf(props.sortedHeader)
-//   // TODO: handle sorting
-//   const sortedArr = [...props.tableData.data[headIdx]].sort()
-//   const newIndices = sortedArr.map(el => props.tableData.data[headIdx].indexOf(el))
-
-//   const copiedArr = [...props.tableData.data]
-//   // re-arrange nested data
-//   return copiedArr
-// })
 // FILTERING
 
 // PAGINATION
 
 // RENDERED DATA
-const filteredData = computed(() => {
-  // return filtered and sorted data
-  return props.tableData.data
-})
+const filteredData = computed(() => sortedArray)
 </script>
 
 <template>
