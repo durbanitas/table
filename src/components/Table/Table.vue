@@ -10,7 +10,7 @@ const props = defineProps({
   },
   // sort table
   sortedHeader: {
-    type: String,
+    type: Object,
     required: true
   },
   sortDirection: {
@@ -47,7 +47,7 @@ function sort (head) {
             @click="sort(head)"
           >
             <div class="space-center">
-              <div>{{ head }}</div>
+              <div>{{ head.label }}</div>
               <div class="pl-8">
                 <div
                   class="up-arrow"
