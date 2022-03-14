@@ -22,7 +22,9 @@ Impressions:
 - https://www.massimodutti.com/de/regularfitjeanshemd-im-washedlook-l00170464 (Sizetable/Größentabelle)
 
 Read:
-https://www.w3.org/TR/wai-aria-practices/examples/table/table.html
+- https://www.w3.org/TR/wai-aria-practices/examples/table/table.html
+
+- https://en.wikipedia.org/wiki/Rank_correlation
 
 // TODO: handle resize events
 // pagination vs. scroll
@@ -32,18 +34,36 @@ https://www.w3.org/TR/wai-aria-practices/examples/table/table.html
 
 ```js
 const tableData = {
-  data: [
+  data: [ // column based
     ['luke', 'yoda', 'leia'],
-    [172,45,162],
-    [85,45,52],
+    [172, 45, 162],
+    [85, 45, 52],
     ['Date1', 'Date2', 'Date3']
   ],
-  headers: ['name', 'height', 'mass', 'created']
+  headers: [
+    { key: 'name' },
+    { key: 'height' },
+    { key: 'mass' },
+    { key: 'created' }
+  ]
 }
-// sortHeadBy="mass"
-// sortDirection="1"
-// rowsPerPage="100"
 ```
+```js
+const tableData = {
+  data: [ // row based
+    ['luke', 172, 85, 'Date1'],
+    ['yoda', 45, 45, 'Date2'],
+    ['leia', 162, 52, 'Date3']
+  ],
+  headers: [
+    { key: 'name' },
+    { key: 'height' },
+    { key: 'mass' },
+    { key: 'created' },
+  ]
+}
+```
+
 <!-- validate length of same rows over columns-->
 <!-- validate matching enough headers for data arrays -->
 <!-- validate same typeof each entries -->

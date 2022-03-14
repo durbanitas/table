@@ -95,6 +95,7 @@ function sort (head) {
 .table-wrapper {
   position: relative;
   min-height: 400px;
+  max-height: 500px;
   height: auto;
   width: 100%;
   overflow: auto;

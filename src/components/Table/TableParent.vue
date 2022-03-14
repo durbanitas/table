@@ -66,59 +66,65 @@ const props = defineProps({
       }
       return true
     }
+  },
+  filterTags: {
+    type: Array,
+    // TODO: create filter tags data structure
+    default: []
+    // TODO: add filter tags validation
   }
 })
 
 // SORTING
 const sortedHeader = $ref(getHeaderObj(props.tableData.headers))
-const sortDirection = $ref(1)
-// get initial sort header
+const sortDirection = $ref(props.defaultSortDirection)
+// get initial sorting header
 // TODO: validate if default sort header is in props
 function getHeaderObj (headers) {
-  return headers.filter(h => h.key === props.defaultSortByHeader)[0]
+  return headers.filter(h => h.key === 0)[0]
 }
 function sort(newHeader, newDirection) {
   sortDirection = newDirection
   sortedHeader = newHeader
 }
 
-// sort methods
-// TODO: simplify
-const sortedArray = $computed(() => {
-  const dataObjects = createMergeDataset(props.tableData.data, props.tableData.headers)
-  const sortedArray = sortData(dataObjects)
-  return seperate(sortedArray, props.tableData.headers)
+// FILTERING
+const originalIdxs = $computed(() => props.tableData.data[0].map((_, idx) => idx))
+const filteredIdxs = $computed(() => {
+  if (props.filterTags.length) {
+    const arr = []
+    const columnData = props.tableData.data[0]
+    // TODO: add multiple filters
+    columnData.filter((el, idx) => {
+      if (el < 6) arr.push(idx)
+    })
+    return arr
+  } else {
+    // if no filters are applied return original index array
+    return originalIdxs
+  }
 })
 
-function createMergeDataset(data, headers) {
-  // returns [{name: 'name1', mass: 82}, {...}]
-  return data[0].map((_, idx) => {
-    const obj = {}
-    headers.forEach((head, i) => Object.assign(obj, { [head.key]: data[i][idx] }))
-    return obj
-  })
-}
-function sortData(data) {
-  // TODO: add sort direction
-  // TODO: handle sorting type
-  return data.sort((a, b) => {
-    return ((a[sortedHeader.key] < b[sortedHeader.key]) ? -1 : ((a[sortedHeader.key] == b[sortedHeader.key]) ? 0 : 1))
-  })
-}
-function seperate(arr, headers) {
-  const tableData = []
-  headers.forEach(_ => tableData.push([]))
-  // push each value back to his initial nested array structure
-  arr.forEach((char, i) => headers.forEach((head, idx) => tableData[idx][i] = char[head.key]))
-  return tableData
-}
-
-// FILTERING
+const sortedIdxs = $computed(() => {
+  // TODO: sort different headers
+  const columnData = props.tableData.data[0]
+  const copiedData = filteredIdxs.map(idx => columnData[idx])
+  const sortedIdxs = filteredIdxs.map((_, idx) => idx)
+  // TODO: sort different types
+  sortedIdxs.sort((a, b) => copiedData[a] - copiedData[b])
+  return sortedIdxs
+})
 
 // PAGINATION
 
 // RENDERED DATA
-const filteredData = computed(() => sortedArray)
+const filteredData = computed(() => {
+  return props.tableData.headers.map((_, idx) => {
+    return sortedIdxs.map(i => {
+      return props.tableData.data[idx][filteredIdxs[i]]
+    })
+  })
+})
 </script>
 
 <template>
@@ -131,4 +137,5 @@ const filteredData = computed(() => sortedArray)
     :defaultSortDirection="defaultSortDirection"
     @onHeaderSort="sort"
   />
+  <!-- Pagination.vue  -->
 </template>
