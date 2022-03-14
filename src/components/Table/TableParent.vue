@@ -76,6 +76,8 @@ const props = defineProps({
 })
 
 // SORTING
+// TODO: set default header idx
+const sortedHeaderIdx = $ref(0)
 const sortedHeader = $ref(getHeaderObj(props.tableData.headers))
 const sortDirection = $ref(props.defaultSortDirection)
 // get initial sorting header
@@ -83,9 +85,10 @@ const sortDirection = $ref(props.defaultSortDirection)
 function getHeaderObj (headers) {
   return headers.filter(h => h.key === 0)[0]
 }
-function sort(newHeader, newDirection) {
+function sort(newHeader, newDirection, idx) {
   sortDirection = newDirection
   sortedHeader = newHeader
+  sortedHeaderIdx = idx
 }
 
 // FILTERING
@@ -93,7 +96,7 @@ const originalIdxs = $computed(() => props.tableData.data[0].map((_, idx) => idx
 const filteredIdxs = $computed(() => {
   if (props.filterTags.length) {
     const arr = []
-    const columnData = props.tableData.data[0]
+    const columnData = props.tableData.data[sortedHeaderIdx]
     // TODO: add multiple filters
     columnData.filter((el, idx) => {
       if (el < 6) arr.push(idx)
@@ -106,14 +109,26 @@ const filteredIdxs = $computed(() => {
 })
 
 const sortedIdxs = $computed(() => {
-  // TODO: sort different headers
-  const columnData = props.tableData.data[0]
+  const columnData = props.tableData.data[sortedHeaderIdx]
   const copiedData = filteredIdxs.map(idx => columnData[idx])
   const sortedIdxs = filteredIdxs.map((_, idx) => idx)
   // TODO: sort different types
-  sortedIdxs.sort((a, b) => copiedData[a] - copiedData[b])
+  sortedIdxs.sort(sortMethods(sortedHeader.type, copiedData, sortDirection))
   return sortedIdxs
 })
+function sortMethods (type, data, direction) {
+  switch (type) {
+    case 'number':
+      return (a, b) => {
+        // reverse sorting
+        if (direction === 1) [a, b] = [b, a]
+        return data[a] < data[b] ? -1 : 1
+      }
+    default:
+      break;
+  }
+}
+
 
 // PAGINATION
 

@@ -2,7 +2,7 @@
 import { onBeforeMount } from 'vue'
 const emit = defineEmits(['passNewDataset'])
 // user selection
-let userColumns = $ref(2)
+let userColumns = $ref(4)
 let userRows = $ref(10)
 // new dataset
 let data = []
@@ -36,7 +36,7 @@ function createN() {
   // return (Math.random() * 100).toFixed()
 }
 function reset() {
-  userColumns = 2
+  userColumns = 4
   userRows = 10
   createDataset()
 }

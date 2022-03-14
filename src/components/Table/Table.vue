@@ -25,11 +25,11 @@ const props = defineProps({
 
 // sort events
 const emit = defineEmits(['onHeaderSort'])
-function sort (head) {
+function sort (head, idx) {
   const { sortedHeader, defaultSortDirection, sortDirection } = props
   const newHeader = head !== sortedHeader
   const newDirection = newHeader ? defaultSortDirection : sortDirection * -1
-  emit('onHeaderSort', head, newDirection)
+  emit('onHeaderSort', head, newDirection, idx)
 }
 
 // json scheme
@@ -42,9 +42,9 @@ function sort (head) {
       <thead>
         <tr>
           <th
-            v-for="head in headers"
+            v-for="(head, idx) in headers"
             :key="head.id"
-            @click="sort(head)"
+            @click="sort(head, idx)"
           >
             <div class="space-center">
               <div>{{ head.label }}</div>
