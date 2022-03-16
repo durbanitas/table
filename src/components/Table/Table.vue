@@ -20,6 +20,11 @@ const props = defineProps({
   defaultSortDirection: {
     type: Number,
     default: 1
+  },
+  // virtualisation
+  isVirtualized: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -31,6 +36,20 @@ function sort (head, idx) {
   const newDirection = newHeader ? defaultSortDirection : sortDirection * -1
   emit('onHeaderSort', head, newDirection, idx)
 }
+
+// virtualization
+// get single td height
+// get visible table container height
+// calculate max height: tdHeight * data.length = table height
+// ^ makes the container scrollable
+// calculate max visible td's
+// assign a top height and display if in the current table view
+// use an event listener on scroll to detect the position
+// problems: always assign inline style, what happens if the scrollbar will be clicked?
+
+// idea: fixed td elements
+// will be automatically filled with the scroll position
+// no overlapping cells
 
 // json scheme
 </script>
@@ -94,7 +113,7 @@ function sort (head, idx) {
 <style lang="scss" scoped>
 .table-wrapper {
   position: relative;
-  min-height: 400px;
+  min-height: 100px;
   max-height: 500px;
   height: auto;
   width: 100%;

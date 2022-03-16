@@ -1,6 +1,7 @@
 <script setup>
+import Pagination from './Pagination.vue'
 import Table from './Table.vue'
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
 
 const props = defineProps({
   // required props
@@ -32,8 +33,6 @@ const props = defineProps({
     validator: obj => {
       const sameHeaderColumn = obj.headers.length === obj.data.length
       const equalRowsLength = [...new Set(obj.data.map(el => el.length))].length === 1
-      // TODO: validate same typeof each entries
-      // TODO: validate missing data?
       if (!sameHeaderColumn) console.error('headers and data must be the same length')
       if (!equalRowsLength) console.error('row entries must be the same length')
       return sameHeaderColumn && equalRowsLength
@@ -120,24 +119,31 @@ function sortMethods (type, data, direction) {
   switch (type) {
     case 'number':
       return (a, b) => {
-        // reverse sorting
+        // reverse sorting or use .reverse()?
         if (direction === 1) [a, b] = [b, a]
         return data[a] < data[b] ? -1 : 1
       }
-    default:
-      break;
   }
 }
 
 
 // PAGINATION
+// slice filtered data
+const selectedRows = $ref(props.rowsPerPage)
+const pages = reactive({
+  startIdx: 0,
+  endIdx: selectedRows
+})
+function changePage(newPages) {
+  Object.assign(pages, newPages)
+}
 
 // RENDERED DATA
 const filteredData = computed(() => {
   return props.tableData.headers.map((_, idx) => {
     return sortedIdxs.map(i => {
       return props.tableData.data[idx][filteredIdxs[i]]
-    })
+    }).slice(pages.startIdx, pages.endIdx)
   })
 })
 </script>
@@ -150,7 +156,13 @@ const filteredData = computed(() => {
     :sortDirection="sortDirection"
     :sortedHeader="sortedHeader"
     :defaultSortDirection="defaultSortDirection"
+    :isVirtualized="tableData.data[0].length < rowsPerPage"
     @onHeaderSort="sort"
   />
-  <!-- Pagination.vue  -->
+  <Pagination
+    v-if="tableData.data[0].length > rowsPerPage"
+    :entries="tableData.data[0].length"
+    :rowsPerPage="rowsPerPage"
+    @onChangePage="changePage" 
+  /> 
 </template>

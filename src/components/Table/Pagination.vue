@@ -6,36 +6,36 @@ const props = defineProps({
     type: Number,
     required: true
   },
-  selectedRows: {
+  rowsPerPage: {
     type: Number,
     default: 10
   }
   // currentPage: Number,
 })
 
-const currentPage = $ref(1)
+const currentPage = $ref(0)
 
 // currentPage in parent?
-// TODO: update displayList when selectedRows changes
+// TODO: update displayList when rowsPerPage changes
 const emit = defineEmits(['onChangePage'])
 function displayList(direction) {
-  const { entries, selectedRows  } = props
+  const { entries, rowsPerPage  } = props
   if (direction === 'prev') {
     if (currentPage <= 0) return
     currentPage--
   } else if (direction === 'next') {
-    const maxEnd = entries / selectedRows
+    const maxEnd = entries / rowsPerPage
     if (currentPage >= maxEnd - 1) return
     currentPage++
   }
-  const startIdx = selectedRows * currentPage
-  const endIdx = startIdx + selectedRows
+  const startIdx = rowsPerPage * currentPage
+  const endIdx = startIdx + rowsPerPage
   emit('onChangePage', { startIdx, endIdx })
 }
 
 // template
 const currentPageView = computed(() => {
-  return `${props.selectedRows * (currentPage)}-${(props.selectedRows * currentPage) + props.selectedRows}`
+  return `${props.rowsPerPage * (currentPage) + 1} - ${(props.rowsPerPage * currentPage) + props.rowsPerPage}`
 })
 </script>
 
@@ -43,18 +43,14 @@ const currentPageView = computed(() => {
   <div class="pagination-wrapper space-between">
 
     <!-- navigation -->
-    <div>
-      Page: {{ currentPage +1 }}
-      <!-- <span class="icon"> &#171; </span> -->
-      <span class="icon" @click="displayList('prev')"> &#8249; </span>
-      <span class="icon" @click="displayList('next')"> &#8250; </span>
-      <!-- <span class="icon"> &#187; </span> -->
-    </div>
+    <div />
 
     <!-- entries -->
 
-    <div>{{ currentPageView }} of {{ entries }} entries</div>
-    <!-- rows per page -->
+    <div>{{ currentPageView }} of {{ entries }}       
+      <span class="icon" @click="displayList('prev')"> &#8249; </span>
+      <span class="icon" @click="displayList('next')"> &#8250; </span>
+    </div>
   </div>
 </template>
 

@@ -16,10 +16,14 @@
 - url
   - share table with applied filters, pagination, sorting
 
+- keyboard navigation
+
 ---
 
 Impressions:
 - https://www.massimodutti.com/de/regularfitjeanshemd-im-washedlook-l00170464 (Sizetable/Größentabelle)
+
+- https://uxdesign.cc/data-table-for-enterprise-ux-cb48fb9fdf1e
 
 Read:
 - https://www.w3.org/TR/wai-aria-practices/examples/table/table.html

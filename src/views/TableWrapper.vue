@@ -3,25 +3,24 @@ import Controls from '../components/Controls.vue'
 import TableParent from '../components/Table/TableParent.vue'
 
 let tableData = $ref({})
+let showTable = $ref(false)
 
-const showTable = $ref(false)
-
-function useNewDataset(data) {
+function useDemoDataset(data) {
   tableData = data
   showTable = true
 }
 </script>
 
 <template>
-  <Controls @passNewDataset="useNewDataset" />
-  <!-- show table -->
+  <Controls @passNewDataset="useDemoDataset" />
+  <!-- TODO: add filter tags -->
   <div v-if="showTable">
     <TableParent
       :tableData="tableData"
-      :defaultSortDirection="1"
-      :defaultSortByHeader="'0'"
+      :defaultSortDirection="-1"
+      :defaultSortByHeader="'Col2'"
+      :rowsPerPage="5"
       :filterTags="[]"
-      :rowsPerPage="20"
     />
   </div>
 </template>
