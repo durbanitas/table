@@ -20,11 +20,6 @@ const props = defineProps({
   defaultSortDirection: {
     type: Number,
     default: 1
-  },
-  // virtualisation
-  isVirtualized: {
-    type: Boolean,
-    default: false
   }
 })
 
@@ -36,20 +31,6 @@ function sort (head, idx) {
   const newDirection = newHeader ? defaultSortDirection : sortDirection * -1
   emit('onHeaderSort', head, newDirection, idx)
 }
-
-// virtualization
-// get single td height
-// get visible table container height
-// calculate max height: tdHeight * data.length = table height
-// ^ makes the container scrollable
-// calculate max visible td's
-// assign a top height and display if in the current table view
-// use an event listener on scroll to detect the position
-// problems: always assign inline style, what happens if the scrollbar will be clicked?
-
-// idea: fixed td elements
-// will be automatically filled with the scroll position
-// no overlapping cells
 
 // json scheme
 </script>
@@ -63,11 +44,15 @@ function sort (head, idx) {
           <th
             v-for="(head, idx) in headers"
             :key="head.id"
-            @click="sort(head, idx)"
+            :class="{ 'cursor-pointer': head.sortable  }"
+            v-on="head.sortable ? { click: () => sort(head, idx) } : {}"
           >
             <div class="space-center">
-              <div>{{ head.label }}</div>
-              <div class="pl-8">
+              <!-- <div>{{ head.label }}</div> -->
+              <div>
+                1
+              </div>
+              <div class="pl-8" v-if="head.sortable">
                 <div
                   class="up-arrow"
                   :class="{ 'active-up': head === sortedHeader && sortDirection === -1 }"

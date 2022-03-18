@@ -93,13 +93,16 @@ function sort(newHeader, newDirection, idx) {
 // FILTERING
 const originalIdxs = $computed(() => props.tableData.data[0].map((_, idx) => idx))
 const filteredIdxs = $computed(() => {
+  // add t0
   if (props.filterTags.length) {
+    const start = performance.now()
     const arr = []
     const columnData = props.tableData.data[sortedHeaderIdx]
     // TODO: add multiple filters
     columnData.filter((el, idx) => {
       if (el < 6) arr.push(idx)
     })
+    t0 = performance.now() - start
     return arr
   } else {
     // if no filters are applied return original index array
@@ -108,11 +111,12 @@ const filteredIdxs = $computed(() => {
 })
 
 const sortedIdxs = $computed(() => {
+  t1 = performance.now()
   const columnData = props.tableData.data[sortedHeaderIdx]
   const copiedData = filteredIdxs.map(idx => columnData[idx])
   const sortedIdxs = filteredIdxs.map((_, idx) => idx)
-  // TODO: sort different types
-  sortedIdxs.sort(sortMethods(sortedHeader.type, copiedData, sortDirection))
+  if (sortedHeader.sortable) sortedIdxs.sort(sortMethods(sortedHeader.type, copiedData, sortDirection))
+  t2 = performance.now() - t1
   return sortedIdxs
 })
 function sortMethods (type, data, direction) {
@@ -121,11 +125,20 @@ function sortMethods (type, data, direction) {
       return (a, b) => {
         // reverse sorting or use .reverse()?
         if (direction === 1) [a, b] = [b, a]
-        return data[a] < data[b] ? -1 : 1
+        return data[a] - data[b]
+      }
+    case 'string':
+      return (a, b) => {
+        if (direction === 1) [a, b] = [b, a]
+        return a > b ? -1 : a > b ? 1 : 0
+      }
+    case 'date':
+      return (a, b) => {
+        if (direction === 1) [a, b] = [b, a]
+        return new Date(a) - new Date(b)
       }
   }
 }
-
 
 // PAGINATION
 // slice filtered data
@@ -140,23 +153,30 @@ function changePage(newPages) {
 
 // RENDERED DATA
 const filteredData = computed(() => {
-  return props.tableData.headers.map((_, idx) => {
+  const n = performance.now()
+  const x = props.tableData.headers.map((_, idx) => {
     return sortedIdxs.map(i => {
       return props.tableData.data[idx][filteredIdxs[i]]
     }).slice(pages.startIdx, pages.endIdx)
   })
+  t3 = performance.now() - n
+  emit('performanceTest', [t0, t2, t3])
+  return x
 })
+
+// performance test
+let t0, t1, t2, t3
+const emit = defineEmits(['performanceTest'])
 </script>
 
 <template>
   <!-- Filtering.vue  -->
   <Table
-    :headers="tableData.headers"
     :tableData="filteredData"
-    :sortDirection="sortDirection"
+    :headers="tableData.headers"
     :sortedHeader="sortedHeader"
+    :sortDirection="sortDirection"
     :defaultSortDirection="defaultSortDirection"
-    :isVirtualized="tableData.data[0].length < rowsPerPage"
     @onHeaderSort="sort"
   />
   <Pagination
