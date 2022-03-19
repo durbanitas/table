@@ -82,7 +82,11 @@ const sortDirection = $ref(props.defaultSortDirection)
 // get initial sorting header
 // TODO: validate if default sort header is in props
 function getHeaderObj (headers) {
-  return headers.filter(h => h.key === 0)[0]
+  if (props.defaultSortByHeader) {
+    return headers.filter(h => h.key === props.defaultSortByHeader)[0]
+  } else {
+    return headers[0]
+  }
 }
 function sort(newHeader, newDirection, idx) {
   sortDirection = newDirection
@@ -114,10 +118,10 @@ const sortedIdxs = $computed(() => {
   t1 = performance.now()
   const columnData = props.tableData.data[sortedHeaderIdx]
   const copiedData = filteredIdxs.map(idx => columnData[idx])
-  const sortedIdxs = filteredIdxs.map((_, idx) => idx)
-  if (sortedHeader.sortable) sortedIdxs.sort(sortMethods(sortedHeader.type, copiedData, sortDirection))
+  const idxs = filteredIdxs.map((_, idx) => idx)
+  if (sortedHeader.sortable) idxs.sort(sortMethods(sortedHeader.type, copiedData, sortDirection))
   t2 = performance.now() - t1
-  return sortedIdxs
+  return idxs
 })
 function sortMethods (type, data, direction) {
   switch (type) {
@@ -130,12 +134,12 @@ function sortMethods (type, data, direction) {
     case 'string':
       return (a, b) => {
         if (direction === 1) [a, b] = [b, a]
-        return a > b ? -1 : a > b ? 1 : 0
+        return data[a] < data[b] ? -1 : data[a] > data[b] ? 1 : 0
       }
     case 'date':
       return (a, b) => {
         if (direction === 1) [a, b] = [b, a]
-        return new Date(a) - new Date(b)
+        return new Date(data[a]) - new Date(data[b])
       }
   }
 }

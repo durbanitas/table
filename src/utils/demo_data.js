@@ -11,7 +11,8 @@ export const createDataset = (userColumns, userRows) => {
       key: i,
       label: 'Col' + i,
       type: 'number',
-      sortable: true
+      sortable: true,
+      align: 'end'
     }
     headers.push(head)
   }

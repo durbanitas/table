@@ -6,7 +6,7 @@
 
 - https://material.io/components/data-tables#anatomy
 
-- https://vuetifyjs.com/en/components/data-tables/
+- https://vuetifyjs.com /en/components/data-tables/
 
 ## Todo:
 

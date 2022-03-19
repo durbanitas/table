@@ -48,10 +48,7 @@ function sort (head, idx) {
             v-on="head.sortable ? { click: () => sort(head, idx) } : {}"
           >
             <div class="space-center">
-              <!-- <div>{{ head.label }}</div> -->
-              <div>
-                1
-              </div>
+              <div>{{ head.label }}</div>
               <div class="pl-8" v-if="head.sortable">
                 <div
                   class="up-arrow"

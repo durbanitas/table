@@ -8,15 +8,39 @@ let tableData = $ref({})
 let showTable = $ref(false)
 
 const N_ROWS_PER_PAGE = 10000
-const N_COLUMNS = 10
+const N_COLUMNS = 2
 
 onBeforeMount(() => {
   initTable()
 })
+
+const test = {
+      headers: [
+        {
+          key: 'name', // represents data[[key1], [key2]]
+          type: 'string', // string, number, date
+          label: 'Name',
+          align: 'start', // start, center, end
+          sortable: true,
+        },
+        {
+          key: 'height',
+          type: 'number',
+          label: 'Height',
+          align: 'end',
+          sortable: true,
+        }
+      ],
+      data: [
+        ['luke', 'yoda', 'leia', 'bob', 'mark'],
+        [175, 65, 124, 12, 54]
+      ]
+    }
+
 function initTable() {
   showTable = false // set to false for performance testing
   const data = createDataset(N_COLUMNS, N_ROWS_PER_PAGE)
-  tableData = data
+  tableData = test
   showTable = true
 }
 
@@ -56,7 +80,7 @@ function startTest() {
     <TableParent
       :tableData="tableData"
       :defaultSortDirection="1"
-      :defaultSortByHeader="'Col0'"
+      :defaultSortByHeader="'name'"
       :rowsPerPage="5"
       :filterTags="[]"
       @performanceTest="collectData"
