@@ -68,8 +68,13 @@ const props = defineProps({
   },
   filterTags: {
     type: Array,
-    // TODO: create filter tags data structure
-    default: []
+    default: [
+      {
+        type: 'name',
+        name: '',
+        operator: '=' // 
+      }
+    ]
     // TODO: add filter tags validation
   }
 })
@@ -95,25 +100,49 @@ function sort(newHeader, newDirection, idx) {
 }
 
 // FILTERING
+const a = []	
+const tIds = props.filterTags.map(el => props.tableData.headers.findIndex(h => h.key === el.type))
 const originalIdxs = $computed(() => props.tableData.data[0].map((_, idx) => idx))
 const filteredIdxs = $computed(() => {
   // add t0
   if (props.filterTags.length) {
     const start = performance.now()
-    const arr = []
     const columnData = props.tableData.data[sortedHeaderIdx]
-    // TODO: add multiple filters
-    columnData.filter((el, idx) => {
-      if (el < 6) arr.push(idx)
+    
+    props.tableData.data.forEach((d, i) => {
+      tIds.forEach((ti, tid) => {
+        if (ti !== i) return
+        getIdxs(d, i, tid)
+      })
     })
+
+    console.log(a);
     t0 = performance.now() - start
-    return arr
+    return a
   } else {
     // if no filters are applied return original index array
     return originalIdxs
   }
 })
 
+function getIdxs(arr, i, ti) {
+  const filters = props.filterTags[ti].name
+  const op = props.filterTags[ti].operator
+  const type = props.tableData.headers[i].type
+  if (type === 'string') {
+    arr.forEach((el, idx) => {
+      if (el.includes(filters)) a.push(idx)
+    })
+  }
+
+  if (type === 'number') {
+    arr.forEach((el, idx) => {
+      if (el < 40) a.push(idx)
+    })
+  }
+}
+
+// SORTING
 const sortedIdxs = $computed(() => {
   t1 = performance.now()
   const columnData = props.tableData.data[sortedHeaderIdx]
@@ -184,8 +213,8 @@ const emit = defineEmits(['performanceTest'])
     @onHeaderSort="sort"
   />
   <Pagination
-    v-if="tableData.data[0].length > rowsPerPage"
-    :entries="tableData.data[0].length"
+    v-if="filteredIdxs.length > rowsPerPage"
+    :entries="filteredIdxs.length"
     :rowsPerPage="rowsPerPage"
     @onChangePage="changePage" 
   /> 
