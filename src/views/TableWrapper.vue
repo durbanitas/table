@@ -1,5 +1,6 @@
 <script setup>
 import TableParent from '../components/Table/TableParent.vue'
+import Filtering from '../components/Filtering.vue'
 import { onBeforeMount } from 'vue'
 import { createDataset } from '../utils/demo_data.js'
 import { getSums } from '../utils/measure.js'
@@ -8,7 +9,7 @@ let tableData = $ref({})
 let showTable = $ref(false)
 
 const N_ROWS_PER_PAGE = 100
-const N_COLUMNS = 2
+const N_COLUMNS = 5
 
 onBeforeMount(() => {
   initTable()
@@ -19,6 +20,29 @@ function initTable() {
   const data = createDataset(N_COLUMNS, N_ROWS_PER_PAGE)
   tableData = data
   showTable = true
+}
+
+// add filter tags
+const filterTags = $ref([
+  {
+    type: 0,
+    name: 5,
+    operator: '=' // 
+    },
+    {
+    type: 0,
+    name: 60,
+    operator: '=' // 
+    },
+    {
+    type: 1,
+    name: 50,
+    operator: '=' // 
+  }
+])
+function useFilterTags(val) {
+  console.log(val);
+  filterTags = val
 }
 
 // Performance test
@@ -54,17 +78,16 @@ function startTest() {
 <template>
   <!-- TODO: add filter tags -->
   <div v-if="showTable">
+    <Filtering 
+      :headers="tableData.headers" 
+      @submit="useFilterTags" 
+    />
     <TableParent
       :tableData="tableData"
       :defaultSortDirection="1"
       :defaultSortByHeader="0"
       :rowsPerPage="5"
-      :filterTags="[{
-        type: 0,
-        name: 5,
-        operator: '=' // 
-        }
-      ]"
+      :filterTags="filterTags"
       @performanceTest="collectData"
     />
   </div>

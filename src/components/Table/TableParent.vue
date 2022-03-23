@@ -100,25 +100,29 @@ function sort(newHeader, newDirection, idx) {
 }
 
 // FILTERING
-const a = []	
-const tIds = props.filterTags.map(el => props.tableData.headers.findIndex(h => h.key === el.type))
 const originalIdxs = $computed(() => props.tableData.data[0].map((_, idx) => idx))
 const filteredIdxs = $computed(() => {
+  // TODO: use filter tags operator
+  const allIdxs = []
   // add t0
   if (props.filterTags.length) {
     const start = performance.now()
-    const columnData = props.tableData.data[sortedHeaderIdx]
-    
+    // get all headers corresponding to the filters 
+    const tagIds = props.filterTags.map(el => props.tableData.headers.findIndex(h => h.key === el.type))
+    // loop over the dataset
     props.tableData.data.forEach((d, i) => {
-      tIds.forEach((ti, tid) => {
+      // loop over the corresponding filters to use multiple
+      tagIds.forEach((ti, tid) => {
         if (ti !== i) return
-        getIdxs(d, i, tid)
+        const columnIdxs = getIdxs(d, i, tid)
+        allIdxs.push(...columnIdxs)
       })
     })
 
-    console.log(a);
+    const unique = [...new Set(allIdxs)]
+    console.log(allIdxs, unique);
     t0 = performance.now() - start
-    return a
+    return unique
   } else {
     // if no filters are applied return original index array
     return originalIdxs
@@ -126,20 +130,25 @@ const filteredIdxs = $computed(() => {
 })
 
 function getIdxs(arr, i, ti) {
+  const idxs = []
   const filters = props.filterTags[ti].name
   const op = props.filterTags[ti].operator
   const type = props.tableData.headers[i].type
+  console.log(filters);
   if (type === 'string') {
+    // console.log('STRING');
     arr.forEach((el, idx) => {
-      if (el.includes(filters)) a.push(idx)
+      if (el.includes(filters)) idxs.push(idx)
     })
   }
 
   if (type === 'number') {
+    // console.log('NUMBER');
     arr.forEach((el, idx) => {
-      if (el < 40) a.push(idx)
+      if (el === 40) idxs.push(idx)
     })
   }
+  return idxs
 }
 
 // SORTING
