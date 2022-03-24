@@ -23,23 +23,7 @@ function initTable() {
 }
 
 // add filter tags
-const filterTags = $ref([
-  {
-    type: 0,
-    name: 5,
-    operator: '=' // 
-    },
-    {
-    type: 0,
-    name: 60,
-    operator: '=' // 
-    },
-    {
-    type: 1,
-    name: 50,
-    operator: '=' // 
-  }
-])
+const filterTags = $ref([])
 function useFilterTags(val) {
   console.log(val);
   filterTags = val
@@ -51,7 +35,6 @@ function collectData(val) {
   stats.push(val)
 }
 // TODO: simplify?
-// TODO: is creating data each time costly?
 async function createDataAndTable(){
   initTable()
   return;

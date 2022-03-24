@@ -70,9 +70,9 @@ const props = defineProps({
     type: Array,
     default: [
       {
-        type: 'name',
-        name: '',
-        operator: '=' // 
+        type: 'name', // column header
+        name: '', // filter value
+        operator: '=' // isEqual, isLess, isGreater
       }
     ]
     // TODO: add filter tags validation
@@ -102,7 +102,7 @@ function sort(newHeader, newDirection, idx) {
 // FILTERING
 const originalIdxs = $computed(() => props.tableData.data[0].map((_, idx) => idx))
 const filteredIdxs = $computed(() => {
-  // TODO: use filter tags operator
+  // TODO: better way to use filter tags operators
   const allIdxs = []
   // add t0
   if (props.filterTags.length) {
@@ -120,7 +120,6 @@ const filteredIdxs = $computed(() => {
     })
 
     const unique = [...new Set(allIdxs)]
-    console.log(allIdxs, unique);
     t0 = performance.now() - start
     return unique
   } else {
@@ -129,25 +128,37 @@ const filteredIdxs = $computed(() => {
   }
 })
 
-function getIdxs(arr, i, ti) {
+function getIdxs(arr, i, tagIdx) {
   const idxs = []
-  const filters = props.filterTags[ti].name
-  const op = props.filterTags[ti].operator
+  const filterTag = props.filterTags[tagIdx].name
   const type = props.tableData.headers[i].type
-  console.log(filters);
-  if (type === 'string') {
-    // console.log('STRING');
-    arr.forEach((el, idx) => {
-      if (el.includes(filters)) idxs.push(idx)
-    })
-  }
+  
+  arr.forEach((el, idx) => {
+    switch (type) {
+      case 'string':
+        if (el.includes(filterTag)) idxs.push(idx)
+        break;
+    
+      case 'number':
+        const operator = props.filterTags[tagIdx].operator
+        switch (operator) {
+          case 'isEqual':
+            if (el == filterTag) idxs.push(idx)
+            break;
+          case 'isLess':
+            if (el < filterTag) idxs.push(idx)
+            break;
+          case 'isGreater':
+            if (el > filterTag) idxs.push(idx)
+            break;
+        }
 
-  if (type === 'number') {
-    // console.log('NUMBER');
-    arr.forEach((el, idx) => {
-      if (el === 40) idxs.push(idx)
-    })
-  }
+      case 'date':
+        // return date
+
+    }
+  })
+  
   return idxs
 }
 

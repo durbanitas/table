@@ -66,7 +66,7 @@ const t = [
 <!-- remove pills -->
 <div class="filter-list">
   <span v-for="(p, idx) in filterTags" @click="filterTags.splice(idx, 1)" class="pill">
-    {{ p }}
+    {{ p.type }}: {{ p.operator }} {{ p.name }}
   </span>
 </div>
 
