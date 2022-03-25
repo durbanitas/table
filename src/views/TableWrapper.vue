@@ -9,7 +9,7 @@ let tableData = $ref({})
 let showTable = $ref(false)
 
 const N_ROWS_PER_PAGE = 100
-const N_COLUMNS = 5
+const N_COLUMNS = 10
 
 onBeforeMount(() => {
   initTable()
@@ -30,6 +30,7 @@ function useFilterTags(val) {
 }
 
 // Performance test
+const displayOutcome = $ref('')
 const stats = []
 function collectData(val) {
   stats.push(val)
@@ -49,7 +50,8 @@ function runTest (cols, rows) {
         const result = getSums(stats)
         result.rows = rows
         result.columns = cols
-        console.log(result);
+        displayOutcome = result
+        // console.log(result);
       }
     }
 }
@@ -59,7 +61,6 @@ function startTest() {
 </script>
 
 <template>
-  <!-- TODO: add filter tags -->
   <div v-if="showTable">
     <Filtering 
       :headers="tableData.headers" 
@@ -68,14 +69,15 @@ function startTest() {
     <TableParent
       :tableData="tableData"
       :defaultSortDirection="1"
-      :defaultSortByHeader="0"
+      :defaultSortByHeader="1"
       :rowsPerPage="5"
       :filterTags="filterTags"
       @performanceTest="collectData"
     />
   </div>
   <!-- performance test -->
-  <button @click="startTest()" v-text="'run test'" /> 
+  <button @click="startTest()" v-text="'run test'" />
+  <h5 v-text="displayOutcome" />
 </template>
 
 <style>

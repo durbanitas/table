@@ -51,8 +51,8 @@ const props = defineProps({
     }
   },
   defaultSortByHeader: {
-    type: String,
-    default: 'name',
+    type: [String, Number],
+    default: 'name', // headers[idx].key
     // validator: val => val
   },
   rowsPerPage: {
@@ -80,16 +80,16 @@ const props = defineProps({
 })
 
 // SORTING
-// TODO: set default header idx
 const sortedHeaderIdx = $ref(0)
 const sortedHeader = $ref(getHeaderObj(props.tableData.headers))
 const sortDirection = $ref(props.defaultSortDirection)
-// get initial sorting header
 // TODO: validate if default sort header is in props
 function getHeaderObj (headers) {
+  // get initial sorting header
   if (props.defaultSortByHeader) {
+    sortedHeaderIdx = headers.findIndex(h => h.key === props.defaultSortByHeader)
     return headers.filter(h => h.key === props.defaultSortByHeader)[0]
-  } else {
+  } else { // return first header element to be sorted by
     return headers[0]
   }
 }
