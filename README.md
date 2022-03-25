@@ -89,7 +89,7 @@ const tableData = {
 // will be automatically filled with the scroll position
 // no overlapping cells -->
 
-## Localhost
+## Localhost (ohne filter)
 
 | Run | Filtering | Sorting | Rendering | Total | Rows | Columns |
 |---|---|---|---|---|---|---|
@@ -115,6 +115,36 @@ const tableData = {
 | 4 | / | 976 | 24264 | 25240 | 100_000 | 20 |
 | 5 | / | 16625 | 198881 | 215506 | 1_000_000 | 20 |
 
+## Localhost (mit 1x filter)
+
+| Run | Filtering | Sorting | Rendering | Total | Rows | Columns |
+|---|---|---|---|---|---|---|
+| 1 | 3 | 4 | 6 | 13 | 100 | 2 |
+| 2 | 8 | 13 | 19 | 40 | 1_000 | 2 |
+| 3 | 49 | 67 | 102 | 218 | 10_000 | 2 |
+| 4 | 545 | 733 | 1197 | 2475 | 100_000 | 2 |
+| 5 | 6051 | 9002 | 13452 | 28505 | 1_000_000 | 2 |
+
+## Localhost (mit 5x filter)
+
+| Run | Filtering | Sorting | Rendering | Total | Rows | Columns |
+|---|---|---|---|---|---|---|
+| 1 | 6 | 6 | 8 | 20 | 100 | 10 |
+| 2 | 39 | 41 | 80 | 160 | 1_000 | 10 |
+| 3 | 460 | 488 | 901 | 1849 | 10_000 | 10 |
+| 4 | 4659 | 4941 | 9532 | 19132 | 100_000 | 10 |
+| 5 | / | / | / | / | 1_000_000 | 10 |
+
+## Localhost (mit 10x filter)
+
+| Run | Filtering | Sorting | Rendering | Total | Rows | Columns |
+|---|---|---|---|---|---|---|
+| 1 | 12 | 14 | 20 | 46 | 100 | 10 |
+| 2 | 39 | 41 | 80 | 160 | 1_000 | 10 |
+| 3 | 460 | 488 | 901 | 1849 | 10_000 | 10 |
+| 4 | 4659 | 4941 | 9532 | 19132 | 100_000 | 10 |
+| 5 | / | / | / | / | 1_000_000 | 10 |
+
 ## Deployed
 
 | Run | Filtering | Sorting | Rendering | Total | Rows | Columns |
@@ -123,7 +153,7 @@ const tableData = {
 | 2 | / | 10 | 43 | 53 | 1_000 | 10 |
 | 3 | / | 62 | 445 | 507 | 10_000 | 10 |
 | 4 | / | 696 | 5138 | 5834 | 100_000 | 10 |
-| 5 | / |  |  |  | 1_000_000 | 10 |
+| 5 | / | 9287 | 71687 | 80974 | 1_000_000 | 10 |
 
 ```js
 {
