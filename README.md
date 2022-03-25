@@ -30,10 +30,6 @@ Read:
 
 - https://en.wikipedia.org/wiki/Rank_correlation
 
-// TODO: handle resize events
-// pagination vs. scroll
-// reactive rows per page / client viewheight
-
 ---
 
 ```js
@@ -68,26 +64,7 @@ const tableData = {
 }
 ```
 
-<!-- validate length of same rows over columns-->
-<!-- validate matching enough headers for data arrays -->
-<!-- validate same typeof each entries -->
-<!-- filter by each column simpler -->
-
-<!-- pass done entries vs. pass format method to format each entry  -->
-
-<!-- // virtualization
-// get single td height
-// get visible table container height
-// calculate max height: tdHeight * data.length = table height
-// ^ makes the container scrollable
-// calculate max visible td's
-// assign a top height and display if in the current table view
-// use an event listener on scroll to detect the position
-// problems: always assign inline style, what happens if the scrollbar will be clicked?
-
-// idea: fixed td elements
-// will be automatically filled with the scroll position
-// no overlapping cells -->
+# Performance Tests
 
 ## Localhost (ohne filter)
 
@@ -166,95 +143,3 @@ const tableData = {
 | 4 | 2167 | 2278 | 3184 | 7629 | 100_000 | 10 |
 | 5 | 26115 | 28235 | 39764 | 94114 | 1_000_000 | 10 |
 
-```js
-{
-  "filtering": null,
-  "sorting": 5.6,
-  "rendering": 25.3,
-  "total": 30.9,
-  "rows": 1000,
-  "columns": 4
-}
-{
-  "filtering": null,
-  "sorting": 48.6,
-  "rendering": 207.3,
-  "total": 255.9,
-  "rows": 10000,
-  "columns": 4
-}
-{
-  "filtering": null,
-  "sorting": 488.1,
-  "rendering": 2571.6,
-  "total": 3059.7,
-  "rows": 100000,
-  "columns": 4
-}
-{ // only once executed
-  "filtering": null,
-  "sorting": 6186,
-  "rendering": 28590,
-  "total": 34776,
-  "rows": 1000000,
-  "columns": 4
-}
-```
-
-```js
-{
-  "filtering": null,
-  "sorting": 8.3,
-  "rendering": 212,
-  "total": 220.3,
-  "rows": 1000,
-  "columns": 40
-}
-{
-  "filtering": null,
-  "sorting": 55.8,
-  "rendering": 2523.1,
-  "total": 2578.9,
-  "rows": 10000,
-  "columns": 40
-}
-```
-
-
----
-second time
-```js
-
-{
-  "filtering": null,
-  "sorting": 6,
-  "rendering": 46,
-  "total": 52,
-  "rows": 1000,
-  "columns": 10
-}
-{
-  "filtering": null,
-  "sorting": 60,
-  "rendering": 487,
-  "total": 547,
-  "rows": 10000,
-  "columns": 10
-}
-{
-  "filtering": null,
-  "sorting": 513,
-  "rendering": 6493,
-  "total": 7006,
-  "rows": 100000,
-  "columns": 10
-}
-{
-  "filtering": null,
-  "sorting": 13216,
-  "rendering": 88696,
-  "total": 101912,
-  "rows": 1000000,
-  "columns": 10
-}
-```
