@@ -23,11 +23,19 @@ const props = defineProps({
           label: 'Height',
           align: 'end',
           sortable: true,
-        }
+        },
+        {
+          key: 'created',
+          type: 'date',
+          label: 'Created',
+          align: 'center',
+          sortable: false,
+        },
       ],
       data: [
         ['luke', 'yoda'],
-        [175, 65]
+        [175, 65],
+        ['2014-12-09T13:50:51.644000Z', '2014-12-20T21:17:56.891000Z']
       ]
     },
     validator: obj => {
@@ -70,7 +78,7 @@ const props = defineProps({
     type: Array,
     default: [
       {
-        type: 'name', // column header
+        key: 'name', // column header
         name: '', // filter value
         operator: '=' // isEqual, isLess, isGreater
       }
@@ -108,7 +116,7 @@ const filteredIdxs = $computed(() => {
   if (props.filterTags.length) {
     const start = performance.now()
     // get all headers corresponding to the filters 
-    const tagIds = props.filterTags.map(el => props.tableData.headers.findIndex(h => h.key === el.type))
+    const tagIds = props.filterTags.map(f => props.tableData.headers.findIndex(h => h.key === f.key))
     // loop over the dataset
     props.tableData.data.forEach((d, i) => {
       // loop over the corresponding filters to use multiple
@@ -128,12 +136,12 @@ const filteredIdxs = $computed(() => {
   }
 })
 
-function getIdxs(arr, i, tagIdx) {
+function getIdxs(data, i, tagIdx) {
   const idxs = []
   const filterTag = props.filterTags[tagIdx].name
   const type = props.tableData.headers[i].type
   
-  arr.forEach((el, idx) => {
+  data.forEach((el, idx) => {
     switch (type) {
       case 'string':
         if (el.includes(filterTag)) idxs.push(idx)
@@ -154,8 +162,17 @@ function getIdxs(arr, i, tagIdx) {
         }
 
       case 'date':
-        // return date
-
+        const fDay = new Date(filterTag)
+        const date = new Date(el)
+        case 'isEqual':
+          if (fDay.getTime() === date.getTime()) idxs.push(idx)
+          break;
+        case 'isLess':
+          if (date <= fDay) idxs.push(idx)
+          break;
+        case 'isGreater':
+          if (date >= fDay) idxs.push(idx)
+          break;
     }
   })
   
@@ -173,23 +190,17 @@ const sortedIdxs = $computed(() => {
   return idxs
 })
 function sortMethods (type, data, direction) {
-  switch (type) {
-    case 'number':
-      return (a, b) => {
-        // reverse sorting or use .reverse()?
-        if (direction === 1) [a, b] = [b, a]
+  return (a, b) => {
+    // reverse sorting
+    if (direction === 1) [a, b] = [b, a]
+    switch (type) {
+      case 'number':
         return data[a] - data[b]
-      }
-    case 'string':
-      return (a, b) => {
-        if (direction === 1) [a, b] = [b, a]
+      case 'string':
         return data[a] < data[b] ? -1 : data[a] > data[b] ? 1 : 0
-      }
-    case 'date':
-      return (a, b) => {
-        if (direction === 1) [a, b] = [b, a]
+      case 'date':
         return new Date(data[a]) - new Date(data[b])
-      }
+    }
   }
 }
 
@@ -207,14 +218,14 @@ function changePage(newPages) {
 // RENDERED DATA
 const filteredData = computed(() => {
   const n = performance.now()
-  const x = props.tableData.headers.map((_, idx) => {
+  const data = props.tableData.headers.map((_, idx) => {
     return sortedIdxs.map(i => {
       return props.tableData.data[idx][filteredIdxs[i]]
     }).slice(pages.startIdx, pages.endIdx)
   })
   t3 = performance.now() - n
   emit('performanceTest', [t0, t2, t3])
-  return x
+  return data
 })
 
 // performance test

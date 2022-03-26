@@ -33,6 +33,7 @@ function sort (head, idx) {
 }
 
 // json scheme
+// TODO: show no results tag if filters are applied and the results are 0
 </script>
 
 <template>
@@ -48,15 +49,15 @@ function sort (head, idx) {
             v-on="head.sortable ? { click: () => sort(head, idx) } : {}"
           >
             <div class="space-center">
-              <div>{{ head.label }}</div>
+              <div v-html="head.label" />
               <div class="pl-8" v-if="head.sortable">
                 <div
                   class="up-arrow"
-                  :class="{ 'active-up': head === sortedHeader && sortDirection === -1 }"
+                  :class="{ 'active-up': head.key === sortedHeader.key && sortDirection === -1 }"
                 />
                 <div
                   class="down-arrow"
-                  :class="{ 'active-down': head === sortedHeader && sortDirection === 1 }"
+                  :class="{ 'active-down': head.key === sortedHeader.key && sortDirection === 1 }"
                 />
               </div>
             </div>
@@ -67,14 +68,14 @@ function sort (head, idx) {
       <!-- BODY -->
       <tbody>
         <template v-if="tableData.length">
-          <template v-for="n in tableData[0].length">
+          <template v-for="(_, idx) in tableData[0].length">
             <tr>
               <td
-                v-for="data in tableData" 
+                v-for="(data, i) in tableData"
+                :class="headers[i].align"
                 :key="data.id"
-              > 
-                {{ data[n - 1] }}
-              </td>
+                v-html="data[idx]"
+              /> 
             </tr>
           </template>
         </template>
@@ -113,7 +114,6 @@ table {
     padding: 8px;
     min-width: auto;
     box-sizing: border-box;
-    text-align: left;
   }
   // custom headers
   thead th {
@@ -184,8 +184,14 @@ table {
 }
 
 // HELPERS
-.text-right {
+.end {
   text-align: right;
+}
+.center {
+  text-align: center;
+}
+.start {
+  text-align: left;
 }
 .space-center {
   display: flex;

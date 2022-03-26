@@ -2,7 +2,7 @@
 import TableParent from '../components/Table/TableParent.vue'
 import Filtering from '../components/Filtering.vue'
 import { onBeforeMount } from 'vue'
-import { createDataset } from '../utils/demo_data.js'
+import { createDataset, demoStarWarsData } from '../utils/demo_data.js'
 import { getSums } from '../utils/measure.js'
 
 let tableData = $ref({})
@@ -17,23 +17,22 @@ onBeforeMount(() => {
 
 function initTable() {
   showTable = false // set to false for performance testing
-  const data = createDataset(N_COLUMNS, N_ROWS_PER_PAGE)
-  tableData = data
+  // tableData = createDataset(N_COLUMNS, N_ROWS_PER_PAGE)
+  tableData = demoStarWarsData
   showTable = true
 }
 
 // add filter tags
 const filterTags = $ref([])
-function useFilterTags(val) {
-  console.log(val);
-  filterTags = val
+function useFilterTags(filters) {
+  filterTags = filters
 }
 
 // Performance test
 const displayOutcome = $ref('')
 const stats = []
-function collectData(val) {
-  stats.push(val)
+function collectData(testResults) {
+  stats.push(testResults)
 }
 // TODO: simplify?
 async function createDataAndTable(){
@@ -69,7 +68,7 @@ function startTest() {
     <TableParent
       :tableData="tableData"
       :defaultSortDirection="1"
-      :defaultSortByHeader="1"
+      :defaultSortByHeader="0"
       :rowsPerPage="5"
       :filterTags="filterTags"
       @performanceTest="collectData"

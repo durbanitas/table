@@ -18,7 +18,7 @@ const operators = [
 
 function useFilter() {
   const obj = {
-    type: selectedHeader,
+    key: selectedHeader,
     operator: selectedOperator,
     name: selectedValue,
   }
@@ -31,19 +31,6 @@ function resetInputs() {
   selectedOperator = ''
   selectedValue = ''
 }
-
-// import input component based on type?
-// string: text, number: number, ...
-
-const t = [
-  {
-    type: 'header_key',
-    name: 'x',
-    operator: 'less' // 
-  }
-]
-
-
 </script>
 
 <template>
@@ -66,7 +53,7 @@ const t = [
 <!-- remove pills -->
 <div class="filter-list">
   <span v-for="(p, idx) in filterTags" @click="filterTags.splice(idx, 1)" class="pill">
-    {{ p.type }}: {{ p.operator }} {{ p.name }}
+    {{ p.key }}: {{ p.operator }} {{ p.name }}
   </span>
 </div>
 
