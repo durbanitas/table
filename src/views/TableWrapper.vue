@@ -17,8 +17,8 @@ onBeforeMount(() => {
 
 function initTable() {
   showTable = false // set to false for performance testing
-  // tableData = createDataset(N_COLUMNS, N_ROWS_PER_PAGE)
-  tableData = demoStarWarsData
+  tableData = createDataset(N_COLUMNS, N_ROWS_PER_PAGE)
+  // tableData = demoStarWarsData
   showTable = true
 }
 
