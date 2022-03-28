@@ -143,3 +143,12 @@ const tableData = {
 | 4 | 2167 | 2278 | 3184 | 7629 | 100_000 | 10 |
 | 5 | 26115 | 28235 | 39764 | 94114 | 1_000_000 | 10 |
 
+---
+
+- get idxs of headers via filter tags
+- if not use default sort header by
+- call a method (dataset)
+- sort array
+- use sorted array with filter tag
+- call method binary search
+- return idxs

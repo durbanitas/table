@@ -18,7 +18,7 @@ const props = defineProps({
           sortable: true,
         },
         {
-          key: 'height',
+          key: 'height', // TODO: duplicated with label?
           type: 'number',
           label: 'Height',
           align: 'end',
@@ -62,6 +62,7 @@ const props = defineProps({
     type: [String, Number],
     default: 'name', // headers[idx].key
     // validator: val => val
+    // TODO: all validation
   },
   rowsPerPage: {
     type: Number,
@@ -80,7 +81,7 @@ const props = defineProps({
       {
         key: 'name', // column header
         name: '', // filter value
-        operator: '=' // isEqual, isLess, isGreater
+        operator: 'isEqual' // isEqual, isLess, isGreater
       }
     ]
     // TODO: add filter tags validation
@@ -91,7 +92,6 @@ const props = defineProps({
 const sortedHeaderIdx = $ref(0)
 const sortedHeader = $ref(getHeaderObj(props.tableData.headers))
 const sortDirection = $ref(props.defaultSortDirection)
-// TODO: validate if default sort header is in props
 function getHeaderObj (headers) {
   // get initial sorting header
   if (props.defaultSortByHeader) {
@@ -101,6 +101,7 @@ function getHeaderObj (headers) {
     return headers[0]
   }
 }
+// handle user interaction: sort
 function sort(newHeader, newDirection, idx) {
   sortDirection = newDirection
   sortedHeader = newHeader
@@ -110,7 +111,6 @@ function sort(newHeader, newDirection, idx) {
 // FILTERING
 const originalIdxs = $computed(() => props.tableData.data[0].map((_, idx) => idx))
 const filteredIdxs = $computed(() => {
-  // TODO: better way to use filter tags operators
   const allIdxs = []
   // add t0
   if (props.filterTags.length) {
@@ -135,7 +135,7 @@ const filteredIdxs = $computed(() => {
     return originalIdxs
   }
 })
-
+// filter each dataset and return matching idxs
 function getIdxs(data, i, tagIdx) {
   const idxs = []
   const filterTag = props.filterTags[tagIdx].name
@@ -168,14 +168,13 @@ function getIdxs(data, i, tagIdx) {
           if (fDay.getTime() === date.getTime()) idxs.push(idx)
           break;
         case 'isLess':
-          if (date <= fDay) idxs.push(idx)
+          if (date < fDay) idxs.push(idx)
           break;
         case 'isGreater':
-          if (date >= fDay) idxs.push(idx)
+          if (date > fDay) idxs.push(idx)
           break;
     }
   })
-  
   return idxs
 }
 
@@ -231,6 +230,51 @@ const filteredData = computed(() => {
 // performance test
 let t0, t1, t2, t3
 const emit = defineEmits(['performanceTest'])
+
+// UNUSED
+// sort single data array for binary search
+// function sortDataset (data) {
+//   const copy = data.slice()
+//   return copy.sort((a, b) => a - b)
+// }
+// const sortIdxs = $computed(() => {
+//   const allIdxs = []
+//   // get all headers corresponding to the filters
+//   const tagIds = props.filterTags.map(f => props.tableData.headers.findIndex(h => h.key === f.key))
+//   const ids = tagIds.length ? tagIds : [sortedHeaderIdx]
+//   // loop over the dataset
+//   props.tableData.data.forEach((d, i) => {
+//     // loop over the corresponding filters to use multiple
+//     ids.forEach((ti, tIdx) => {
+//       if (ti !== i) return
+//       const copiedData = sortDataset(d)
+//       // const val = filter value
+//       const columnIdxs = binary(copiedData, i, tIdx, val)
+//       allIdxs.push(...columnIdxs)
+//     })
+//   })
+//   const unique = [...new Set(allIdxs)]
+//   console.log(ids);
+//   return unique
+// })
+
+// function binary(data, i, tIdx, val) {
+//   let min = 0
+//   let max = data.length - 1
+
+//   while (min <= max) {
+//     let middle = Math.floor((min + max) / 2)
+//     let currentElement = data[middle]
+//     if (data[middle] < val) {
+//       min = middle + 1
+//     } else if (data[middle] > val) {
+//       max = middle - 1
+//     } else {
+//       return middle
+//     }
+//   }
+//   return -1
+// }
 </script>
 
 <template>
