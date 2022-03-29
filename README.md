@@ -18,6 +18,10 @@
 
 - keyboard navigation
 
+- handle/test live updates
+
+- pagination (select rows per page or add an array with a custom range)
+
 ---
 
 Impressions:

@@ -8,7 +8,7 @@ import { getSums } from '../utils/measure.js'
 let tableData = $ref({})
 let showTable = $ref(false)
 
-const N_ROWS_PER_PAGE = 100
+const N_ROWS_PER_PAGE = 10_000
 const N_COLUMNS = 5
 
 onBeforeMount(() => {

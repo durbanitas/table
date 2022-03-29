@@ -9,7 +9,7 @@ const selectedHeader = $ref('')
 const selectedOperator = $ref('')
 const selectedValue = $ref('')
 const filterTags = $ref([])
-
+// TODO: adapt filter by typing
 const operators = [
   'isEqual',
   'isLess',
@@ -20,7 +20,7 @@ function useFilter() {
   const obj = {
     key: selectedHeader,
     operator: selectedOperator,
-    name: selectedValue,
+    value: selectedValue,
   }
   filterTags.push(obj)
   emit('submit', filterTags)
@@ -53,7 +53,7 @@ function resetInputs() {
 <!-- remove pills -->
 <div class="filter-list">
   <span v-for="(p, idx) in filterTags" @click="filterTags.splice(idx, 1)" class="pill">
-    {{ p.key }}: {{ p.operator }} {{ p.name }}
+    {{ p.key }}: {{ p.operator }} {{ p.value }}
   </span>
 </div>
 

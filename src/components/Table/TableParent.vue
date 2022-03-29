@@ -2,6 +2,7 @@
 import Pagination from './Pagination.vue'
 import Table from './Table.vue'
 import { computed, reactive } from 'vue'
+// TODO: check 
 
 const props = defineProps({
   // required props
@@ -13,12 +14,12 @@ const props = defineProps({
         {
           key: 'name', // represents data[[key1], [key2]]
           type: 'string', // string, number, date
-          label: 'Name',
+          label: 'Name', // TODO: handle text overflow
           align: 'start', // start, center, end
           sortable: true,
         },
         {
-          key: 'height', // TODO: duplicated with label?
+          key: 'height',
           type: 'number',
           label: 'Height',
           align: 'end',
@@ -39,11 +40,11 @@ const props = defineProps({
       ]
     },
     validator: obj => {
-      const sameHeaderColumn = obj.headers.length === obj.data.length
+      const equalHeadersColumnsLength = obj.headers.length === obj.data.length
       const equalRowsLength = [...new Set(obj.data.map(el => el.length))].length === 1
-      if (!sameHeaderColumn) console.error('headers and data must be the same length')
+      if (!equalHeadersColumnsLength) console.error('headers and data must be the same length')
       if (!equalRowsLength) console.error('row entries must be the same length')
-      return sameHeaderColumn && equalRowsLength
+      return equalHeadersColumnsLength && equalRowsLength
     }
   },
   // optional props
@@ -80,7 +81,7 @@ const props = defineProps({
     default: [
       {
         key: 'name', // column header
-        name: '', // filter value
+        value: '', // filter value
         operator: 'isEqual' // isEqual, isLess, isGreater
       }
     ]
@@ -102,31 +103,31 @@ function getHeaderObj (headers) {
   }
 }
 // handle user interaction: sort
-function sort(newHeader, newDirection, idx) {
-  sortDirection = newDirection
+function sort(newHeader, newDirection, headIdx) {
   sortedHeader = newHeader
-  sortedHeaderIdx = idx
+  sortDirection = newDirection
+  sortedHeaderIdx = headIdx
 }
 
 // FILTERING
-const originalIdxs = $computed(() => props.tableData.data[0].map((_, idx) => idx))
+const originalIdxs = $computed(() => [...Array(props.tableData.data[0].length).keys()]) // [0, 1, ...data[0].length ]
 const filteredIdxs = $computed(() => {
   const allIdxs = []
   // add t0
   if (props.filterTags.length) {
     const start = performance.now()
     // get all headers corresponding to the filters 
-    const tagIds = props.filterTags.map(f => props.tableData.headers.findIndex(h => h.key === f.key))
-    // loop over the dataset
-    props.tableData.data.forEach((d, i) => {
-      // loop over the corresponding filters to use multiple
-      tagIds.forEach((ti, tid) => {
-        if (ti !== i) return
-        const columnIdxs = getIdxs(d, i, tid)
+    const filteredHeaderIdxs = props.filterTags.map(f => props.tableData.headers.findIndex(h => h.key === f.key))
+    // loop over each column
+    props.tableData.data.forEach((col, colIdx) => {
+      // loop over the header for using multiple filters
+      filteredHeaderIdxs.forEach((headIdx, filterIdx) => {
+        if (headIdx !== colIdx) return
+        const columnIdxs = getIdxs(col, colIdx, filterIdx)
         allIdxs.push(...columnIdxs)
       })
     })
-
+    // trim all matching idxs and return a unique filtered set
     const unique = [...new Set(allIdxs)]
     t0 = performance.now() - start
     return unique
@@ -135,43 +136,43 @@ const filteredIdxs = $computed(() => {
     return originalIdxs
   }
 })
-// filter each dataset and return matching idxs
-function getIdxs(data, i, tagIdx) {
+// filter each column dataset and return matching idxs
+function getIdxs(colData, colIdx, filterTagIdx) {
   const idxs = []
-  const filterTag = props.filterTags[tagIdx].name
-  const type = props.tableData.headers[i].type
+  const filterValue = props.filterTags[filterTagIdx].value
+  const type = props.tableData.headers[colIdx].type
   
-  data.forEach((el, idx) => {
+  colData.forEach((el, idx) => {
     switch (type) {
       case 'string':
-        if (el.includes(filterTag)) idxs.push(idx)
+        if (el.includes(filterValue)) idxs.push(idx)
         break;
     
       case 'number':
-        const operator = props.filterTags[tagIdx].operator
+        const operator = props.filterTags[filterTagIdx].operator
         switch (operator) {
           case 'isEqual':
-            if (el == filterTag) idxs.push(idx)
+            if (el == filterValue) idxs.push(idx)
             break;
           case 'isLess':
-            if (el < filterTag) idxs.push(idx)
+            if (el < filterValue) idxs.push(idx)
             break;
           case 'isGreater':
-            if (el > filterTag) idxs.push(idx)
+            if (el > filterValue) idxs.push(idx)
             break;
         }
 
       case 'date':
-        const fDay = new Date(filterTag)
+        const toFilteredDate = new Date(filterValue)
         const date = new Date(el)
         case 'isEqual':
-          if (fDay.getTime() === date.getTime()) idxs.push(idx)
+          if (toFilteredDate.getTime() === date.getTime()) idxs.push(idx)
           break;
         case 'isLess':
-          if (date < fDay) idxs.push(idx)
+          if (date < toFilteredDate) idxs.push(idx)
           break;
         case 'isGreater':
-          if (date > fDay) idxs.push(idx)
+          if (date > toFilteredDate) idxs.push(idx)
           break;
     }
   })
@@ -182,24 +183,23 @@ function getIdxs(data, i, tagIdx) {
 const sortedIdxs = $computed(() => {
   t1 = performance.now()
   const columnData = props.tableData.data[sortedHeaderIdx]
-  const copiedData = filteredIdxs.map(idx => columnData[idx])
-  const idxs = filteredIdxs.map((_, idx) => idx)
-  if (sortedHeader.sortable) idxs.sort(sortMethods(sortedHeader.type, copiedData, sortDirection))
+  const filteredColumn = filteredIdxs.map(idx => columnData[idx])
+  const idxs = [...Array(filteredIdxs.length).keys()]
+  if (sortedHeader.sortable) {
+    idxs.sort(sortMethods(filteredColumn, sortedHeader.type))
+    if (sortDirection === -1) idxs.reverse()
+  }
   t2 = performance.now() - t1
   return idxs
 })
-function sortMethods (type, data, direction) {
-  return (a, b) => {
-    // reverse sorting
-    if (direction === 1) [a, b] = [b, a]
-    switch (type) {
-      case 'number':
-        return data[a] - data[b]
-      case 'string':
-        return data[a] < data[b] ? -1 : data[a] > data[b] ? 1 : 0
-      case 'date':
-        return new Date(data[a]) - new Date(data[b])
-    }
+function sortMethods (col, type) {
+  switch (type) {
+    case 'number':
+      return (a, b) => col[a] - col[b]
+    case 'string':
+      return (a, b) => col[a] < col[b] ? -1 : col[a] > col[b] ? 1 : 0
+    case 'date':
+      return (a, b) => new Date(col[a]) - new Date(col[b])
   }
 }
 
@@ -230,51 +230,6 @@ const filteredData = computed(() => {
 // performance test
 let t0, t1, t2, t3
 const emit = defineEmits(['performanceTest'])
-
-// UNUSED
-// sort single data array for binary search
-// function sortDataset (data) {
-//   const copy = data.slice()
-//   return copy.sort((a, b) => a - b)
-// }
-// const sortIdxs = $computed(() => {
-//   const allIdxs = []
-//   // get all headers corresponding to the filters
-//   const tagIds = props.filterTags.map(f => props.tableData.headers.findIndex(h => h.key === f.key))
-//   const ids = tagIds.length ? tagIds : [sortedHeaderIdx]
-//   // loop over the dataset
-//   props.tableData.data.forEach((d, i) => {
-//     // loop over the corresponding filters to use multiple
-//     ids.forEach((ti, tIdx) => {
-//       if (ti !== i) return
-//       const copiedData = sortDataset(d)
-//       // const val = filter value
-//       const columnIdxs = binary(copiedData, i, tIdx, val)
-//       allIdxs.push(...columnIdxs)
-//     })
-//   })
-//   const unique = [...new Set(allIdxs)]
-//   console.log(ids);
-//   return unique
-// })
-
-// function binary(data, i, tIdx, val) {
-//   let min = 0
-//   let max = data.length - 1
-
-//   while (min <= max) {
-//     let middle = Math.floor((min + max) / 2)
-//     let currentElement = data[middle]
-//     if (data[middle] < val) {
-//       min = middle + 1
-//     } else if (data[middle] > val) {
-//       max = middle - 1
-//     } else {
-//       return middle
-//     }
-//   }
-//   return -1
-// }
 </script>
 
 <template>
