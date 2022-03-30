@@ -184,22 +184,31 @@ const sortedIdxs = $computed(() => {
   t1 = performance.now()
   const columnData = props.tableData.data[sortedHeaderIdx]
   const filteredColumn = filteredIdxs.map(idx => columnData[idx])
+  const sortFn = getSortMethod(filteredColumn, sortedHeader.type, sortDirection)
   const idxs = [...Array(filteredIdxs.length).keys()]
-  if (sortedHeader.sortable) {
-    idxs.sort(sortMethods(filteredColumn, sortedHeader.type))
-    if (sortDirection === -1) idxs.reverse()
-  }
+  if (sortedHeader.sortable) idxs.sort(sortFn)
   t2 = performance.now() - t1
   return idxs
 })
-function sortMethods (col, type) {
-  switch (type) {
-    case 'number':
-      return (a, b) => col[a] - col[b]
-    case 'string':
-      return (a, b) => col[a] < col[b] ? -1 : col[a] > col[b] ? 1 : 0
-    case 'date':
-      return (a, b) => new Date(col[a]) - new Date(col[b])
+function getSortMethod(col, type, direction) {
+  if (direction === 1) {
+    switch (type) {
+      case 'number':
+        return (a, b) => col[a] - col[b]
+      case 'string':
+        return (a, b) => col[a] < col[b] ? -1 : col[a] > col[b] ? 1 : 0
+      case 'date':
+        return (a, b) => new Date(col[a]) - new Date(col[b])
+    }
+  } else {
+    switch (type) {
+      case 'number':
+        return (a, b) => col[b] - col[a]
+      case 'string':
+        return (a, b) => col[b] < col[a] ? -1 : col[b] > col[a] ? 1 : 0
+      case 'date':
+        return (a, b) => new Date(col[b]) - new Date(col[a])
+    }
   }
 }
 
