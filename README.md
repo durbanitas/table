@@ -149,6 +149,48 @@ const tableData = {
 
 ---
 
+# Performance Tests v2
+
+## Localhost (ohne filter)
+
+| Run | Filtering | Sorting | Rendering | Total | Rows | Columns |
+|---|---|---|---|---|---|---|
+| 1 | / | 3 | 3 | 6 | 100 | 2 |
+| 2 | / | 5 | 6 | 11 | 1_000 | 2 |
+| 3 | / | 29 | 32 | 61 | 10_000 | 2 |
+| 4 | / | 307 | 315 | 622 | 100_000 | 2 |
+| 5 | / | 3884 | 3958 | 7842 | 1_000_000 | 2 |
+| 5 | / | 53199 | 53928 | 107127 | 10_000_000 | 2 |
+
+| Run | Filtering | Sorting | Rendering | Total | Rows | Columns |
+|---|---|---|---|---|---|---|
+| 1 | / | 1 | 1 | 2 | 100 | 10 |
+| 2 | / | 6 | 6 | 12 | 1_000 | 10 |
+| 3 | / | 33 | 34 | 67 | 10_000 | 10 |
+| 4 | / | 408 | 414 | 822 | 100_000 | 10 |
+| 5 | / | 5967 | 6070 | 12037 | 1_000_000 | 10 |
+
+## Localhost (mit 1x filter)
+
+| Run | Filtering | Sorting | Rendering | Total | Rows | Columns |
+|---|---|---|---|---|---|---|
+| 1 | 2 | 2 | 2 | 6 | 100 | 2 |
+| 2 | 8 | 10 | 10 | 28 | 1_000 | 2 |
+| 3 | 60 | 74 | 75 | 209 | 10_000 | 2 |
+| 4 | 587 | 728 | 734 | 2049 | 100_000 | 2 |
+
+## Localhost (mit 5x filter)
+
+| Run | Filtering | Sorting | Rendering | Total | Rows | Columns |
+|---|---|---|---|---|---|---|
+| 1 | 7 | 8 | 8 | 23 | 100 | 10 |
+| 2 | 25 | 28 | 29 | 82 | 1_000 | 10 |
+| 3 | 229 | 246 | 247 | 722 | 10_000 | 10 |
+| 4 | 2819 | 3013 | 3020 | 8852 | 100_000 | 10 |
+
+
+---
+
 - get idxs of headers via filter tags
 - if not use default sort header by
 - call a method (dataset)

@@ -8,8 +8,8 @@ import { getSums } from '../utils/measure.js'
 let tableData = $ref({})
 let showTable = $ref(false)
 
-const N_ROWS_PER_PAGE = 10_000
-const N_COLUMNS = 5
+const N_ROWS_PER_PAGE = 1_000
+const N_COLUMNS = 10
 
 onBeforeMount(() => {
   initTable()
@@ -23,7 +23,33 @@ function initTable() {
 }
 
 // add filter tags
-const filterTags = $ref([])
+const filterTags = $ref([
+  {
+    key: 0, // column header
+    value: '65', // filter value
+    operator: 'isLess' // isEqual, isLess, isGreater
+  },
+  {
+    key: 0, // column header
+    value: '80', // filter value
+    operator: 'isEqual' // isEqual, isLess, isGreater
+  },
+  {
+    key: 1, // column header
+    value: '40', // filter value
+    operator: 'isLess' // isEqual, isLess, isGreater
+  },
+  {
+    key: 3, // column header
+    value: '90', // filter value
+    operator: 'isGreater' // isEqual, isLess, isGreater
+  },
+  {
+    key: 3, // column header
+    value: '12', // filter value
+    operator: 'isEqual' // isEqual, isLess, isGreater
+  },
+])
 function useFilterTags(filters) {
   filterTags = filters
 }

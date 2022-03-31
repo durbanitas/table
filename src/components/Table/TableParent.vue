@@ -97,7 +97,7 @@ function getHeaderObj (headers) {
   // get initial sorting header
   if (props.defaultSortByHeader) {
     sortedHeaderIdx = headers.findIndex(h => h.key === props.defaultSortByHeader)
-    return headers.filter(h => h.key === props.defaultSortByHeader)[0]
+    return headers.find(h => h.key === props.defaultSortByHeader)
   } else { // return first header element to be sorted by
     return headers[0]
   }
@@ -185,12 +185,19 @@ const sortedIdxs = $computed(() => {
   const columnData = props.tableData.data[sortedHeaderIdx]
   const filteredColumn = filteredIdxs.map(idx => columnData[idx])
   const sortFn = getSortMethod(filteredColumn, sortedHeader.type, sortDirection)
-  const idxs = [...Array(filteredIdxs.length).keys()]
-  if (sortedHeader.sortable) idxs.sort(sortFn)
+  const idxRange = [...Array(filteredIdxs.length).keys()]
+  let idxs = []
+  if (sortedHeader.sortable) { 
+    idxRange.sort(sortFn)
+    idxs = idxRange.map(i => filteredIdxs[i])
+  } else {
+    idxs = idxRange
+  }
   t2 = performance.now() - t1
   return idxs
 })
 function getSortMethod(col, type, direction) {
+  // TODO: simplify
   if (direction === 1) {
     switch (type) {
       case 'number':
@@ -226,14 +233,15 @@ function changePage(newPages) {
 // RENDERED DATA
 const filteredData = computed(() => {
   const n = performance.now()
-  const data = props.tableData.headers.map((_, idx) => {
-    return sortedIdxs.map(i => {
-      return props.tableData.data[idx][filteredIdxs[i]]
-    }).slice(pages.startIdx, pages.endIdx)
+  const rangeSortedIdxs = sortedIdxs.slice(pages.startIdx, pages.endIdx)
+  const tableData = props.tableData.headers.map((_, colIdx) => {
+    return rangeSortedIdxs.map(i => {
+      return props.tableData.data[colIdx][i]
+    })
   })
   t3 = performance.now() - n
   emit('performanceTest', [t0, t2, t3])
-  return data
+  return tableData
 })
 
 // performance test
