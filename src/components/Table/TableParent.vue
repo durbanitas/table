@@ -112,9 +112,9 @@ function sort(newHeader, newDirection, headIdx) {
 // FILTERING
 const originalIdxs = $computed(() => [...Array(props.tableData.data[0].length).keys()]) // [0, 1, ...data[0].length ]
 const filteredIdxs = $computed(() => {
-  const allIdxs = []
   // add t0
   if (props.filterTags.length) {
+    const allIdxs = []
     const start = performance.now()
     // get all headers corresponding to the filters 
     const filteredHeaderIdxs = props.filterTags.map(f => props.tableData.headers.findIndex(h => h.key === f.key))
@@ -124,11 +124,12 @@ const filteredIdxs = $computed(() => {
       filteredHeaderIdxs.forEach((headIdx, filterIdx) => {
         if (headIdx !== colIdx) return
         const columnIdxs = getIdxs(col, colIdx, filterIdx)
-        allIdxs.push(...columnIdxs)
+        allIdxs.push(columnIdxs)
       })
     })
     // trim all matching idxs and return a unique filtered set
-    const unique = [...new Set(allIdxs)]
+    const flat = allIdxs.flat()
+    const unique = [...new Set(flat)]
     t0 = performance.now() - start
     return unique
   } else {

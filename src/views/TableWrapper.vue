@@ -9,7 +9,7 @@ let tableData = $ref({})
 let showTable = $ref(false)
 
 const N_ROWS_PER_PAGE = 1_000
-const N_COLUMNS = 10
+const N_COLUMNS = 50
 
 onBeforeMount(() => {
   initTable()

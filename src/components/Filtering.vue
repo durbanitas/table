@@ -1,4 +1,5 @@
 <script setup>
+// TODO: add difference between multiple filters && and || operator <- merge in pills? adadpt in table parent?!
 const props = defineProps({
   headers: {
     type: Array
@@ -17,6 +18,7 @@ const operators = [
 ]
 
 function useFilter() {
+  console.log('input');
   const obj = {
     key: selectedHeader,
     operator: selectedOperator,
@@ -45,9 +47,9 @@ function resetInputs() {
     <option v-for="operator in operators">{{ operator }}</option>
   </select>
   <!-- select a value -->
-  <input type="text" v-model="selectedValue">
+  <input type="text" v-model="selectedValue" @change="useFilter()">
   <!-- submit filter -->
-  <button @click.prevent="useFilter()" v-text="'use filter'" />
+  <!-- <button @click.prevent="useFilter()" v-text="'use filter'" /> -->
 </form>
 
 <!-- remove pills -->
