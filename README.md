@@ -6,14 +6,17 @@
 
 - https://material.io/components/data-tables#anatomy
 
-- https://vuetifyjs.com /en/components/data-tables/
+- https://vuetifyjs.com/en/components/data-tables/
 
 ## Todo:
+
+- fix routing
+  /table
 
 - scroll
   - virtualization
 
-- url
+- url, add queries
   - share table with applied filters, pagination, sorting
 
 - keyboard navigation
@@ -197,10 +200,62 @@ mergeSort
 
 ---
 
-- get idxs of headers via filter tags
-- if not use default sort header by
-- call a method (dataset)
-- sort array
-- use sorted array with filter tag
-- call method binary search
-- return idxs
+```js
+const data = [[67, 87, 97, 13, 27, 40, 30, 91, 85, 9], [16, 77, 69, 39, 83, 80, 80, 37, 80, 59]]
+const filters = [
+  {
+    columnKey: 0,
+    value: '65',
+    operator: '<' // isLess
+  },
+  {
+    columnKey: 1,
+    value: '80',
+    operator: '==' // isEqual
+  },
+  {
+    columnKey: 0,
+    value: '40',
+    operator: '>' // isGreater
+  }
+]
+// 1. get filter header idx
+// filter tags = 3x | 2x column1, 1x column2
+const filterHeaderIdxs = [0, 1, 0]
+// build or rearrange filter tags matching the columns. for using multiple filters on a single column loop
+// 2. build filtered dataset
+// 3. got another column to filter? loop over filtered dataset
+// 3.1 loop the filtered dataset for all applied filters
+// 4. get matching idxs
+
+// got new filter for a already filtered column? -> filter whole column data, or the last subset?
+// got a new filter for a new column applied? -> use filtered data
+
+function getIdxs(data) {
+  const arr = []
+  // remove push and return idx
+  data.filter((el, idx) => {
+    if (filterMethod(el, 10, 40)) arr.push(idx)
+  })
+  return arr
+}
+// generate dynamically valueN by filter length
+let item = 'item', value1 = 'value1', value2 = 'value2'
+const filterMethod = new Function(item, value1, value2,
+  'return item > value1 && item < value2'
+);
+
+
+console.log(getIdxs(data[0]))
+```
+
+```js
+let filterA = {
+  text: 'filterA',
+  operator: '<'
+}, filterB = 'filterB';
+const testFn = new Function(filterA.text, filterB,
+  `return filterA ${ filterA.operator } filterB`
+);
+console.log(testFn(10, 15));
+```

@@ -53,11 +53,11 @@ function sort (head, idx) {
               <div class="pl-8" v-if="head.sortable">
                 <div
                   class="up-arrow"
-                  :class="{ 'active-up': head.key === sortedHeader.key && sortDirection === -1 }"
+                  :class="{ 'active-up': head.columnKey === sortedHeader.columnKey && sortDirection === -1 }"
                 />
                 <div
                   class="down-arrow"
-                  :class="{ 'active-down': head.key === sortedHeader.key && sortDirection === 1 }"
+                  :class="{ 'active-down': head.columnKey === sortedHeader.columnKey && sortDirection === 1 }"
                 />
               </div>
             </div>

@@ -12,21 +12,21 @@ const props = defineProps({
     default: {
       headers: [
         {
-          key: 'name', // represents data[[key1], [key2]]
+          columnKey: 'name', // represents data[[key1], [key2]]
           type: 'string', // string, number, date
           label: 'Name', // TODO: handle text overflow
           align: 'start', // start, center, end
           sortable: true,
         },
         {
-          key: 'height',
+          columnKey: 'height',
           type: 'number',
           label: 'Height',
           align: 'end',
           sortable: true,
         },
         {
-          key: 'created',
+          columnKey: 'created',
           type: 'date',
           label: 'Created',
           align: 'center',
@@ -80,9 +80,9 @@ const props = defineProps({
     type: Array,
     default: [
       {
-        key: 'name', // column header
-        value: '', // filter value
-        operator: 'isEqual' // isEqual, isLess, isGreater
+        columnKey: 'name', // column header
+        operator: 'isEqual', // isEqual, isLess, isGreater
+        value: '' // filter value
       }
     ]
     // TODO: add filter tags validation
@@ -96,8 +96,8 @@ const sortDirection = $ref(props.defaultSortDirection)
 function getHeaderObj (headers) {
   // get initial sorting header
   if (props.defaultSortByHeader) {
-    sortedHeaderIdx = headers.findIndex(h => h.key === props.defaultSortByHeader)
-    return headers.find(h => h.key === props.defaultSortByHeader)
+    sortedHeaderIdx = headers.findIndex(h => h.columnKey === props.defaultSortByHeader)
+    return headers.find(h => h.columnKey === props.defaultSortByHeader)
   } else { // return first header element to be sorted by
     return headers[0]
   }
@@ -109,15 +109,13 @@ function sort(newHeader, newDirection, headIdx) {
   sortedHeaderIdx = headIdx
 }
 
-// FILTERING
 const originalIdxs = $computed(() => [...Array(props.tableData.data[0].length).keys()]) // [0, 1, ...data[0].length ]
 const filteredIdxs = $computed(() => {
-  // add t0
   if (props.filterTags.length) {
     const allIdxs = []
     const start = performance.now()
     // get all headers corresponding to the filters 
-    const filteredHeaderIdxs = props.filterTags.map(f => props.tableData.headers.findIndex(h => h.key === f.key))
+    const filteredHeaderIdxs = props.filterTags.map(f => props.tableData.headers.findIndex(h => h.columnKey === f.columnKey))
     // loop over each column
     props.tableData.data.forEach((col, colIdx) => {
       // loop over the header for using multiple filters
@@ -128,9 +126,8 @@ const filteredIdxs = $computed(() => {
       })
     })
     // trim all matching idxs and return a unique filtered set
-    const flat = allIdxs.flat()
-    const unique = [...new Set(flat)]
-    t0 = performance.now() - start
+    const unique = [...new Set(allIdxs.flat())]
+    _timeRange1 = performance.now() - start
     return unique
   } else {
     // if no filters are applied return original index array
@@ -182,7 +179,7 @@ function getIdxs(colData, colIdx, filterTagIdx) {
 
 // SORTING
 const sortedIdxs = $computed(() => {
-  t1 = performance.now()
+  const n = performance.now()
   const columnData = props.tableData.data[sortedHeaderIdx]
   const filteredColumn = filteredIdxs.map(idx => columnData[idx])
   const sortFn = getSortMethod(filteredColumn, sortedHeader.type, sortDirection)
@@ -194,7 +191,7 @@ const sortedIdxs = $computed(() => {
   } else {
     idxs = idxRange
   }
-  t2 = performance.now() - t1
+  _timeRange2 = performance.now() - n
   return idxs
 })
 function getSortMethod(col, type, direction) {
@@ -240,13 +237,13 @@ const filteredData = computed(() => {
       return props.tableData.data[colIdx][i]
     })
   })
-  t3 = performance.now() - n
-  emit('performanceTest', [t0, t2, t3])
+  _timeRange3 = performance.now() - n
+  emit('performanceTest', [_timeRange1, _timeRange2, _timeRange3])
   return tableData
 })
 
 // performance test
-let t0, t1, t2, t3
+let _timeRange1, _timeRange2, _timeRange3
 const emit = defineEmits(['performanceTest'])
 </script>
 

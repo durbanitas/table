@@ -9,7 +9,7 @@ export const createDataset = (userColumns, userRows) => {
     }
     data.push(arr)
     const head = {
-      key: i,
+      columnKey: i,
       label: 'Col' + i,
       type: 'number',
       sortable: true,

@@ -17,10 +17,10 @@ const operators = [
   'isGreater'
 ]
 
+// TODO: only submit new filter
 function useFilter() {
-  console.log('input');
   const obj = {
-    key: selectedHeader,
+    columnKey: selectedHeader,
     operator: selectedOperator,
     value: selectedValue,
   }
@@ -40,22 +40,22 @@ function resetInputs() {
 <form>
   <label>Filter by:</label>
   <select v-model="selectedHeader">
-    <option v-for="head in props.headers" :value="head.key">{{ head.label }}</option>
+    <option v-for="head in props.headers" :value="head.columnKey">{{ head.label }}</option>
   </select>
   <!-- select an operator -->
   <select v-model="selectedOperator">
     <option v-for="operator in operators">{{ operator }}</option>
   </select>
   <!-- select a value -->
-  <input type="text" v-model="selectedValue" @change="useFilter()">
+  <input type="text" v-model="selectedValue">
   <!-- submit filter -->
-  <!-- <button @click.prevent="useFilter()" v-text="'use filter'" /> -->
+  <button @click.prevent="useFilter()" v-text="'use filter'" />
 </form>
 
 <!-- remove pills -->
 <div class="filter-list">
   <span v-for="(p, idx) in filterTags" @click="filterTags.splice(idx, 1)" class="pill">
-    {{ p.key }}: {{ p.operator }} {{ p.value }}
+    {{ p.columnKey }}: {{ p.operator }} {{ p.value }}
   </span>
 </div>
 
