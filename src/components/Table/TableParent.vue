@@ -112,70 +112,67 @@ function sort(newHeader, newDirection, headIdx) {
 const originalIdxs = $computed(() => [...Array(props.tableData.data[0].length).keys()]) // [0, 1, ...data[0].length ]
 const filteredIdxs = $computed(() => {
   if (props.filterTags.length) {
-    const allIdxs = []
+    // const allIdxs = []
     const start = performance.now()
     // get all headers corresponding to the filters 
     const filteredHeaderIdxs = props.filterTags.map(f => props.tableData.headers.findIndex(h => h.columnKey === f.columnKey))
     // loop over each column
-    props.tableData.data.forEach((col, colIdx) => {
-      // loop over the header for using multiple filters
-      filteredHeaderIdxs.forEach((headIdx, filterIdx) => {
-        if (headIdx !== colIdx) return
-        const columnIdxs = getIdxs(col, colIdx, filterIdx)
-        allIdxs.push(columnIdxs)
-      })
-    })
+    console.log(filteredHeaderIdxs);
+    /*
+      TODO: enable multi filter
+      - add key value pair to filter: 'text': fiterA
+    */
+    // TODO: got additional another column filter? use filtered dataset
+    const columnIdxs = getIdxs(props.tableData.data[0], 'number')
+    // allIdxs.push(columnIdxs)
     // trim all matching idxs and return a unique filtered set
-    const unique = [...new Set(allIdxs.flat())]
+    // const unique = [...new Set(allIdxs.flat())]
     _timeRange1 = performance.now() - start
-    return unique
+    return columnIdxs
   } else {
     // if no filters are applied return original index array
     return originalIdxs
   }
 })
-// filter each column dataset and return matching idxs
-function getIdxs(colData, colIdx, filterTagIdx) {
-  const idxs = []
-  const filterValue = props.filterTags[filterTagIdx].value
-  const type = props.tableData.headers[colIdx].type
-  
-  colData.forEach((el, idx) => {
+
+let filterA = {
+  text: 'filterA',
+  operator: '==',
+  value: '45',
+}, item = 'item';
+const filterNumber = new Function(filterA.text, item,
+  `return item ${filterA.operator} filterA`
+);
+const filterString = new Function(filterA.text, item,
+  `return item.includes(filterA)`
+)
+function getIdxs (colData, type) {
+  const arr = []
+  let isMatching
+  colData.filter((el, idx) => {
     switch (type) {
-      case 'string':
-        if (el.includes(filterValue)) idxs.push(idx)
-        break;
-    
       case 'number':
-        const operator = props.filterTags[filterTagIdx].operator
-        switch (operator) {
-          case 'isEqual':
-            if (el == filterValue) idxs.push(idx)
-            break;
-          case 'isLess':
-            if (el < filterValue) idxs.push(idx)
-            break;
-          case 'isGreater':
-            if (el > filterValue) idxs.push(idx)
-            break;
-        }
+        isMatching = filterNumber(filterA.value, el)
+        if (isMatching) arr.push(idx)
+        break;
+
+      case 'string':
+        isMatching = filterString(filterA.value, el)
+        if (isMatching) arr.push(idx)
+        break;    
 
       case 'date':
-        const toFilteredDate = new Date(filterValue)
-        const date = new Date(el)
-        case 'isEqual':
-          if (toFilteredDate.getTime() === date.getTime()) idxs.push(idx)
-          break;
-        case 'isLess':
-          if (date < toFilteredDate) idxs.push(idx)
-          break;
-        case 'isGreater':
-          if (date > toFilteredDate) idxs.push(idx)
-          break;
+        const toFilteredDate = Math.floor(new Date(filterA.value).getTime() / 1000)
+        const date = Math.floor(new Date(el).getTime() / 1000)
+        isMatching = filterNumber(toFilteredDate, date)
+        if (isMatching) arr.push(idx)
+        break;    
     }
   })
-  return idxs
+  return arr
 }
+
+
 
 // SORTING
 const sortedIdxs = $computed(() => {

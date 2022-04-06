@@ -23,6 +23,7 @@ function useFilter() {
     columnKey: selectedHeader,
     operator: selectedOperator,
     value: selectedValue,
+    text: 'filterA'
   }
   filterTags.push(obj)
   emit('submit', filterTags)

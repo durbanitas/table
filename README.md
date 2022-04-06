@@ -10,9 +10,6 @@
 
 ## Todo:
 
-- fix routing
-  /table
-
 - scroll
   - virtualization
 
@@ -23,7 +20,8 @@
 
 - handle/test live updates
 
-- pagination (select rows per page or add an array with a custom range)
+- pagination
+  - pass custom rows per page via array
 
 ---
 
@@ -253,9 +251,106 @@ console.log(getIdxs(data[0]))
 let filterA = {
   text: 'filterA',
   operator: '<'
-}, filterB = 'filterB';
-const testFn = new Function(filterA.text, filterB,
-  `return filterA ${ filterA.operator } filterB`
+}, item = 'item';
+const testFn = new Function(filterA.text, item,
+  `return filterA ${ filterA.operator } item`
 );
 console.log(testFn(10, 15));
+```
+
+```js 
+let x = 'x'
+let y = (x) => x === 42
+const testFn = new Function(x, 'y',
+  `return ${y(x)}`
+);
+console.log(testFn(42)); // false
+console.log(`${y(42)}`); // true
+```
+
+```js
+let x = 'x'
+const y = `return x[0] == x[1]`
+const testFn = new Function([x], 'y', y);
+console.log(testFn([42, 42])); // true
+```
+
+```js
+const data = [
+  [67, 87, 97, 13, 27, 80, 30, 80, 80, 9], 
+  [16, 77, 69, 39, 83, 80, 80, 37, 80, 59],
+  ['ab', 'vx', 'jha', 'km', 'log', 'cd']
+]
+const headers = [
+  {
+    columnKey: 0,
+    type: 'number',
+  },
+  {
+    columnKey: 1,
+    type: 'number',
+  }
+]
+const filters = [
+  {
+    text: 'filterA',
+    columnKey: 0,
+    value: '65',
+    operator: '<' // isLess
+  },
+  // {
+  //   columnKey: 1,
+  //   value: '80',
+  //   operator: '==' // isEqual
+  // },
+  // {
+  //   columnKey: 0,
+  //   value: '40',
+  //   operator: '>' // isGreater
+  // }
+]
+// seperate filter tags / merge to the same column
+// const filter = {
+//   0: [0,2], // columnKey: [filterIdxs]
+//   1: [1]
+// }
+
+let filterA = {
+  text: 'filterA',
+  operator: '==',
+  value: 'a',
+}, item = 'item';
+const filterNumber = new Function(filterA.text, item,
+  `return item ${filterA.operator} filterA`
+);
+const filterString = new Function(filterA.text, item,
+  `return item.includes(filterA)`
+)
+
+function getIdxs (colData, type) {
+  const arr = []
+  let isMatching
+  colData.filter((el, idx) => {
+    switch (type) {
+      case 'number':
+        isMatching = filterNumber(filterA.value, el)
+        if (isMatching) arr.push(idx)
+        break;
+
+      case 'string':
+        isMatching = filterString(filterA.value, el)
+        if (isMatching) arr.push(idx)
+        break;    
+
+      case 'date':
+        const toFilteredDate = Math.floor(new Date(filterA.value).getTime() / 1000)
+        const date = Math.floor(new Date(el).getTime() / 1000)
+        isMatching = filterNumber(toFilteredDate, date)
+        if (isMatching) arr.push(idx)
+        break;    
+    }
+  })
+  return arr
+}
+console.log(getIdxs(data[2], 'string'));
 ```

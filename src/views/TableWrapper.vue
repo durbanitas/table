@@ -24,11 +24,11 @@ function initTable() {
 
 // add filter tags
 const filterTags = $ref([
-  // {
-  //   columnKey: 0, // column header
-  //   value: '65', // filter value
-  //   operator: 'isLess' // isEqual, isLess, isGreater
-  // },
+  {
+    columnKey: 0, // column header
+    value: '65', // filter value
+    operator: 'isLess' // isEqual, isLess, isGreater
+  },
   // {
   //   columnKey: 0, // column header
   //   value: '80', // filter value
