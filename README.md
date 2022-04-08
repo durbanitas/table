@@ -195,57 +195,7 @@ const tableData = {
 mergeSort
 - 100_000 ~200ms
 
-
 ---
-
-```js
-const data = [[67, 87, 97, 13, 27, 40, 30, 91, 85, 9], [16, 77, 69, 39, 83, 80, 80, 37, 80, 59]]
-const filters = [
-  {
-    columnKey: 0,
-    value: '65',
-    operator: '<' // isLess
-  },
-  {
-    columnKey: 1,
-    value: '80',
-    operator: '==' // isEqual
-  },
-  {
-    columnKey: 0,
-    value: '40',
-    operator: '>' // isGreater
-  }
-]
-// 1. get filter header idx
-// filter tags = 3x | 2x column1, 1x column2
-const filterHeaderIdxs = [0, 1, 0]
-// build or rearrange filter tags matching the columns. for using multiple filters on a single column loop
-// 2. build filtered dataset
-// 3. got another column to filter? loop over filtered dataset
-// 3.1 loop the filtered dataset for all applied filters
-// 4. get matching idxs
-
-// got new filter for a already filtered column? -> filter whole column data, or the last subset?
-// got a new filter for a new column applied? -> use filtered data
-
-function getIdxs(data) {
-  const arr = []
-  // remove push and return idx
-  data.filter((el, idx) => {
-    if (filterMethod(el, 10, 40)) arr.push(idx)
-  })
-  return arr
-}
-// generate dynamically valueN by filter length
-let item = 'item', value1 = 'value1', value2 = 'value2'
-const filterMethod = new Function(item, value1, value2,
-  'return item > value1 && item < value2'
-);
-
-
-console.log(getIdxs(data[0]))
-```
 
 ```js
 let filterA = {
@@ -256,23 +206,6 @@ const testFn = new Function(filterA.text, item,
   `return filterA ${ filterA.operator } item`
 );
 console.log(testFn(10, 15));
-```
-
-```js 
-let x = 'x'
-let y = (x) => x === 42
-const testFn = new Function(x, 'y',
-  `return ${y(x)}`
-);
-console.log(testFn(42)); // false
-console.log(`${y(42)}`); // true
-```
-
-```js
-let x = 'x'
-const y = `return x[0] == x[1]`
-const testFn = new Function([x], 'y', y);
-console.log(testFn([42, 42])); // true
 ```
 
 ```js
@@ -353,4 +286,12 @@ function getIdxs (colData, type) {
   return arr
 }
 console.log(getIdxs(data[2], 'string'));
+```
+
+```js
+const y = (x) => x === 42
+const testFn = new Function('x', 'y',
+  'return y(x)'
+);
+console.log(testFn(42, y));
 ```

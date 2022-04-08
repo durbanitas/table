@@ -8,7 +8,7 @@ import { getSums } from '../utils/measure.js'
 let tableData = $ref({})
 let showTable = $ref(false)
 
-const N_ROWS_PER_PAGE = 1_000
+const N_ROWS_PER_PAGE = 10_000
 const N_COLUMNS = 5
 
 onBeforeMount(() => {
@@ -27,18 +27,28 @@ const filterTags = $ref([
   {
     columnKey: 0, // column header
     value: '65', // filter value
-    operator: 'isLess' // isEqual, isLess, isGreater
+    operator: '<' // isEqual, isLess, isGreater
+  },
+  {
+    columnKey: 2, // column header
+    value: '40', // filter value
+    operator: '<' // isEqual, isLess, isGreater
+  },
+  {
+    columnKey: 0, // column header
+    value: '20', // filter value
+    operator: '>' // isEqual, isLess, isGreater
+  },
+  {
+    columnKey: 3, // column header
+    value: '24', // filter value
+    operator: '==' // isEqual, isLess, isGreater
   },
   // {
-  //   columnKey: 0, // column header
-  //   value: '80', // filter value
-  //   operator: 'isEqual' // isEqual, isLess, isGreater
+  //   columnKey: 4, // column header
+  //   value: '10', // filter value
+  //   operator: '>' // isEqual, isLess, isGreater
   // },
-  // {
-  //   columnKey: 1, // column header
-  //   value: '40', // filter value
-  //   operator: 'isLess' // isEqual, isLess, isGreater
-  // }
 ])
 function useFilterTags(filters) {
   filterTags = filters
@@ -77,10 +87,10 @@ function startTest() {
 
 <template>
   <div v-if="showTable">
-    <Filtering 
+    <!-- <Filtering 
       :headers="tableData.headers" 
       @submit="useFilterTags" 
-    />
+    /> -->
     <TableParent
       :tableData="tableData"
       :defaultSortDirection="1"

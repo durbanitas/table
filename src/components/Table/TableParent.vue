@@ -2,7 +2,6 @@
 import Pagination from './Pagination.vue'
 import Table from './Table.vue'
 import { computed, reactive } from 'vue'
-// TODO: check 
 
 const props = defineProps({
   // required props
@@ -85,7 +84,6 @@ const props = defineProps({
         value: '' // filter value
       }
     ]
-    // TODO: add filter tags validation
   }
 })
 
@@ -93,8 +91,8 @@ const props = defineProps({
 const sortedHeaderIdx = $ref(0)
 const sortedHeader = $ref(getHeaderObj(props.tableData.headers))
 const sortDirection = $ref(props.defaultSortDirection)
+// get sorting header when creating the table
 function getHeaderObj (headers) {
-  // get initial sorting header
   if (props.defaultSortByHeader) {
     sortedHeaderIdx = headers.findIndex(h => h.columnKey === props.defaultSortByHeader)
     return headers.find(h => h.columnKey === props.defaultSortByHeader)
@@ -102,7 +100,7 @@ function getHeaderObj (headers) {
     return headers[0]
   }
 }
-// handle user interaction: sort
+// user interaction: sort
 function sort(newHeader, newDirection, headIdx) {
   sortedHeader = newHeader
   sortDirection = newDirection
@@ -112,67 +110,73 @@ function sort(newHeader, newDirection, headIdx) {
 const originalIdxs = $computed(() => [...Array(props.tableData.data[0].length).keys()]) // [0, 1, ...data[0].length ]
 const filteredIdxs = $computed(() => {
   if (props.filterTags.length) {
-    // const allIdxs = []
     const start = performance.now()
-    // get all headers corresponding to the filters 
-    const filteredHeaderIdxs = props.filterTags.map(f => props.tableData.headers.findIndex(h => h.columnKey === f.columnKey))
-    // loop over each column
-    console.log(filteredHeaderIdxs);
-    /*
-      TODO: enable multi filter
-      - add key value pair to filter: 'text': fiterA
-    */
-    // TODO: got additional another column filter? use filtered dataset
-    const columnIdxs = getIdxs(props.tableData.data[0], 'number')
-    // allIdxs.push(columnIdxs)
-    // trim all matching idxs and return a unique filtered set
-    // const unique = [...new Set(allIdxs.flat())]
+    let idxs = []
+    // TODO: simplify the access to the data. There are a lot of used index values here...
+    const filterTagIdxs = mergeFilters(props.filterTags)
+    Object.entries(filterTagIdxs).forEach((filterTag, filterTagIdx) => {
+      const colIdx = filterTag[0]
+      const filters = filterTag[1].map(f => props.filterTags[f])
+      // compare first filter with whole column data
+      if (filterTagIdx === 0) {
+        idxs = getColFilteredIdxs(props.tableData.data[colIdx], filters, 'number')
+      } else {
+        // compare only the n-filtered results, not the whole column
+        const matchingIdxs = []
+        const filtered = idxs.map(dataIdx => props.tableData.data[colIdx][dataIdx])
+        filtered.forEach((dp, colI) => {
+          const isMatch = checkMatch(dp, filters)
+          if (isMatch) matchingIdxs.push(colI)
+        })
+        idxs = idxs.filter((_, idx) => {
+          return matchingIdxs.indexOf(idx) !== -1
+        })
+      }
+    })
     _timeRange1 = performance.now() - start
-    return columnIdxs
+    return idxs
   } else {
     // if no filters are applied return original index array
     return originalIdxs
   }
 })
-
-let filterA = {
-  text: 'filterA',
-  operator: '==',
-  value: '45',
-}, item = 'item';
-const filterNumber = new Function(filterA.text, item,
-  `return item ${filterA.operator} filterA`
-);
-const filterString = new Function(filterA.text, item,
-  `return item.includes(filterA)`
-)
-function getIdxs (colData, type) {
-  const arr = []
-  let isMatching
-  colData.filter((el, idx) => {
-    switch (type) {
-      case 'number':
-        isMatching = filterNumber(filterA.value, el)
-        if (isMatching) arr.push(idx)
+// mergeFilters: { columnIdx0: [filterIdx0, filterIdx2], columnIdx1: [filterIdx1] }
+function mergeFilters (filters) {
+  const helperObj = {}
+  const keys = filters.map(f => f.columnKey)
+  const uniqueKeys = [...new Set(keys)]
+  uniqueKeys.forEach(key => Object.assign(helperObj, { [key]: [] }))
+  filters.forEach((f, filterIdx) => helperObj[f.columnKey].push(filterIdx))
+  return helperObj
+}
+// prepare column loop
+function getColFilteredIdxs (colData, filters, type) {
+  const matchingIdxs = []
+  colData.forEach((dp, colIdx) => {
+    const isMatch = checkMatch(dp, filters)
+    if (isMatch) matchingIdxs.push(colIdx)
+  })
+  return matchingIdxs
+}
+// compare single datavalue with applied column filters
+const checkMatch = (dp, filters) => {
+  let isMatch = true
+  filters.forEach(filter => {
+    if (!isMatch) return
+    switch (filter.operator) {
+      case '==':
+        if (dp != filter.value) isMatch = false      
         break;
-
-      case 'string':
-        isMatching = filterString(filterA.value, el)
-        if (isMatching) arr.push(idx)
-        break;    
-
-      case 'date':
-        const toFilteredDate = Math.floor(new Date(filterA.value).getTime() / 1000)
-        const date = Math.floor(new Date(el).getTime() / 1000)
-        isMatching = filterNumber(toFilteredDate, date)
-        if (isMatching) arr.push(idx)
-        break;    
+      case '<':
+        if (dp > filter.value) isMatch = false
+        break;
+      case '>':
+        if (dp < filter.value) isMatch = false
+        break;
     }
   })
-  return arr
+  return isMatch
 }
-
-
 
 // SORTING
 const sortedIdxs = $computed(() => {

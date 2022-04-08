@@ -32,14 +32,19 @@ function nextPage() {
 const emit = defineEmits(['onChangePage'])
 function changePage(page) {
   // validate page
-  if (page < 1) currentPage = 1
-  if (page > numPages) currentPage = numPages
+  if (page < 1) {
+    currentPage = 0
+  } else if (page >= numPages) {
+    currentPage = numPages
+  } 
+  // if (props.rowsPerPage < props.entries) currentPage = 0
+  console.log(page);
   const startIdx = selectedRowsPerPage * currentPage
   const endIdx = startIdx + selectedRowsPerPage
   emit('onChangePage', { startIdx, endIdx })
 }
 // all possible n pages
-const numPages = $computed(() => Math.floor(props.entries / selectedRowsPerPage) - 1)
+const numPages = $computed(() => Math.ceil(props.entries / selectedRowsPerPage) - 1)
 // template current pages
 const currentPageView = computed(() => {
   return `${(selectedRowsPerPage * currentPage) + 1} - ${(selectedRowsPerPage * currentPage) + selectedRowsPerPage}`
