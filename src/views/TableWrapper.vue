@@ -8,7 +8,7 @@ import { getSums } from '../utils/measure.js'
 let tableData = $ref({})
 let showTable = $ref(false)
 
-const N_ROWS_PER_PAGE = 10_000
+const N_ROWS_PER_PAGE = 1_000
 const N_COLUMNS = 5
 
 onBeforeMount(() => {
@@ -44,11 +44,11 @@ const filterTags = $ref([
     value: '24', // filter value
     operator: '==' // isEqual, isLess, isGreater
   },
-  // {
-  //   columnKey: 4, // column header
-  //   value: '10', // filter value
-  //   operator: '>' // isEqual, isLess, isGreater
-  // },
+  {
+    columnKey: 4, // column header
+    value: '10', // filter value
+    operator: '>' // isEqual, isLess, isGreater
+  },
 ])
 function useFilterTags(filters) {
   filterTags = filters

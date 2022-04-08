@@ -190,6 +190,25 @@ const tableData = {
 | 4 | 2819 | 3013 | 3020 | 8852 | 100_000 | 10 |
 | 5 | 24782 | 26917 | 26982 | 78681 | 1_000_000 | 10 |
 
+# Performance Tests v3
+
+## Localhost (mit 3x filter)
+
+| Run | Filtering | Sorting | Rendering | Total | Rows | Columns |
+|---|---|---|---|---|---|---|
+| 1 | 242 | 245 | 246 | 733 | 1_000 | 5 |
+
+# Performance Tests v4
+
+## Localhost (mit 5x filter)
+
+| Run | Filtering | Sorting | Rendering | Total | Rows | Columns |
+|---|---|---|---|---|---|---|
+| 1 | 3 | 3 | 3 | 9 | 100 | 5 |
+| 2 | 8 | 9 | 9 | 26 | 1_000 | 5 |
+| 3 | 91 | 92 | 92 | 275 | 10_000 | 5 |
+| 4 | 2120 | 2132 | 2132 | 6384 | 100_000 | 5 |
+
 ---
 
 mergeSort
