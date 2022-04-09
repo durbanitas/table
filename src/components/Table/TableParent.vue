@@ -140,7 +140,7 @@ function mergeFilters (filters) {
 function getColFilteredIdxs (colData, filters, type) {
   const filterMethod = getFilterMethod(filters, type)
   const filterString = `return data.map((colValue, idx) => ${filterMethod} ? idx : -1)`
-  const callFilterMethod = new Function('data', 'filters', filterString)
+  const callFilterMethod = new Function('data', filterString)
   const idxs = callFilterMethod(colData, filters)
   return idxs.filter(idx => idx !== -1)
 }
