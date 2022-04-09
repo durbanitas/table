@@ -1,5 +1,26 @@
 <script setup>
-// TODO: add difference between multiple filters && and || operator <- merge in pills? adadpt in table parent?!
+
+// filterTags [] in parent
+// filter input is for the latest filterTag
+// typing will be updating the value
+// use debounce for typing -> emit
+// click on pill will remove this filter from filterTags
+// click on addFilter will be create a new filter obj
+
+// get header type
+// if number use ==, <, >
+// if string use == // match case or whole word (ignore upper/lower)
+// if date use ==, <, > and date input
+// <input type="date" value="2017-06-01">
+
+// dropdown 1: select a column -> show datatype
+// dropdown 2: select an operator
+// input: enable if dd1 & dd2 are filled
+
+
+
+
+
 const props = defineProps({
   headers: {
     type: Array
@@ -10,11 +31,10 @@ const selectedHeader = $ref('')
 const selectedOperator = $ref('')
 const selectedValue = $ref('')
 const filterTags = $ref([])
-// TODO: adapt filter by typing
 const operators = [
-  'isEqual',
-  'isLess',
-  'isGreater'
+  '==',
+  '>',
+  '<'
 ]
 
 // TODO: only submit new filter
@@ -22,8 +42,7 @@ function useFilter() {
   const obj = {
     columnKey: selectedHeader,
     operator: selectedOperator,
-    value: selectedValue,
-    text: 'filterA'
+    value: selectedValue
   }
   filterTags.push(obj)
   emit('submit', filterTags)

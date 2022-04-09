@@ -34,21 +34,21 @@ const filterTags = $ref([
     value: '40', // filter value
     operator: '<' // isEqual, isLess, isGreater
   },
-  {
-    columnKey: 0, // column header
-    value: '20', // filter value
-    operator: '>' // isEqual, isLess, isGreater
-  },
-  {
-    columnKey: 3, // column header
-    value: '24', // filter value
-    operator: '==' // isEqual, isLess, isGreater
-  },
-  {
-    columnKey: 4, // column header
-    value: '10', // filter value
-    operator: '>' // isEqual, isLess, isGreater
-  },
+  // {
+  //   columnKey: 0, // column header
+  //   value: '20', // filter value
+  //   operator: '>' // isEqual, isLess, isGreater
+  // },
+  // {
+  //   columnKey: 3, // column header
+  //   value: '24', // filter value
+  //   operator: '==' // isEqual, isLess, isGreater
+  // },
+  // {
+  //   columnKey: 4, // column header
+  //   value: '10', // filter value
+  //   operator: '>' // isEqual, isLess, isGreater
+  // },
 ])
 function useFilterTags(filters) {
   filterTags = filters

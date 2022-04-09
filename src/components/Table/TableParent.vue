@@ -114,12 +114,14 @@ const filteredIdxs = $computed(() => {
   let idxs = []
   const mergedFilterObj = mergeFilters(props.filterTags)
   Object.entries(mergedFilterObj).forEach(([colIdx, filterElements], filterTagIdx) => {
+    console.log(colIdx, ' colIdx', filterElements);
     const filters = filterElements.map(f => props.filterTags[f])
+    const colType = props.tableData.headers[0].type
     // compare first filter with whole column data
-    if (filterTagIdx === 0) return idxs = getColFilteredIdxs(props.tableData.data[colIdx], filters, 'number')
+    if (filterTagIdx === 0) return idxs = getColFilteredIdxs(props.tableData.data[0], filters, colType)
     // compare only the n-filtered results, not the whole column
-    const filteredColData = idxs.map(dataIdx => props.tableData.data[colIdx][dataIdx])
-    const matchingIdxs = getColFilteredIdxs(filteredColData, filters, 'number')
+    const filteredColData = idxs.map(dataIdx => props.tableData.data[0][dataIdx])
+    const matchingIdxs = getColFilteredIdxs(filteredColData, filters, colType)
     idxs = idxs.filter((_, idx) => matchingIdxs.indexOf(idx) !== -1)
   })
   _timeRange1 = performance.now() - start
@@ -127,6 +129,7 @@ const filteredIdxs = $computed(() => {
 })
 // mergeFilters: { columnIdx0: [filterIdx0, filterIdx2], columnIdx1: [filterIdx1] }
 function mergeFilters (filters) {
+  console.log(filters);
   const helperObj = {}
   const keys = filters.map(f => f.columnKey)
   const uniqueKeys = [...new Set(keys)]
@@ -135,12 +138,19 @@ function mergeFilters (filters) {
   return helperObj
 }
 function getColFilteredIdxs (colData, filters, type) {
-  // TODO: add type filtering
-  const filterStrNumbers = filters.map(({ value, operator }) => `colValue ${operator} ${value}`).join('&&')
-  const fnString = `return data.map((colValue, idx) => ${filterStrNumbers} ? idx : -1)`
-  const filterMethod = new Function('data', 'filters', fnString)
-  const idxs = filterMethod(colData, filters)
+  const filterMethod = getFilterMethod(filters, type)
+  const filterString = `return data.map((colValue, idx) => ${filterMethod} ? idx : -1)`
+  const callFilterMethod = new Function('data', 'filters', filterString)
+  const idxs = callFilterMethod(colData, filters)
   return idxs.filter(idx => idx !== -1)
+}
+function getFilterMethod(filters, type) {
+  switch (type) {
+    case 'number':
+      return filters.map(({ value, operator }) => `colValue ${operator} ${value}`).join('&&')
+    case 'string':
+      return filters.map(({ value }) => `colValue.toLowerCase().includes('${value.toLowerCase()}')`).join('&&')
+  }
 }
 
 // SORTING
