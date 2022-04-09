@@ -209,103 +209,24 @@ const tableData = {
 | 3 | 91 | 92 | 92 | 275 | 10_000 | 5 |
 | 4 | 2120 | 2132 | 2132 | 6384 | 100_000 | 5 |
 
+# Performance Tests v5
+
+## Localhost (mit 5x filter)
+
+| Run | Filtering | Sorting | Rendering | Total | Rows | Columns |
+|---|---|---|---|---|---|---|
+| 1 | 1 | 1 | 1 | 3 | 100 | 5 |
+| 2 | 5 | 5 | 5 | 15 | 1_000 | 5 |
+| 3 | 59 | 62 | 63 | 184 | 10_000 | 5 |
+| 4 | 1430 | 650.4 | 651 | 2731.4 | 100_000 | 5 |
+| 5 | 99929 | 100056 | 100057 | 300042 | 1_000_000 | 5 |
+
 ---
 
 mergeSort
 - 100_000 ~200ms
 
 ---
-
-```js
-let filterA = {
-  text: 'filterA',
-  operator: '<'
-}, item = 'item';
-const testFn = new Function(filterA.text, item,
-  `return filterA ${ filterA.operator } item`
-);
-console.log(testFn(10, 15));
-```
-
-```js
-const data = [
-  [67, 87, 97, 13, 27, 80, 30, 80, 80, 9], 
-  [16, 77, 69, 39, 83, 80, 80, 37, 80, 59],
-  ['ab', 'vx', 'jha', 'km', 'log', 'cd']
-]
-const headers = [
-  {
-    columnKey: 0,
-    type: 'number',
-  },
-  {
-    columnKey: 1,
-    type: 'number',
-  }
-]
-const filters = [
-  {
-    text: 'filterA',
-    columnKey: 0,
-    value: '65',
-    operator: '<' // isLess
-  },
-  // {
-  //   columnKey: 1,
-  //   value: '80',
-  //   operator: '==' // isEqual
-  // },
-  // {
-  //   columnKey: 0,
-  //   value: '40',
-  //   operator: '>' // isGreater
-  // }
-]
-// seperate filter tags / merge to the same column
-// const filter = {
-//   0: [0,2], // columnKey: [filterIdxs]
-//   1: [1]
-// }
-
-let filterA = {
-  text: 'filterA',
-  operator: '==',
-  value: 'a',
-}, item = 'item';
-const filterNumber = new Function(filterA.text, item,
-  `return item ${filterA.operator} filterA`
-);
-const filterString = new Function(filterA.text, item,
-  `return item.includes(filterA)`
-)
-
-function getIdxs (colData, type) {
-  const arr = []
-  let isMatching
-  colData.filter((el, idx) => {
-    switch (type) {
-      case 'number':
-        isMatching = filterNumber(filterA.value, el)
-        if (isMatching) arr.push(idx)
-        break;
-
-      case 'string':
-        isMatching = filterString(filterA.value, el)
-        if (isMatching) arr.push(idx)
-        break;    
-
-      case 'date':
-        const toFilteredDate = Math.floor(new Date(filterA.value).getTime() / 1000)
-        const date = Math.floor(new Date(el).getTime() / 1000)
-        isMatching = filterNumber(toFilteredDate, date)
-        if (isMatching) arr.push(idx)
-        break;    
-    }
-  })
-  return arr
-}
-console.log(getIdxs(data[2], 'string'));
-```
 
 ```js
 const y = (x) => x === 42
