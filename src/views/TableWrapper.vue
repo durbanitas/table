@@ -15,7 +15,7 @@ onBeforeMount(() => {
   initTable()
 })
 
-function initTable() {
+function initTable () {
   showTable = false // set to false for performance testing
   tableData = createDataset(N_COLUMNS, N_ROWS_PER_PAGE)
   // tableData = demoStarWarsData
@@ -23,90 +23,54 @@ function initTable() {
 }
 
 // add filter tags
-const filterTags = $ref([
-  {
-    columnKey: 0, // column header
-    value: '65', // filter value
-    operator: '<' // isEqual, isLess, isGreater
-  },
-  {
-    columnKey: 2, // column header
-    value: '40', // filter value
-    operator: '<' // isEqual, isLess, isGreater
-  },
-  // {
-  //   columnKey: 0, // column header
-  //   value: '20', // filter value
-  //   operator: '>' // isEqual, isLess, isGreater
-  // },
-  // {
-  //   columnKey: 3, // column header
-  //   value: '24', // filter value
-  //   operator: '==' // isEqual, isLess, isGreater
-  // },
-  // {
-  //   columnKey: 4, // column header
-  //   value: '10', // filter value
-  //   operator: '>' // isEqual, isLess, isGreater
-  // },
-])
-function useFilterTags(filters) {
+const filterTags = $ref([])
+function useFilterTags (filters) {
   filterTags = filters
 }
 
 // Performance test
 const displayOutcome = $ref('')
 const stats = []
-function collectData(testResults) {
+function collectData (testResults) {
   stats.push(testResults)
 }
-// TODO: simplify?
-async function createDataAndTable(){
+async function createDataAndTable () {
   initTable()
   return;
 };
-async function getPerformanceData(){
+async function getPerformanceData () {
   await createDataAndTable();
 };
 function runTest (cols, rows) {
-    for (let i = 0; i < 10; i++) {
-      getPerformanceData()
-      if (i === 9) {
-        const result = getSums(stats)
-        result.rows = rows
-        result.columns = cols
-        displayOutcome = result
-        // console.log(result);
-      }
+  for (let i = 0; i < 10; i++) {
+    getPerformanceData()
+    if (i === 9) {
+      const result = getSums(stats)
+      result.rows = rows
+      result.columns = cols
+      displayOutcome = result
+      // console.log(result);
     }
+  }
 }
-function startTest() {
+function startTest () {
   runTest(N_COLUMNS, N_ROWS_PER_PAGE)
 }
 </script>
 
 <template>
   <div v-if="showTable">
-    <!-- <Filtering 
-      :headers="tableData.headers" 
-      @submit="useFilterTags" 
-    /> -->
-    <TableParent
-      :tableData="tableData"
-      :defaultSortDirection="1"
-      :defaultSortByHeader="0"
-      :rowsPerPage="5"
-      :filterTags="filterTags"
-      @performanceTest="collectData"
-    />
+    <Filtering :headers="tableData.headers" @submit="useFilterTags" />
+    <br>
+    <TableParent :tableData="tableData" :defaultSortDirection="1" :defaultSortByHeader="0" :rowsPerPage="5"
+      :filterTags="filterTags" @performanceTest="collectData" />
   </div>
   <!-- performance test -->
   <button @click="startTest()" v-text="'run test'" />
   <h5 v-text="displayOutcome" />
 </template>
 
-<style>
-.loading-table-size {
+<style>.loading-table-size {
   height: 400px;
   border: 1px solid #ccc;
 }

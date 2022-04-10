@@ -13,7 +13,7 @@ export const getSums = (arr) => {
   }
   arr.forEach(test => {
     test.forEach((val, i) => {
-      if (i === 0) obj.filtering += val
+      if (i === 0 && val !== undefined) obj.filtering += val
       if (i === 1) obj.sorting += val
       if (i === 2) obj.rendering += val
       if (val) obj.total += val

@@ -10,18 +10,18 @@
 
 ## Todo:
 
+- handle/test live updates
+
+- pagination
+  - pass custom rows per page via array
+
 - scroll
-  - virtualization
+  - virtualization (important for -> show rows per page: All)
 
 - url, add queries
   - share table with applied filters, pagination, sorting
 
 - keyboard navigation
-
-- handle/test live updates
-
-- pagination
-  - pass custom rows per page via array
 
 ---
 

@@ -114,13 +114,12 @@ const filteredIdxs = $computed(() => {
   let idxs = []
   const mergedFilterObj = mergeFilters(props.filterTags)
   Object.entries(mergedFilterObj).forEach(([colIdx, filterElements], filterTagIdx) => {
-    console.log(colIdx, ' colIdx', filterElements);
     const filters = filterElements.map(f => props.filterTags[f])
-    const colType = props.tableData.headers[0].type
+    const colType = props.tableData.headers[colIdx].type
     // compare first filter with whole column data
-    if (filterTagIdx === 0) return idxs = getColFilteredIdxs(props.tableData.data[0], filters, colType)
+    if (filterTagIdx === 0) return idxs = getColFilteredIdxs(props.tableData.data[colIdx], filters, colType)
     // compare only the n-filtered results, not the whole column
-    const filteredColData = idxs.map(dataIdx => props.tableData.data[0][dataIdx])
+    const filteredColData = idxs.map(dataIdx => props.tableData.data[colIdx][dataIdx])
     const matchingIdxs = getColFilteredIdxs(filteredColData, filters, colType)
     idxs = idxs.filter((_, idx) => matchingIdxs.indexOf(idx) !== -1)
   })
@@ -129,7 +128,6 @@ const filteredIdxs = $computed(() => {
 })
 // mergeFilters: { columnIdx0: [filterIdx0, filterIdx2], columnIdx1: [filterIdx1] }
 function mergeFilters (filters) {
-  console.log(filters);
   const helperObj = {}
   const keys = filters.map(f => f.columnKey)
   const uniqueKeys = [...new Set(keys)]
@@ -147,6 +145,7 @@ function getColFilteredIdxs (colData, filters, type) {
 function getFilterMethod(filters, type) {
   switch (type) {
     case 'number':
+    case 'date':
       return filters.map(({ value, operator }) => `colValue ${operator} ${value}`).join('&&')
     case 'string':
       return filters.map(({ value }) => `colValue.toLowerCase().includes('${value.toLowerCase()}')`).join('&&')
@@ -171,24 +170,21 @@ const sortedIdxs = $computed(() => {
   return idxs
 })
 function getSortMethod(col, type, direction) {
-  // TODO: simplify
   if (direction === 1) {
     switch (type) {
       case 'number':
+      case 'date':
         return (a, b) => col[a] - col[b]
       case 'string':
         return (a, b) => col[a] < col[b] ? -1 : col[a] > col[b] ? 1 : 0
-      case 'date':
-        return (a, b) => new Date(col[a]) - new Date(col[b])
     }
   } else {
     switch (type) {
       case 'number':
+      case 'date':
         return (a, b) => col[b] - col[a]
       case 'string':
         return (a, b) => col[b] < col[a] ? -1 : col[b] > col[a] ? 1 : 0
-      case 'date':
-        return (a, b) => new Date(col[b]) - new Date(col[a])
     }
   }
 }
