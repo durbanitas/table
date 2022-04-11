@@ -29,21 +29,21 @@ function createN () {
 export const demoStarWarsData = {
   headers: [
     {
-      key: 'name',
+      columnKey: 'name',
       type: 'string',
       label: 'Name',
       align: 'start',
       sortable: true,
     },
     {
-      key: 'height',
+      columnKey: 'height',
       type: 'number',
       label: 'Height',
       align: 'end',
       sortable: true,
     },
     {
-      key: 'created',
+      columnKey: 'created',
       type: 'date',
       label: 'Created',
       align: 'center',
@@ -53,6 +53,6 @@ export const demoStarWarsData = {
   data: [
     ['luke', 'yoda', 'C-3PO', 'Darth Vader'],
     [175, 65, 167, 202],
-    ['2014-12-09T13:50:51.644000Z', '2014-12-20T21:17:56.891000Z', '2014-12-10T15:10:51.357000Z', '2014-12-10T15:18:20.704000Z']
+    [1418129410, 1419094570, 1419229410, 1417094570]
   ]
 }

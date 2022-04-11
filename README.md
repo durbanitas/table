@@ -1,19 +1,27 @@
 # Vue 3 + Vite
 
-- https://mui.com/components/tables/
-
-- https://mdbootstrap.com/docs/b4/jquery/tables/basic/
-
-- https://material.io/components/data-tables#anatomy
-
-- https://vuetifyjs.com/en/components/data-tables/
-
 ## Todo:
 
 - handle/test live updates
+  - user selection: rowsPerPage, columns, update frequency
 
 - pagination
   - pass custom rows per page via array
+  - last page or first page reached - disable state on actions
+
+- prop-validation
+  - fully reusable?
+  - json scheme?
+
+- table states
+  - loading?
+  - no results for applied filter?
+
+- table styling
+  - text overflow in cell? hover or tip show the cell expanded with the full text
+
+- readable date
+  - pass function via props?
 
 - scroll
   - virtualization (important for -> show rows per page: All)
@@ -23,15 +31,29 @@
 
 - keyboard navigation
 
----
+## Links
+
+- https://mui.com/components/tables/
+
+- https://mdbootstrap.com/docs/b4/jquery/tables/basic/
+
+- https://material.io/components/data-tables#anatomy
+
+- https://vuetifyjs.com/en/components/data-tables/
 
 Impressions:
+
 - https://www.massimodutti.com/de/regularfitjeanshemd-im-washedlook-l00170464 (Sizetable/Größentabelle)
 
 - https://uxdesign.cc/data-table-for-enterprise-ux-cb48fb9fdf1e
 
+- https://grafana.com/docs/grafana/latest/visualizations/table/
+
 Read:
+
 - https://www.w3.org/TR/wai-aria-practices/examples/table/table.html
+
+- https://developer.mozilla.org/en-US/docs/Learn/HTML/Tables/Basics
 
 - https://en.wikipedia.org/wiki/Rank_correlation
 

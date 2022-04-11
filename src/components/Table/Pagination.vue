@@ -51,7 +51,6 @@ const currentPageView = computed(() => {
 
 <template>
   <div class="pagination-wrapper space-between">
-
     <!-- navigation -->
     <div>
       <span>Rows per page:</span>
@@ -61,15 +60,16 @@ const currentPageView = computed(() => {
         </option>
       </select>
     </div>
-
     <!-- entries -->
     <div>{{ currentPageView }} of {{ entries }}
       <span class="icon" @click="prevPage()"> &#8249; </span>
       <span class="icon" @click="nextPage()"> &#8250; </span>
-    </div>  </div>
+    </div>
+  </div>
 </template>
 
-<style lang="scss" scoped>.pagination-wrapper {
+<style lang="scss" scoped>
+.pagination-wrapper {
   padding: 8px;
   border: 1px solid #ccc;
 }

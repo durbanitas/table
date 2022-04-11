@@ -5,7 +5,7 @@ const props = defineProps({
   }
 })
 const OPERATORS = ['==', '>', '<']
-const TIMEOUT = 600
+const TIMEOUT = 400
 
 const emit = defineEmits(['submit', 'remove'])
 const filtersScope = $ref([])
@@ -13,7 +13,6 @@ const filterTags = $ref([])
 
 function addFilter () {
   const filterObj = { columnKey: '', operator: '', value: '' }
-  console.log('add filter');
   filtersScope.push(filterObj)
 }
 function removeFilter (idx) {
@@ -21,7 +20,15 @@ function removeFilter (idx) {
   filterTags = filtersScope.filter(f => f.value.length)
   emit('submit', filterTags)
 }
-
+// TODO: trim ref instances
+const itemRefs = $ref([])
+function emitValue () {
+  itemRefs.forEach((input, idx) => {
+    if (input.type === 'text') filtersScope[idx].value = input.value
+  })
+  filterTags = filtersScope.filter(f => f.value.length)
+  emit('submit', filterTags)
+}
 const debounce = (func, wait) => {
   let timeout
   return function executedFunction (...args) {
@@ -33,20 +40,7 @@ const debounce = (func, wait) => {
     timeout = setTimeout(later, wait)
   }
 }
-
 const updateValue = debounce(() => emitValue(), TIMEOUT)
-const itemRefs = $ref([])
-function emitValue () {
-  console.log('emit');
-  itemRefs.forEach((input, idx) => {
-    console.log(input, idx);
-    console.log(filtersScope);
-    if (input.type === 'text') filtersScope[idx].value = input.value
-  })
-  filterTags = filtersScope.filter(f => f.value.length)
-  console.log(filterTags);
-  emit('submit', filterTags)
-}
 </script>
 
 <template>
@@ -70,26 +64,3 @@ function emitValue () {
 
   <button @click="addFilter()" v-text="'add filter +'" />
 </template>
-
-<style lang="scss" scoped>
-form {
-  padding: 8px;
-}
-
-.filter-list {
-  padding: 12px;
-}
-
-.pill {
-  background-color: #ccc;
-  padding: 4px;
-  font-size: 12px;
-  border-radius: 30px;
-  margin: 8px;
-
-  &:hover {
-    background-color: #ddd;
-    cursor: pointer;
-  }
-}
-</style>

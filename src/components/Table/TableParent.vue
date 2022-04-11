@@ -1,10 +1,10 @@
 <script setup>
-import Pagination from './Pagination.vue'
 import Table from './Table.vue'
+import Pagination from './Pagination.vue'
 import { computed, reactive } from 'vue'
 
 const props = defineProps({
-  // required props
+  // REQUIRED PROPS
   tableData: {
     type: Object,
     required: true,
@@ -35,7 +35,7 @@ const props = defineProps({
       data: [
         ['luke', 'yoda'],
         [175, 65],
-        ['2014-12-09T13:50:51.644000Z', '2014-12-20T21:17:56.891000Z']
+        [1418129410, 1419094570] // unix dateformat
       ]
     },
     validator: obj => {
@@ -46,7 +46,7 @@ const props = defineProps({
       return equalHeadersColumnsLength && equalRowsLength
     }
   },
-  // optional props
+  // OPTIONAL PROPS
   defaultSortDirection: {
     type: Number,
     default: 1, // 1 or -1
@@ -60,9 +60,8 @@ const props = defineProps({
   },
   defaultSortByHeader: {
     type: [String, Number],
-    default: 'name', // headers[idx].key
-    // validator: val => val
-    // TODO: all validation
+    // default: 'name' // headers[idx].key
+    // TODO: default values for optional properties?
   },
   rowsPerPage: {
     type: Number,
@@ -80,7 +79,7 @@ const props = defineProps({
     default: [
       {
         columnKey: 'name', // column header
-        operator: 'isEqual', // isEqual, isLess, isGreater
+        operator: '==', // '==', '<', '>'
         value: '' // filter value
       }
     ]
@@ -93,37 +92,40 @@ const sortedHeader = $ref(getHeaderObj(props.tableData.headers))
 const sortDirection = $ref(props.defaultSortDirection)
 // get sorting header when creating the table
 function getHeaderObj (headers) {
-  if (props.defaultSortByHeader) {
-    sortedHeaderIdx = headers.findIndex(h => h.columnKey === props.defaultSortByHeader)
-    return headers.find(h => h.columnKey === props.defaultSortByHeader)
+  const { defaultSortByHeader } = props
+  if (defaultSortByHeader) {
+    sortedHeaderIdx = headers.findIndex(head => head.columnKey === defaultSortByHeader)
+    return headers.find(head => head.columnKey === defaultSortByHeader)
   } else { // return first header element to be sorted by
     return headers[0]
   }
 }
 // user interaction: sort
-function sort(newHeader, newDirection, headIdx) {
+function sort (newHeader, newDirection, headIdx) {
   sortedHeader = newHeader
   sortDirection = newDirection
   sortedHeaderIdx = headIdx
 }
 
+// FILTERING
 const originalIdxs = $computed(() => [...Array(props.tableData.data[0].length).keys()]) // [0, 1, ...data[0].length ]
 const filteredIdxs = $computed(() => {
-  const start = performance.now()
-  if (props.filterTags.length === 0) return originalIdxs
+  const { filterTags, tableData } = props
+  // if no filters are applied, the original idxs are returned
+  if (filterTags.length === 0) return originalIdxs
   let idxs = []
-  const mergedFilterObj = mergeFilters(props.filterTags)
+  const mergedFilterObj = mergeFilters(filterTags)
+  // FIXME: colIdx = 'name' given by the filtered columnKey
   Object.entries(mergedFilterObj).forEach(([colIdx, filterElements], filterTagIdx) => {
-    const filters = filterElements.map(f => props.filterTags[f])
-    const colType = props.tableData.headers[colIdx].type
+    const filters = filterElements.map(f => filterTags[f])
+    const colType = tableData.headers[colIdx].type
     // compare first filter with whole column data
-    if (filterTagIdx === 0) return idxs = getColFilteredIdxs(props.tableData.data[colIdx], filters, colType)
+    if (filterTagIdx === 0) return idxs = getColFilteredIdxs(tableData.data[colIdx], filters, colType)
     // compare only the n-filtered results, not the whole column
-    const filteredColData = idxs.map(dataIdx => props.tableData.data[colIdx][dataIdx])
+    const filteredColData = idxs.map(dataIdx => tableData.data[colIdx][dataIdx])
     const matchingIdxs = getColFilteredIdxs(filteredColData, filters, colType)
-    idxs = idxs.filter((_, idx) => matchingIdxs.indexOf(idx) !== -1)
+    idxs = idxs.filter((_, matchIdx) => matchingIdxs.indexOf(matchIdx) !== -1)
   })
-  _timeRange1 = performance.now() - start
   return idxs
 })
 // mergeFilters: { columnIdx0: [filterIdx0, filterIdx2], columnIdx1: [filterIdx1] }
@@ -142,7 +144,7 @@ function getColFilteredIdxs (colData, filters, type) {
   const idxs = callFilterMethod(colData, filters)
   return idxs.filter(idx => idx !== -1)
 }
-function getFilterMethod(filters, type) {
+function getFilterMethod (filters, type) {
   switch (type) {
     case 'number':
     case 'date':
@@ -154,22 +156,20 @@ function getFilterMethod(filters, type) {
 
 // SORTING
 const sortedIdxs = $computed(() => {
-  const n = performance.now()
   const columnData = props.tableData.data[sortedHeaderIdx]
-  const filteredColumn = filteredIdxs.map(idx => columnData[idx])
+  const filteredColumn = filteredIdxs.map(dataIdx => columnData[dataIdx])
   const sortFn = getSortMethod(filteredColumn, sortedHeader.type, sortDirection)
   const idxRange = [...Array(filteredIdxs.length).keys()]
   let idxs = []
-  if (sortedHeader.sortable) { 
+  if (sortedHeader.sortable) {
     idxRange.sort(sortFn)
-    idxs = idxRange.map(i => filteredIdxs[i])
+    idxs = idxRange.map(dataIdx => filteredIdxs[dataIdx])
   } else {
     idxs = idxRange
   }
-  _timeRange2 = performance.now() - n
   return idxs
 })
-function getSortMethod(col, type, direction) {
+function getSortMethod (col, type, direction) {
   if (direction === 1) {
     switch (type) {
       case 'number':
@@ -196,43 +196,25 @@ const pages = reactive({
   startIdx: 0,
   endIdx: selectedRows
 })
-function changePage(newPages) {
+function changePage (newPages) {
   Object.assign(pages, newPages)
 }
 
-// RENDERED DATA
+// RENDERING
 const filteredData = computed(() => {
-  const n = performance.now()
   const rangeSortedIdxs = sortedIdxs.slice(pages.startIdx, pages.endIdx)
-  const tableData = props.tableData.headers.map((_, colIdx) => {
+  return props.tableData.headers.map((_, colIdx) => {
     return rangeSortedIdxs.map(dataIdx => {
       return props.tableData.data[colIdx][dataIdx]
     })
   })
-  _timeRange3 = performance.now() - n
-  emit('performanceTest', [_timeRange1, _timeRange2, _timeRange3])
-  return tableData
 })
-
-// performance test
-let _timeRange1, _timeRange2, _timeRange3
-const emit = defineEmits(['performanceTest'])
 </script>
 
 <template>
   <!-- Filtering.vue  -->
-  <Table
-    :tableData="filteredData"
-    :headers="tableData.headers"
-    :sortedHeader="sortedHeader"
-    :sortDirection="sortDirection"
-    :defaultSortDirection="defaultSortDirection"
-    @onHeaderSort="sort"
-  />
-  <Pagination
-    v-if="filteredIdxs.length > rowsPerPage"
-    :entries="filteredIdxs.length"
-    :rowsPerPage="rowsPerPage"
-    @onChangePage="changePage" 
-  /> 
+  <Table :tableData="filteredData" :headers="tableData.headers" :sortedHeader="sortedHeader"
+    :sortDirection="sortDirection" :defaultSortDirection="defaultSortDirection" @onHeaderSort="sort" />
+  <Pagination v-if="filteredIdxs.length > rowsPerPage" :entries="filteredIdxs.length" :rowsPerPage="rowsPerPage"
+    @onChangePage="changePage" />
 </template>
