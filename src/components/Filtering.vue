@@ -41,7 +41,7 @@ function emitValue () {
   itemRefs.forEach((input, idx) => {
     console.log(input, idx);
     console.log(filtersScope);
-    filtersScope[idx].value = input.value
+    if (input.type === 'text') filtersScope[idx].value = input.value
   })
   filterTags = filtersScope.filter(f => f.value.length)
   emit('submit', filterTags)
