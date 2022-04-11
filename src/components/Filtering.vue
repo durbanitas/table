@@ -13,6 +13,7 @@ const filterTags = $ref([])
 
 function addFilter () {
   const filterObj = { columnKey: '', operator: '', value: '' }
+  console.log('add filter');
   filters.push(filterObj)
 }
 function removeFilter (idx) {
@@ -36,7 +37,11 @@ const debounce = (func, wait) => {
 const updateValue = debounce(() => emitValue(), TIMEOUT)
 const itemRefs = $ref([])
 function emitValue () {
-  itemRefs.map((input, idx) => filters[idx].value = input.value)
+  console.log('emit');
+  itemRefs.forEach((input, idx) => {
+    console.log(input, idx);
+    filters[idx].value = input.value
+  })
   filterTags = filters.filter(f => f.value.length)
   emit('submit', filterTags)
 }
@@ -56,7 +61,7 @@ function emitValue () {
     </select>
     <!-- filter by value -->
     <input type="text" :disabled="filter.columnKey.length === 0 || filter.operator.length === 0" @keyup="updateValue"
-      :ref="(el) => { itemRefs[idx] = el }">
+      :ref="(input) => { itemRefs[idx] = input }">
     <!-- remove filter -->
     <button @click="removeFilter(idx)" v-text="'x'" />
   </div>
