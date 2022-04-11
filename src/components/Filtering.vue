@@ -44,6 +44,7 @@ function emitValue () {
     if (input.type === 'text') filtersScope[idx].value = input.value
   })
   filterTags = filtersScope.filter(f => f.value.length)
+  console.log(filterTags);
   emit('submit', filterTags)
 }
 </script>
