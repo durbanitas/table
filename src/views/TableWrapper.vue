@@ -42,16 +42,12 @@ async function getPerformanceData () {
   await createDataAndTable();
 };
 function runTest (cols, rows) {
-  for (let i = 0; i < 10; i++) {
-    getPerformanceData()
-    if (i === 9) {
-      const result = getSums(stats)
-      result.rows = rows
-      result.columns = cols
-      displayOutcome = result
-      // console.log(result);
-    }
-  }
+  getPerformanceData()
+  const result = getSums(stats)
+  result.rows = rows
+  result.columns = cols
+  displayOutcome = result
+  // console.log(result);
 }
 function startTest () {
   runTest(N_COLUMNS, N_ROWS_PER_PAGE)
@@ -70,7 +66,8 @@ function startTest () {
   <h5 v-text="displayOutcome" />
 </template>
 
-<style>.loading-table-size {
+<style>
+.loading-table-size {
   height: 400px;
   border: 1px solid #ccc;
 }

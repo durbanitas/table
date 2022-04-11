@@ -1,14 +1,11 @@
 <script setup>
-import { watch } from 'vue'
-
-// TODO: add debounce typing
-
 const props = defineProps({
   headers: {
     type: Array
   }
 })
 const OPERATORS = ['==', '>', '<']
+const TIMEOUT = 600
 
 const emit = defineEmits(['submit', 'remove'])
 const filters = $ref([])
@@ -18,18 +15,35 @@ function addFilter () {
   const filterObj = { columnKey: '', operator: '', value: '' }
   filters.push(filterObj)
 }
-watch(() => filters, () => {
+function removeFilter (idx) {
+  filters.splice(idx, 1)
   filterTags = filters.filter(f => f.value.length)
   emit('submit', filterTags)
-},
-  {
-    deep: true
+}
+
+const debounce = (func, wait) => {
+  let timeout
+  return function executedFunction (...args) {
+    const later = () => {
+      timeout = null
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
   }
-)
+}
+
+const updateValue = debounce(() => emitValue(), TIMEOUT)
+const itemRefs = $ref([])
+function emitValue () {
+  itemRefs.map((input, idx) => filters[idx].value = input.value)
+  filterTags = filters.filter(f => f.value.length)
+  emit('submit', filterTags)
+}
 </script>
 
 <template>
-  <div v-for="(filter, idx) in filters" :key="filter.id">
+  <div v-for="(filter, idx) in filters" :key="filter.id" ref="itemRefs">
     <!-- choose column -->
     <select v-model="filter.columnKey">
       <option value="" disabled selected hidden v-text="'select a column'" />
@@ -41,16 +55,17 @@ watch(() => filters, () => {
       <option v-for="operator in OPERATORS" v-text="operator" />
     </select>
     <!-- filter by value -->
-    <input type="text" v-model="filter.value" :disabled="filter.columnKey.length === 0 || filter.operator.length === 0"
-      @keyup="search">
+    <input type="text" :disabled="filter.columnKey.length === 0 || filter.operator.length === 0" @keyup="updateValue"
+      :ref="(el) => { itemRefs[idx] = el }">
     <!-- remove filter -->
-    <button @click="filters.splice(idx, 1)" v-text="'x'" />
+    <button @click="removeFilter(idx)" v-text="'x'" />
   </div>
 
   <button @click="addFilter()" v-text="'add filter +'" />
 </template>
 
-<style lang="scss" scoped>form {
+<style lang="scss" scoped>
+form {
   padding: 8px;
 }
 
