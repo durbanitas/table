@@ -8,17 +8,17 @@ const OPERATORS = ['==', '>', '<']
 const TIMEOUT = 600
 
 const emit = defineEmits(['submit', 'remove'])
-const filters = $ref([])
+const filtersScope = $ref([])
 const filterTags = $ref([])
 
 function addFilter () {
   const filterObj = { columnKey: '', operator: '', value: '' }
   console.log('add filter');
-  filters.push(filterObj)
+  filtersScope.push(filterObj)
 }
 function removeFilter (idx) {
-  filters.splice(idx, 1)
-  filterTags = filters.filter(f => f.value.length)
+  filtersScope.splice(idx, 1)
+  filterTags = filtersScope.filter(f => f.value.length)
   emit('submit', filterTags)
 }
 
@@ -40,15 +40,16 @@ function emitValue () {
   console.log('emit');
   itemRefs.forEach((input, idx) => {
     console.log(input, idx);
-    filters[idx].value = input.value
+    console.log(filtersScope);
+    filtersScope[idx].value = input.value
   })
-  filterTags = filters.filter(f => f.value.length)
+  filterTags = filtersScope.filter(f => f.value.length)
   emit('submit', filterTags)
 }
 </script>
 
 <template>
-  <div v-for="(filter, idx) in filters" :key="filter.id" ref="itemRefs">
+  <div v-for="(filter, idx) in filtersScope" :key="filter.id" ref="itemRefs">
     <!-- choose column -->
     <select v-model="filter.columnKey">
       <option value="" disabled selected hidden v-text="'select a column'" />
