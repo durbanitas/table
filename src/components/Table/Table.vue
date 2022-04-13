@@ -25,11 +25,11 @@ const props = defineProps({
 
 // sort events
 const emit = defineEmits(['onHeaderSort'])
-function sort (head, idx) {
+function sort (head, colIdx) {
   const { sortedHeader, defaultSortDirection, sortDirection } = props
   const newHeader = head !== sortedHeader
   const newDirection = newHeader ? defaultSortDirection : sortDirection * -1
-  emit('onHeaderSort', head, newDirection, idx)
+  emit('onHeaderSort', head, newDirection, colIdx)
 }
 </script>
 
@@ -39,8 +39,8 @@ function sort (head, idx) {
       <!-- headers -->
       <thead>
         <tr>
-          <th v-for="(head, idx) in headers" :key="head.id" :class="{ 'cursor-pointer': head.sortable }"
-            v-on="head.sortable ? { click: () => sort(head, idx) } : {}">
+          <th v-for="(head, colIdx) in headers" :key="head.id" :class="{ 'cursor-pointer': head.sortable }"
+            v-on="head.sortable ? { click: () => sort(head, colIdx) } : {}">
             <div class="space-center">
               <div v-html="head.label" />
               <div class="pl-8" v-if="head.sortable">
@@ -50,16 +50,16 @@ function sort (head, idx) {
                   :class="{ 'active-down': head.columnKey === sortedHeader.columnKey && sortDirection === 1 }" />
               </div>
             </div>
-
           </th>
         </tr>
       </thead>
       <!-- BODY -->
       <tbody>
-        <template v-if="tableData.length">
-          <template v-for="(_, idx) in tableData[0].length">
+        <template v-if="tableData[0].length">
+          <template v-for="(_, rowIdx) in tableData[0].length">
             <tr>
-              <td v-for="(data, i) in tableData" :class="headers[i].align" :key="data.id" v-html="data[idx]" />
+              <td v-for="(data, colIdx) in tableData" :class="headers[colIdx].align" :key="data.id"
+                v-html="data[rowIdx]" />
             </tr>
           </template>
         </template>

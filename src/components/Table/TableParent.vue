@@ -115,8 +115,8 @@ const filteredIdxs = $computed(() => {
   if (filterTags.length === 0) return originalIdxs
   let idxs = []
   const mergedFilterObj = mergeFilters(filterTags)
-  // FIXME: colIdx = 'name' given by the filtered columnKey
-  Object.entries(mergedFilterObj).forEach(([colIdx, filterElements], filterTagIdx) => {
+  Object.entries(mergedFilterObj).forEach(([colKey, filterElements], filterTagIdx) => {
+    const colIdx = tableData.headers.findIndex(head => head.columnKey == colKey)
     const filters = filterElements.map(f => filterTags[f])
     const colType = tableData.headers[colIdx].type
     // compare first filter with whole column data

@@ -20,9 +20,29 @@ export const createDataset = (userColumns, userRows) => {
 
   return { data, headers }
 }
-
 function createN () {
   return Number((Math.random() * 100).toFixed())
+}
+
+// create randomized filters
+const OPERATORS = ['==', '>', '<']
+function randomNumber (min, max) { // min and max included 
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+export const randomFilters = (userColumns, useValid) => {
+  const filters = []
+  const nFilters = randomNumber(1, 5)
+  for (let i = 0; i < nFilters; i++) {
+    const colIdx = randomNumber(0, userColumns)
+    const opIdx = randomNumber(0, OPERATORS.length - 1)
+    const filter = {
+      columnKey: 'Col' + colIdx,
+      operator: OPERATORS[opIdx],
+      value: createN()
+    }
+    filters.push(filter)
+  }
+  return filters
 }
 
 // dataset of star wars characters

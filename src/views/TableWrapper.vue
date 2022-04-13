@@ -2,7 +2,7 @@
 import TableParent from '../components/Table/TableParent.vue'
 import Filtering from '../components/Filtering.vue'
 import { onBeforeMount } from 'vue'
-import { createDataset, demoStarWarsData } from '../utils/demo_data.js'
+import { createDataset, demoStarWarsData, randomFilters } from '../utils/demo_data.js'
 
 let tableData = $ref({})
 let showTable = $ref(false)
@@ -12,6 +12,7 @@ const N_COLUMNS = 5
 
 onBeforeMount(() => {
   initTable()
+  // console.log(randomFilters(N_COLUMNS));
 })
 
 function initTable () {
@@ -29,7 +30,7 @@ function useFilterTags (filters) {
 
 <template>
   <div v-if="showTable">
-    <Filtering :headers="tableData.headers" @submit="useFilterTags" />
+    <!-- <Filtering :headers="tableData.headers" @submit="useFilterTags" /> -->
     <br>
     <TableParent :tableData="tableData" :defaultSortDirection="1" :rowsPerPage="5" :filterTags="filterTags" />
   </div>

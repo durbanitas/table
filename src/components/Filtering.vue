@@ -7,12 +7,20 @@ const props = defineProps({
 const OPERATORS = ['==', '>', '<']
 const TIMEOUT = 400
 
+// TODO: add autofocus
+// TODO: add input validation
+// TODO: randomize filters (1to5) as params use use validData use invalidData .2%
+
 const emit = defineEmits(['submit', 'remove'])
 const filtersScope = $ref([])
 const filterTags = $ref([])
 
 function addFilter () {
-  const filterObj = { columnKey: '', operator: '', value: '' }
+  const filterObj = {
+    columnKey: props.headers[0].columnKey,
+    operator: '==',
+    value: ''
+  }
   filtersScope.push(filterObj)
 }
 function removeFilter (idx) {
@@ -56,8 +64,7 @@ const updateValue = debounce(() => emitValue(), TIMEOUT)
       <option v-for="operator in OPERATORS" v-text="operator" />
     </select>
     <!-- filter by value -->
-    <input type="text" :disabled="filter.columnKey.length === 0 || filter.operator.length === 0" @keyup="updateValue"
-      :ref="(input) => { itemRefs[idx] = input }">
+    <input type="text" @keyup="updateValue" :ref="(input) => { itemRefs[idx] = input }" autofocus>
     <!-- remove filter -->
     <button @click="removeFilter(idx)" v-text="'x'" />
   </div>

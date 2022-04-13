@@ -2,6 +2,10 @@
 
 ## Todo:
 
+- add type: urls?
+
+- publicate via npm?
+
 - handle/test live updates
   - user selection: rowsPerPage, columns, update frequency
 
@@ -30,6 +34,8 @@
   - share table with applied filters, pagination, sorting
 
 - keyboard navigation
+
+- renderless component
 
 ## Links
 
