@@ -7,8 +7,8 @@ import { createDataset, demoStarWarsData, randomFilters } from '../utils/demo_da
 let tableData = $ref({})
 let showTable = $ref(false)
 
-const N_ROWS_PER_PAGE = 10_000
-const N_COLUMNS = 5
+const N_ROWS_PER_PAGE = 100_000
+const N_COLUMNS = 20
 
 onBeforeMount(() => {
   initTable()
@@ -29,8 +29,8 @@ function useFilterTags (filters) {
 </script>
 
 <template>
+  <Filtering :headers="tableData.headers" @submit="useFilterTags" />
   <div v-if="showTable">
-    <!-- <Filtering :headers="tableData.headers" @submit="useFilterTags" /> -->
     <br>
     <TableParent :tableData="tableData" :defaultSortDirection="1" :rowsPerPage="5" :filterTags="filterTags" />
   </div>

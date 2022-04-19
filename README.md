@@ -39,11 +39,11 @@
 
 ## Links
 
+- https://material.io/components/data-tables#anatomy
+
 - https://mui.com/components/tables/
 
 - https://mdbootstrap.com/docs/b4/jquery/tables/basic/
-
-- https://material.io/components/data-tables#anatomy
 
 - https://vuetifyjs.com/en/components/data-tables/
 
@@ -262,4 +262,15 @@ const testFn = new Function('x', 'y',
   'return y(x)'
 );
 console.log(testFn(42, y));
+```
+
+---
+
+```
+An error occurred in hook 'editComponentState' with payload: 
+app: Object { _uid: 0, _component: {…}, version: "3.2.31", … }
+​componentInstance: Object { uid: 8, vnode: {…}, type: {…}, … }
+​path: Array [ "itemRefs", "2" ]
+​set: function set(object, path, value, cb)​
+state: Object { value: undefined, newKey: undefined, remove: true }
 ```

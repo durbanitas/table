@@ -9,11 +9,11 @@ const TIMEOUT = 400
 
 // TODO: add autofocus
 // TODO: add input validation
-// TODO: randomize filters (1to5) as params use use validData use invalidData .2%
 
 const emit = defineEmits(['submit', 'remove'])
 const filtersScope = $ref([])
 const filterTags = $ref([])
+const itemRefs = $ref([])
 
 function addFilter () {
   const filterObj = {
@@ -22,20 +22,27 @@ function addFilter () {
     value: ''
   }
   filtersScope.push(filterObj)
+  isValid.push(true)
 }
 function removeFilter (idx) {
   filtersScope.splice(idx, 1)
+  isValid.splice(idx, 1)
+  itemRefs.pop()
   filterTags = filtersScope.filter(f => f.value.length)
   emit('submit', filterTags)
 }
-// TODO: trim ref instances
-const itemRefs = $ref([])
+
 function emitValue () {
-  itemRefs.forEach((input, idx) => {
-    if (input.type === 'text') filtersScope[idx].value = input.value
-  })
-  filterTags = filtersScope.filter(f => f.value.length)
-  emit('submit', filterTags)
+  const allValid = isValid.findIndex(valid => valid === false) < 0
+  if (allValid) {
+    itemRefs.forEach((input, idx) => {
+      if (input.type === 'text') filtersScope[idx].value = input.value
+    })
+    filterTags = filtersScope.filter(f => f.value.length)
+    emit('submit', filterTags)
+  } else {
+    console.error('wrong input value(s)')
+  }
 }
 const debounce = (func, wait) => {
   let timeout
@@ -49,25 +56,41 @@ const debounce = (func, wait) => {
   }
 }
 const updateValue = debounce(() => emitValue(), TIMEOUT)
+
+// validations
+function validateInput (e, idx) {
+  const isNumber = /^\d+$/.test(e.target.value)
+  isValid[idx] = isNumber
+}
+const isValid = $ref([])
 </script>
 
 <template>
-  <div v-for="(filter, idx) in filtersScope" :key="filter.id" ref="itemRefs">
-    <!-- choose column -->
-    <select v-model="filter.columnKey">
-      <option value="" disabled selected hidden v-text="'select a column'" />
-      <option v-for="head in props.headers" :value="head.columnKey" v-text="head.label" placeholder="c" />
-    </select>
-    <!-- operator -->
-    <select v-model="filter.operator">
-      <option value="" disabled selected hidden v-text="'select an operator'" />
-      <option v-for="operator in OPERATORS" v-text="operator" />
-    </select>
-    <!-- filter by value -->
-    <input type="text" @keyup="updateValue" :ref="(input) => { itemRefs[idx] = input }" autofocus>
-    <!-- remove filter -->
-    <button @click="removeFilter(idx)" v-text="'x'" />
-  </div>
+  <div class="box">
+    <div v-for="(filter, idx) in filtersScope" :key="filter.id">
+      <!-- choose a column -->
+      <select v-model="filter.columnKey">
+        <option v-for="head in props.headers" :key="head.id" :value="head.columnKey" v-text="head.label" />
+      </select>
+      <!-- choose an operator -->
+      <select v-model="filter.operator">
+        <option v-for="operator in OPERATORS" :key="operator.id" v-text="operator" />
+      </select>
+      <!-- filter by value -->
+      <input type="text" @keyup="updateValue" :ref="(input) => { itemRefs[idx] = input }"
+        @change="validateInput($event, idx)" @input="validateInput($event, idx)" :value="filter.value">
+      <!-- remove filter -->
+      <button @click="removeFilter(idx)" v-text="'x'" />
+      <!-- show invalid message -->
+      <div class="error" v-if="!isValid[idx]">invalid value</div>
+    </div>
 
-  <button @click="addFilter()" v-text="'add filter +'" />
+    <button @click="addFilter()" v-text="'add filter +'" />
+  </div>
 </template>
+
+<style>
+.error {
+  color: red;
+}
+</style>

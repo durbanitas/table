@@ -103,7 +103,8 @@ table {
     position: sticky;
     top: 0;
     z-index: 2;
-    background: #ffbf9f;
+    background: var(--table-surface);
+    color: var(--table-header);
     white-space: nowrap;
     user-select: none;
 
@@ -123,17 +124,18 @@ table {
     // sticky left row
     tr> :first-child {
       position: sticky;
-      background: #ccc;
+      background: var(--table-surface);
       left: 0;
       min-width: 100px;
     }
 
     & tr:nth-child(odd) {
-      background: #ddd;
+      background: var(--table-surface);
     }
 
     & tr:hover {
       background: yellow;
+      color: #000;
 
       & :first-child {
         background: yellow;

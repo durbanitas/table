@@ -128,7 +128,7 @@ const filteredIdxs = $computed(() => {
   })
   return idxs
 })
-// mergeFilters: { columnIdx0: [filterIdx0, filterIdx2], columnIdx1: [filterIdx1] }
+// mergeFilters: { columnKey: [filterIdx0, filterIdx2], columnKey: [filterIdx1] }
 function mergeFilters (filters) {
   const helperObj = {}
   const keys = filters.map(f => f.columnKey)

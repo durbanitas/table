@@ -2,11 +2,19 @@
 [data-theme="dark"] {
   --bg-color1: #121416;
   --font-color: #f4f4f4;
+  --table-surface: #363640;
+  --table-text: #fff;
+  --table-header: rgba(255, 255, 255. .6);
+  --table-devider: rgba(255, 255, 255. .12);
 }
 
 [data-theme="light"] {
   --bg-color1: #f4f4f4;
   --font-color: #121416;
+  --table-surface: #fff;
+  --table-text: #fff;
+  --table-header: #1c1c1c;
+  --table-devider: #e0e0e0;
 }
 
 // MAIN
@@ -30,6 +38,26 @@ body {
   color: var(--font-color);
 }
 
+nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  height: 40px;
+  background-color: #999;
+
+  .nav-container {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+
+    h1 {
+      font-size: 12pt;
+    }
+  }
+}
+
 .container {
   max-width: 900px;
   max-height: 95vh;
@@ -39,9 +67,25 @@ body {
   padding-top: 25px;
 }
 
+.box {
+  border: 1px solid #ccc;
+  margin: 8px 0 8px 0;
+  padding: 8px;
+}
+
 // HELPERS
 h5 {
   font-size: 1.15rem;
+}
+
+label,
+input[type='checkbox'] {
+  cursor: pointer;
+}
+
+.btn {
+  height: 24px;
+  margin: 8px;
 }
 
 .align-center {
