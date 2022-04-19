@@ -2,7 +2,7 @@
 import TableParent from '../components/Table/TableParent.vue'
 import Filtering from '../components/Filtering.vue'
 import { onBeforeMount } from 'vue'
-import { createDataset, demoStarWarsData, randomFilters } from '../utils/demo_data.js'
+import { createDataset, demoStarWarsData } from '../utils/demo_data.js'
 
 let tableData = $ref({})
 let showTable = $ref(false)
@@ -12,7 +12,6 @@ const N_COLUMNS = 20
 
 onBeforeMount(() => {
   initTable()
-  // console.log(randomFilters(N_COLUMNS));
 })
 
 function initTable () {

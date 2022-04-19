@@ -1,4 +1,6 @@
 <script setup>
+import { watch } from 'vue';
+
 const props = defineProps({
   headers: {
     type: Array
@@ -25,11 +27,18 @@ function addFilter () {
   isValid.push(true)
 }
 function removeFilter (idx) {
-  filtersScope.splice(idx, 1)
+  itemRefs.splice(idx, 1);
   isValid.splice(idx, 1)
-  itemRefs.pop()
+  filtersScope.splice(idx, 1)
   filterTags = filtersScope.filter(f => f.value.length)
   emit('submit', filterTags)
+}
+
+watch(() => [...itemRefs], (oldVal, newVal) => setFocus(oldVal, newVal))
+function setFocus (oldVal, newVal) {
+  const oldArrLen = oldVal.filter(el => el !== null).length
+  const newArrLen = newVal.filter(el => el !== null).length
+  if (newArrLen < oldArrLen) itemRefs[newArrLen].focus()
 }
 
 function emitValue () {
@@ -67,7 +76,7 @@ const isValid = $ref([])
 
 <template>
   <div class="box">
-    <div v-for="(filter, idx) in filtersScope" :key="filter.id">
+    <div v-for="(filter, idx) in filtersScope" :key="idx">
       <!-- choose a column -->
       <select v-model="filter.columnKey">
         <option v-for="head in props.headers" :key="head.id" :value="head.columnKey" v-text="head.label" />
