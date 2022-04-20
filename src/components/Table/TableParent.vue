@@ -216,6 +216,6 @@ const filteredData = computed(() => {
   <!-- Filtering.vue  -->
   <Table :tableData="filteredData" :headers="tableData.headers" :sortedHeader="sortedHeader"
     :sortDirection="sortDirection" :defaultSortDirection="defaultSortDirection" @onHeaderSort="sort" />
-  <Pagination v-if="filteredIdxs.length > rowsPerPage" :entries="filteredIdxs.length" :rowsPerPage="rowsPerPage"
-    @onChangePage="changePage" />
+  <!-- <Pagination v-if="filteredIdxs.length > rowsPerPage" :entries="filteredIdxs.length" :rowsPerPage="rowsPerPage"
+    @onChangePage="changePage" /> -->
 </template>

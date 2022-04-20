@@ -44,9 +44,11 @@ function changePage (page) {
 // all possible n pages
 const numPages = $computed(() => Math.ceil(props.entries / selectedRowsPerPage) - 1)
 // template current pages
-const currentPageView = computed(() => {
-  const start = selectedRowsPerPage * currentPage
-  return `${start + 1} - ${start + selectedRowsPerPage <= props.entries ? start + selectedRowsPerPage : props.entries}`
+const currentPageView = $computed(() => {
+  const fromEntries = selectedRowsPerPage * currentPage
+  const uptoEntries = fromEntries + selectedRowsPerPage
+
+  return `${fromEntries + 1} - ${fromEntries + selectedRowsPerPage <= props.entries ? uptoEntries : props.entries}`
 })
 </script>
 
@@ -63,8 +65,8 @@ const currentPageView = computed(() => {
     </div>
     <!-- entries -->
     <div>{{ currentPageView }} of {{ entries }}
-      <span class="icon" @click="prevPage()"> &#8249; </span>
-      <span class="icon" @click="nextPage()"> &#8250; </span>
+      <span class="icon" @click="prevPage()" :class="{ 'disabled': currentPage === 0 }"> &#8249; </span>
+      <span class="icon" @click="nextPage()" :class="{ 'disabled': currentPage === numPages }"> &#8250; </span>
     </div>
   </div>
 </template>
@@ -89,6 +91,15 @@ const currentPageView = computed(() => {
 
   &:hover {
     color: red;
+  }
+}
+
+.disabled {
+  cursor: not-allowed;
+  color: grey;
+
+  &:hover {
+    color: grey;
   }
 }
 </style>
