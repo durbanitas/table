@@ -83,6 +83,11 @@ input[type='checkbox'] {
   cursor: pointer;
 }
 
+input[type="text"]:disabled,
+button:disabled {
+  cursor: no-drop;
+}
+
 .btn {
   height: 24px;
   margin: 8px;

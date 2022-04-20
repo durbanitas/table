@@ -2,12 +2,14 @@
 import TableParent from '../components/Table/TableParent.vue'
 import Filtering from '../components/Filtering.vue'
 import { onBeforeMount } from 'vue'
-import { createDataset, demoStarWarsData } from '../utils/demo_data.js'
+import { createDataset } from '../utils/demo_data.js'
 
 let tableData = $ref({})
 let showTable = $ref(false)
 
-const N_ROWS_PER_PAGE = 100_000
+// FIXME: pagination last page and change filter. Got results but the table shows "no results" && the start page doesnt match
+
+const N_ROWS_PER_PAGE = 10_000
 const N_COLUMNS = 20
 
 onBeforeMount(() => {
@@ -16,7 +18,6 @@ onBeforeMount(() => {
 
 function initTable () {
   tableData = createDataset(N_COLUMNS, N_ROWS_PER_PAGE)
-  // tableData = demoStarWarsData
   showTable = true
 }
 

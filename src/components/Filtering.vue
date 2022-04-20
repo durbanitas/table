@@ -45,13 +45,14 @@ function emitValue () {
   const allValid = isValid.findIndex(valid => valid === false) < 0
   if (allValid) {
     itemRefs.forEach((input, idx) => {
-      if (input.type === 'text') filtersScope[idx].value = input.value
+      if (input !== null) filtersScope[idx].value = input.value
     })
     filterTags = filtersScope.filter(f => f.value.length)
     emit('submit', filterTags)
-  } else {
-    console.error('wrong input value(s)')
   }
+  // else {
+  //   console.error('wrong input value(s)')
+  // }
 }
 const debounce = (func, wait) => {
   let timeout
@@ -68,7 +69,10 @@ const updateValue = debounce(() => emitValue(), TIMEOUT)
 
 // validations
 function validateInput (e, idx) {
-  const isNumber = /^\d+$/.test(e.target.value)
+  let isNumber = true
+  if (e.target.value.length) {
+    isNumber = !isNaN(parseFloat(e.target.value)) && isFinite(e.target.value)
+  }
   isValid[idx] = isNumber
 }
 const isValid = $ref([])

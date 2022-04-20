@@ -111,6 +111,7 @@ function sort (newHeader, newDirection, headIdx) {
 const originalIdxs = $computed(() => [...Array(props.tableData.data[0].length).keys()]) // [0, 1, ...data[0].length ]
 const filteredIdxs = $computed(() => {
   const { filterTags, tableData } = props
+  // console.log(filterTags);
   // if no filters are applied, the original idxs are returned
   if (filterTags.length === 0) return originalIdxs
   let idxs = []

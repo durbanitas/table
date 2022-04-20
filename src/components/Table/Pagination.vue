@@ -1,5 +1,5 @@
 <script setup>
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   entries: {
@@ -45,7 +45,8 @@ function changePage (page) {
 const numPages = $computed(() => Math.ceil(props.entries / selectedRowsPerPage) - 1)
 // template current pages
 const currentPageView = computed(() => {
-  return `${(selectedRowsPerPage * currentPage) + 1} - ${(selectedRowsPerPage * currentPage) + selectedRowsPerPage}`
+  const start = selectedRowsPerPage * currentPage
+  return `${start + 1} - ${start + selectedRowsPerPage <= props.entries ? start + selectedRowsPerPage : props.entries}`
 })
 </script>
 

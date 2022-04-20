@@ -62,38 +62,6 @@ export const randomFilters = (userColumns, useValid) => {
   return filters
 }
 
-// dataset of star wars characters
-export const demoStarWarsData = {
-  headers: [
-    {
-      columnKey: 'name',
-      type: 'string',
-      label: 'Name',
-      align: 'start',
-      sortable: true,
-    },
-    {
-      columnKey: 'height',
-      type: 'number',
-      label: 'Height',
-      align: 'end',
-      sortable: true,
-    },
-    {
-      columnKey: 'created',
-      type: 'date',
-      label: 'Created',
-      align: 'center',
-      sortable: true,
-    },
-  ],
-  data: [
-    ['luke', 'yoda', 'C-3PO', 'Darth Vader'],
-    [175, 65, 167, 202],
-    [1418129410, 1419094570, 1419229410, 1417094570]
-  ]
-}
-
 const COUNTRIES = [
   { name: 'Afghanistan', code: 'AF' },
   { name: 'Åland Islands', code: 'AX' },
@@ -339,3 +307,36 @@ const COUNTRIES = [
   { name: 'Zambia', code: 'ZM' },
   { name: 'Zimbabwe', code: 'ZW' }
 ]
+
+// UNUSED
+// dataset of star wars characters
+export const demoStarWarsData = {
+  headers: [
+    {
+      columnKey: 'name',
+      type: 'string',
+      label: 'Name',
+      align: 'start',
+      sortable: true,
+    },
+    {
+      columnKey: 'height',
+      type: 'number',
+      label: 'Height',
+      align: 'end',
+      sortable: true,
+    },
+    {
+      columnKey: 'created',
+      type: 'date',
+      label: 'Created',
+      align: 'center',
+      sortable: true,
+    },
+  ],
+  data: [
+    ['luke', 'yoda', 'C-3PO', 'Darth Vader'],
+    [175, 65, 167, 202],
+    [1418129410, 1419094570, 1419229410, 1417094570]
+  ]
+}
