@@ -214,7 +214,7 @@ const filteredData = computed(() => {
 
 <template>
   <!-- Filtering.vue  -->
-  <Table :tableData="filteredData" :headers="tableData.headers" :sortedHeader="sortedHeader"
-    :sortDirection="sortDirection" :defaultSortDirection="defaultSortDirection" @onHeaderSort="sort" />
-  <Pagination :entries="filteredIdxs.length" :rowsPerPage="rowsPerPage" @onChangePage="changePage" />
+  <Table @onHeaderSort="sort" :tableData="filteredData" :headers="tableData.headers" :sortedHeader="sortedHeader"
+    :sortDirection="sortDirection" :defaultSortDirection="defaultSortDirection" />
+  <Pagination @onChangePage="changePage" :entries="filteredIdxs.length" :rowsPerPage="rowsPerPage" />
 </template>

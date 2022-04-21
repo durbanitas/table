@@ -9,6 +9,17 @@ const props = defineProps({
 const OPERATORS = ['==', '>', '<']
 const TIMEOUT = 400
 
+// Filter layout
+const openFilters = $ref(false)
+const filterModal = $ref(null)
+
+function openModal () {
+  openFilters = !openFilters
+  // TODO: close modal by click/touch
+  // add a remove listener for clicking outside the modal
+  // close modal and remove event listener
+}
+
 // TODO: add input types validations
 
 const emit = defineEmits(['submit', 'remove'])
@@ -27,28 +38,29 @@ function addFilter () {
 }
 // set autofocus
 watch(() => [...itemRefs], (oldVal, newVal) => setFocus(oldVal, newVal))
-function setFocus (oldVal, newVal) {
-  const oldArrLen = oldVal.filter(el => el !== null).length
-  const newArrLen = newVal.filter(el => el !== null).length
-  if (newArrLen < oldArrLen) itemRefs[newArrLen].focus()
+function setFocus (oldTempRefs, newTempRefs) {
+  const oldTempRefsLen = oldTempRefs.filter(ref => ref !== null).length
+  const newTempRefsLen = newTempRefs.filter(ref => ref !== null).length
+  if (newTempRefsLen < oldTempRefsLen) itemRefs[newTempRefsLen].focus()
 }
-function removeFilter (idx) {
-  itemRefs.splice(idx, 1);
-  inputValids.splice(idx, 1)
-  filtersScope.splice(idx, 1)
+// cleaning up
+function removeFilter (filterIdx) {
+  itemRefs.splice(filterIdx, 1)
+  inputValids.splice(filterIdx, 1)
+  filtersScope.splice(filterIdx, 1)
   filterTags = filtersScope.filter(f => f.value.length)
   emit('submit', filterTags)
 }
 
-function emitValue (inputVal, idx) {
+function emitValue (inputVal, filterIdx) {
   let isValidInput = validate(inputVal) || inputVal.length === 0
   if (isValidInput) {
-    inputValids[idx] = true
-    filtersScope[idx].value = inputVal
+    inputValids[filterIdx] = true
+    filtersScope[filterIdx].value = inputVal
     filterTags = filtersScope.filter(f => f.value.length)
     emit('submit', filterTags)
   } else {
-    inputValids[idx] = false
+    inputValids[filterIdx] = false
   }
 }
 const debounce = (func, wait) => {
@@ -62,21 +74,32 @@ const debounce = (func, wait) => {
     timeout = setTimeout(later, wait)
   }
 }
-const updateValue = debounce((e, idx) => emitValue(e.target.value, idx), TIMEOUT)
+const updateValue = debounce((e, filterIdx) => emitValue(e.target.value, filterIdx), TIMEOUT)
 
 // validations
 const inputValids = $ref([])
-function validate (val) {
-  return !isNaN(parseFloat(val)) && isFinite(val)
+function validate (userInput) {
+  return !isNaN(parseFloat(userInput)) && isFinite(userInput)
 }
 </script>
 
 <template>
-  <div class="box">
+  <button @click="openModal()" type="button" id="closeModal">
+    Filter <span v-if="filterTags.length">| {{ filterTags.length }} applied</span>
+  </button>
+
+  <div v-show="openFilters" ref="filterModal" class="filter-modal box">
+    <!-- message -->
+    <div v-if="filtersScope.length === 0">
+      No filters are applied
+    </div>
+    <!-- filter inputs -->
     <div v-for="(filter, idx) in filtersScope" :key="idx">
       <!-- choose a column -->
       <select v-model="filter.columnKey">
-        <option v-for="head in props.headers" :key="head.id" :value="head.columnKey" v-text="head.label" />
+        <option v-for="head in props.headers" :key="head.id" :value="head.columnKey">
+          {{ head.label }} <span class="text-muted subtitle">({{ head.type }})</span>
+        </option>
       </select>
       <!-- choose an operator -->
       <select v-model="filter.operator">
@@ -87,15 +110,24 @@ function validate (val) {
       <!-- remove filter -->
       <button @click="removeFilter(idx)" v-text="'x'" />
       <!-- show invalid message -->
-      <div class="error" v-if="!inputValids[idx]">invalid value</div>
+      <div class="error" v-if="!inputValids[idx]">Invalid value</div>
     </div>
-
-    <button @click="addFilter()" v-text="'add filter +'" />
+    <button @click="addFilter()" v-text="'+ Add filter'" />
   </div>
 </template>
 
 <style>
+.subtitle {
+  text-transform: capitalize;
+}
+
 .error {
   color: red;
+}
+
+.filter-modal {
+  position: absolute;
+  z-index: 5;
+  background-color: var(--bg-color1);
 }
 </style>
