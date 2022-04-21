@@ -7,8 +7,6 @@ import { createDataset } from '../utils/demo_data.js'
 let tableData = $ref({})
 let showTable = $ref(false)
 
-// FIXME: pagination last page and change filter. Got results but the table shows "no results" && the start page doesnt match
-
 const N_ROWS_PER_PAGE = 10_000
 const N_COLUMNS = 20
 
@@ -33,6 +31,7 @@ function useFilterTags (filters) {
   <div v-if="showTable">
     <br>
     <TableParent :tableData="tableData" :defaultSortDirection="1" :rowsPerPage="5" :filterTags="filterTags" />
+    <!-- <pre v-text="filterTags" /> -->
   </div>
 </template>
 

@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   entries: {
@@ -15,7 +15,7 @@ const props = defineProps({
 // custom rows per page
 const currentPage = $ref(0)
 const rowsOptions = $ref([5, 10, 20, 50])
-const selectedRowsPerPage = $ref(props.rowsPerPage)
+const selectedRows = ref(props.rowsPerPage)
 
 function prevPage () {
   if (currentPage > 0) {
@@ -29,26 +29,31 @@ function nextPage () {
     changePage(currentPage)
   }
 }
+
 const emit = defineEmits(['onChangePage'])
 function changePage (page) {
-  // validate page
-  if (page < 1) {
+  if (page < 1) { // validate page
     currentPage = 0
   } else if (page >= numPages) {
     currentPage = numPages
   }
-  const startIdx = selectedRowsPerPage * currentPage
-  const endIdx = startIdx + selectedRowsPerPage
+  const startIdx = selectedRows.value * currentPage
+  const endIdx = startIdx + selectedRows.value
   emit('onChangePage', { startIdx, endIdx })
 }
+
+watch(selectedRows, () => changePage(currentPage))
+watch(() => props.entries, () => changePage(0))
+
 // all possible n pages
-const numPages = $computed(() => Math.ceil(props.entries / selectedRowsPerPage) - 1)
+const numPages = $computed(() => Math.ceil(props.entries / selectedRows.value) - 1)
 // template current pages
 const currentPageView = $computed(() => {
-  const fromEntries = selectedRowsPerPage * currentPage
-  const uptoEntries = fromEntries + selectedRowsPerPage
+  const fromEntries = selectedRows.value * currentPage
+  const uptoEntries = fromEntries + selectedRows.value
+  const uptoStr = fromEntries + selectedRows.value <= props.entries ? uptoEntries : props.entries
 
-  return `${fromEntries + 1} - ${fromEntries + selectedRowsPerPage <= props.entries ? uptoEntries : props.entries}`
+  return `${fromEntries + 1} - ${uptoStr}`
 })
 </script>
 
@@ -57,7 +62,7 @@ const currentPageView = $computed(() => {
     <!-- navigation -->
     <div>
       <span>Rows per page:</span>
-      <select v-model.number="selectedRowsPerPage" @change="changePage(currentPage)">
+      <select v-model.number="selectedRows" @change="changePage(currentPage)">
         <option v-for="r in rowsOptions" :key="r.id">
           {{ r }}
         </option>
@@ -65,8 +70,11 @@ const currentPageView = $computed(() => {
     </div>
     <!-- entries -->
     <div>{{ currentPageView }} of {{ entries }}
+      <span class="icon" @click="changePage(0)" :class="{ 'disabled': currentPage === 0 }"> |&#8249; </span>
       <span class="icon" @click="prevPage()" :class="{ 'disabled': currentPage === 0 }"> &#8249; </span>
       <span class="icon" @click="nextPage()" :class="{ 'disabled': currentPage === numPages }"> &#8250; </span>
+      <span class="icon" @click="changePage(numPages)" :class="{ 'disabled': currentPage === numPages }"> &#8250;|
+      </span>
     </div>
   </div>
 </template>

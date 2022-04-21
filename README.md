@@ -63,6 +63,8 @@ Read:
 
 - https://en.wikipedia.org/wiki/Rank_correlation
 
+- https://academy.datawrapper.de/article/196-customizing-your-table
+
 ---
 
 ```js

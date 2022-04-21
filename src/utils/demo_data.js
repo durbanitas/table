@@ -25,7 +25,7 @@ export const createDataset = (userColumns, userRows) => {
       // type: i === 0 ? 'string' : 'number',
       // sortable: true,
       // align: i === 0 ? 'start' : 'end'
-      label: 'Col' + i,
+      label: 'Col ' + i,
       type: 'number',
       sortable: true,
       align: 'end'
