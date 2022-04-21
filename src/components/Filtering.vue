@@ -43,6 +43,7 @@ function removeFilter (idx) {
 function emitValue (inputVal, idx) {
   let isValidInput = validate(inputVal) || inputVal.length === 0
   if (isValidInput) {
+    inputValids[idx] = true
     filtersScope[idx].value = inputVal
     filterTags = filtersScope.filter(f => f.value.length)
     emit('submit', filterTags)
