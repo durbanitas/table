@@ -78,20 +78,25 @@ const updateValue = debounce((e, filterIdx) => emitValue(e.target.value, filterI
 // template filter modal
 const showFilterMenu = $ref(false)
 const filterModal = $ref(null)
+const filterBtn = $ref(null)
 
 function openModal () {
   showFilterMenu = !showFilterMenu
 }
-window.onclick = function (e) {
-  const modalDims = getModalDims()
+window.onclick = e => {
+  if (!showFilterMenu) return
+  const btnDims = getDimensions(filterBtn)
+  const modalDims = getDimensions(filterModal)
+  const isInnerBtnX = e.clientX < btnDims.right && e.clientX > btnDims.left || e.clientX === 0
+  const isInnerBtnY = e.clientY > btnDims.top && e.clientY < btnDims.bottom + 2 || e.clientY === 0
   const isInnerX = e.clientX < modalDims.right && e.clientX > modalDims.left || e.clientX === 0
-  const isInnerY = e.clientY > modalDims.top - 24 && e.clientY < modalDims.bottom || e.clientY === 0
-  if (showFilterMenu && (!isInnerX || !isInnerY)) {
+  const isInnerY = e.clientY > modalDims.top && e.clientY < modalDims.bottom || e.clientY === 0
+  if (showFilterMenu && (!isInnerX || !isInnerY) && (!isInnerBtnX || !isInnerBtnY)) {
     showFilterMenu = false
   }
 }
-function getModalDims () {
-  const { left, top, right, bottom } = filterModal.getBoundingClientRect()
+function getDimensions (tempRef) {
+  const { left, top, right, bottom } = tempRef.getBoundingClientRect()
   return { left, top, right, bottom }
 }
 
@@ -103,7 +108,7 @@ function validate (userInput) {
 </script>
 
 <template>
-  <button @click="openModal()" type="button" class="filter-btn">
+  <button @click="openModal()" ref="filterBtn" type="button" class="filter-btn">
     Filter <span v-if="filterTags.length">| {{ filterTags.length }} applied</span>
   </button>
 
