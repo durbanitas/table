@@ -1,5 +1,6 @@
 <script setup>
-import { watch } from 'vue'
+import { watch, reactive } from 'vue'
+import FilteringPills from './FilteringPills.vue'
 
 const props = defineProps({
   headers: {
@@ -8,17 +9,6 @@ const props = defineProps({
 })
 const OPERATORS = ['==', '>', '<']
 const TIMEOUT = 400
-
-// Filter layout
-const openFilters = $ref(false)
-const filterModal = $ref(null)
-
-function openModal () {
-  openFilters = !openFilters
-  // TODO: close modal by click/touch
-  // add a remove listener for clicking outside the modal
-  // close modal and remove event listener
-}
 
 // TODO: add input types validations
 
@@ -51,6 +41,14 @@ function removeFilter (filterIdx) {
   filterTags = filtersScope.filter(f => f.value.length)
   emit('submit', filterTags)
 }
+function removeAllfilters () {
+  const len = filterTags.length
+  itemRefs.splice(0, len)
+  inputValids.splice(0, len)
+  filtersScope.splice(0, len)
+  filterTags = []
+  emit('submit', [])
+}
 
 function emitValue (inputVal, filterIdx) {
   let isValidInput = validate(inputVal) || inputVal.length === 0
@@ -76,6 +74,27 @@ const debounce = (func, wait) => {
 }
 const updateValue = debounce((e, filterIdx) => emitValue(e.target.value, filterIdx), TIMEOUT)
 
+// Filter layout
+const openFilters = $ref(false)
+const filterModal = $ref(null)
+
+function openModal () {
+  openFilters = !openFilters
+}
+window.onclick = function (e) {
+  const modalDims = getModalDims()
+  const isInnerX = e.clientX < modalDims.right && e.clientX > modalDims.left || e.clientX === 0
+  const isInnerY = e.clientY > modalDims.top - 30 && e.clientY < modalDims.bottom || e.clientY === 0
+  if (openFilters && (!isInnerX || !isInnerY)) {
+    openFilters = false
+  }
+}
+function getModalDims () {
+  const { left, top, right, bottom } = filterModal.getBoundingClientRect()
+  return { left, top, right, bottom }
+}
+
+
 // validations
 const inputValids = $ref([])
 function validate (userInput) {
@@ -84,11 +103,15 @@ function validate (userInput) {
 </script>
 
 <template>
-  <button @click="openModal()" type="button" id="closeModal">
+  <button @click="openModal()" type="button" class="filter-btn">
     Filter <span v-if="filterTags.length">| {{ filterTags.length }} applied</span>
   </button>
 
-  <div v-show="openFilters" ref="filterModal" class="filter-modal box">
+  <!-- pills -->
+  <FilteringPills v-if="filterTags.length" :filterTags="filterTags" :headers="headers"
+    @removeSingleFilter="removeFilter" @removeAllfilters="removeAllfilters" />
+
+  <div v-show="openFilters" ref="filterModal" class="filter-modal box" id="myModal">
     <!-- message -->
     <div v-if="filtersScope.length === 0">
       No filters are applied
@@ -97,7 +120,7 @@ function validate (userInput) {
     <div v-for="(filter, idx) in filtersScope" :key="idx">
       <!-- choose a column -->
       <select v-model="filter.columnKey">
-        <option v-for="head in props.headers" :key="head.id" :value="head.columnKey">
+        <option v-for="head in headers" :key="head.id" :value="head.columnKey">
           {{ head.label }} <span class="text-muted subtitle">({{ head.type }})</span>
         </option>
       </select>
@@ -106,13 +129,16 @@ function validate (userInput) {
         <option v-for="operator in OPERATORS" :key="operator.id" v-text="operator" />
       </select>
       <!-- filter by value -->
-      <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }">
+      <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }" pattern="[0-9]+">
       <!-- remove filter -->
-      <button @click="removeFilter(idx)" v-text="'x'" />
+      <button @click="removeFilter(idx)" v-text="'×'" />
       <!-- show invalid message -->
       <div class="error" v-if="!inputValids[idx]">Invalid value</div>
     </div>
-    <button @click="addFilter()" v-text="'+ Add filter'" />
+    <button @click="addFilter()" class="mt-6" v-text="'+ Add filter'" />
+    <!-- <div class="space-between mt-6">
+      <button @click="removeAllfilters()" :disabled="filterTags.length === 0" v-text="'- Remove all filter'" />
+    </div> -->
   </div>
 </template>
 
@@ -125,9 +151,21 @@ function validate (userInput) {
   color: red;
 }
 
+.filter-btn {
+  margin-left: 24px;
+}
+
 .filter-modal {
   position: absolute;
   z-index: 5;
   background-color: var(--bg-color1);
+  top: 40px;
+  left: 24px;
+}
+
+input:invalid,
+input:invalid:focus {
+  border-color: red;
+  outline: none;
 }
 </style>

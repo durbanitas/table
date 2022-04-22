@@ -4,14 +4,11 @@
 
 - add type: urls?
 
-- publicate via npm?
-
 - handle/test live updates
   - user selection: rowsPerPage, columns, update frequency
 
 - pagination
   - pass custom rows per page via array
-  - last page or first page reached - disable state on actions
 
 - prop-validation
   - fully reusable?
@@ -19,10 +16,14 @@
 
 - table states
   - loading?
-  - no results for applied filter?
 
 - table styling
+  -> renderless component?!
   - text overflow in cell? hover or tip show the cell expanded with the full text
+  - table dividers (on/off)
+  - table striped (on/off)
+  - table hierachies of sticky elements
+  - pagination icons
 
 - readable date
   - pass function via props?
