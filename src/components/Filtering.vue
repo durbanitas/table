@@ -1,5 +1,5 @@
 <script setup>
-import { watch, reactive } from 'vue'
+import { watch } from 'vue'
 import FilteringPills from './FilteringPills.vue'
 
 const props = defineProps({
@@ -12,7 +12,6 @@ const TIMEOUT = 400
 
 // TODO: add input types validations
 
-const emit = defineEmits(['submit', 'remove'])
 const filtersScope = $ref([])
 const filterTags = $ref([])
 const itemRefs = $ref([])
@@ -33,6 +32,8 @@ function setFocus (oldTempRefs, newTempRefs) {
   const newTempRefsLen = newTempRefs.filter(ref => ref !== null).length
   if (newTempRefsLen < oldTempRefsLen) itemRefs[newTempRefsLen].focus()
 }
+
+const emit = defineEmits(['submit', 'remove'])
 // cleaning up
 function removeFilter (filterIdx) {
   itemRefs.splice(filterIdx, 1)
@@ -74,26 +75,25 @@ const debounce = (func, wait) => {
 }
 const updateValue = debounce((e, filterIdx) => emitValue(e.target.value, filterIdx), TIMEOUT)
 
-// Filter layout
-const openFilters = $ref(false)
+// template filter modal
+const showFilterMenu = $ref(false)
 const filterModal = $ref(null)
 
 function openModal () {
-  openFilters = !openFilters
+  showFilterMenu = !showFilterMenu
 }
 window.onclick = function (e) {
   const modalDims = getModalDims()
   const isInnerX = e.clientX < modalDims.right && e.clientX > modalDims.left || e.clientX === 0
-  const isInnerY = e.clientY > modalDims.top - 30 && e.clientY < modalDims.bottom || e.clientY === 0
-  if (openFilters && (!isInnerX || !isInnerY)) {
-    openFilters = false
+  const isInnerY = e.clientY > modalDims.top - 24 && e.clientY < modalDims.bottom || e.clientY === 0
+  if (showFilterMenu && (!isInnerX || !isInnerY)) {
+    showFilterMenu = false
   }
 }
 function getModalDims () {
   const { left, top, right, bottom } = filterModal.getBoundingClientRect()
   return { left, top, right, bottom }
 }
-
 
 // validations
 const inputValids = $ref([])
@@ -111,10 +111,10 @@ function validate (userInput) {
   <FilteringPills v-if="filterTags.length" :filterTags="filterTags" :headers="headers"
     @removeSingleFilter="removeFilter" @removeAllfilters="removeAllfilters" />
 
-  <div v-show="openFilters" ref="filterModal" class="filter-modal box" id="myModal">
+  <div v-show="showFilterMenu" ref="filterModal" class="filter-modal box">
     <!-- message -->
     <div v-if="filtersScope.length === 0">
-      No filters are applied
+      No filters applied
     </div>
     <!-- filter inputs -->
     <div v-for="(filter, idx) in filtersScope" :key="idx">
@@ -129,16 +129,18 @@ function validate (userInput) {
         <option v-for="operator in OPERATORS" :key="operator.id" v-text="operator" />
       </select>
       <!-- filter by value -->
-      <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }" pattern="[0-9]+">
+      <!-- TODO: inputmode="numeric" with floats? -->
+      <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }" pattern="[0-9.]+"
+        :class="{ 'invalid': !inputValids[idx] }">
       <!-- remove filter -->
-      <button @click="removeFilter(idx)" v-text="'×'" />
+      <button @click="removeFilter(idx)" v-text="'&#9587;'" />
       <!-- show invalid message -->
       <div class="error" v-if="!inputValids[idx]">Invalid value</div>
     </div>
-    <button @click="addFilter()" class="mt-6" v-text="'+ Add filter'" />
-    <!-- <div class="space-between mt-6">
+    <div class="space-between mt-6">
+      <button @click="addFilter()" v-text="'+ Add filter'" />
       <button @click="removeAllfilters()" :disabled="filterTags.length === 0" v-text="'- Remove all filter'" />
-    </div> -->
+    </div>
   </div>
 </template>
 
@@ -163,6 +165,7 @@ function validate (userInput) {
   left: 24px;
 }
 
+.invalid,
 input:invalid,
 input:invalid:focus {
   border-color: red;

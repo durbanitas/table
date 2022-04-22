@@ -31,9 +31,9 @@ function removeAllfilters () {
   <div class="global-pill">
     <div v-for="(filter, filterIdx) in filterTags" :key="filter.id" class="single-pill">
       {{ pillLabel(filter) }}
-      <button @click="removeSingleFilter(filterIdx)" class="remove-single">×</button>
+      <button @click="removeSingleFilter(filterIdx)" class="remove-single">&#9587;</button>
     </div>
-    <button @click="removeAllfilters()" class="remove-all" title="remove all filters">×</button>
+    <button @click="removeAllfilters()" class="remove-all" title="remove all filters">&#9587;</button>
   </div>
 </template>
 

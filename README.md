@@ -1,5 +1,8 @@
 # Vue 3 + Vite
 
+Custom table component optimized for performance.
+Current benchmark to filter, sort and render  ROWS x Cols in MS.
+
 ## Todo:
 
 - add type: urls?
