@@ -87,17 +87,20 @@ window.onclick = e => {
   if (!showFilterMenu) return
   const btnDims = getDimensions(filterBtn)
   const modalDims = getDimensions(filterModal)
-  const isInnerBtnX = e.clientX < btnDims.right && e.clientX > btnDims.left || e.clientX === 0
-  const isInnerBtnY = e.clientY > btnDims.top && e.clientY < btnDims.bottom + 2 || e.clientY === 0
-  const isInnerX = e.clientX < modalDims.right && e.clientX > modalDims.left || e.clientX === 0
-  const isInnerY = e.clientY > modalDims.top && e.clientY < modalDims.bottom || e.clientY === 0
-  if (showFilterMenu && (!isInnerX || !isInnerY) && (!isInnerBtnX || !isInnerBtnY)) {
-    showFilterMenu = false
-  }
+  const isOuterClick = isClickedOutsideModal(e, btnDims, modalDims)
+  if (showFilterMenu && isOuterClick) showFilterMenu = false
 }
 function getDimensions (tempRef) {
   const { left, top, right, bottom } = tempRef.getBoundingClientRect()
   return { left, top, right, bottom }
+}
+function isClickedOutsideModal (e, btnDims, modalDims) {
+  const isOuterBtnX = (e.clientX < btnDims.left || e.clientX > btnDims.right) && e.clientX > 0
+  const isOuterBtnY = (e.clientY < btnDims.top) && e.clientY > 0
+  const isOuterX = (e.clientX < modalDims.left || e.clientX > modalDims.right) && e.clientX > 0
+  const isOuterY = (e.clientY < modalDims.top || e.clientY > modalDims.bottom) && e.clientY > 0
+  const isOuterClick = (isOuterX || isOuterY) && (isOuterBtnX || isOuterBtnY)
+  return isOuterClick
 }
 
 // validations
