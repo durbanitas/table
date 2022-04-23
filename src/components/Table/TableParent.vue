@@ -87,9 +87,9 @@ const props = defineProps({
 })
 
 // SORTING
-const sortedHeaderIdx = $ref(0)
-const sortedHeader = $ref(getHeaderObj(props.tableData.headers))
-const sortDirection = $ref(props.defaultSortDirection)
+let sortedHeaderIdx = $ref(0)
+let sortedHeader = $ref(getHeaderObj(props.tableData.headers))
+let sortDirection = $ref(props.defaultSortDirection)
 // get sorting header when creating the table
 function getHeaderObj (headers) {
   const { defaultSortByHeader } = props
@@ -192,8 +192,8 @@ function getSortMethod (col, type, direction) {
 
 // PAGINATION
 // slice filtered data
-const selectedRows = $ref(props.rowsPerPage)
-const pages = reactive({
+let selectedRows = $ref(props.rowsPerPage)
+let pages = reactive({
   startIdx: 0,
   endIdx: selectedRows
 })

@@ -23,7 +23,7 @@ function initTable () {
 }
 
 // add filter tags
-const filterTags = $ref([])
+let filterTags = $ref([])
 function useFilterTags (filters) {
   filterTags = filters
 }
@@ -31,8 +31,7 @@ function useFilterTags (filters) {
 
 <template>
   <Filtering :headers="tableData.headers" @submit="useFilterTags" />
-  <div v-if="showTable">
-    <br>
+  <div v-if="showTable" class="table-bg">
     <TableParent :tableData="tableData" :defaultSortDirection="1" :rowsPerPage="5" :filterTags="filterTags" />
     <!-- <pre v-text="filterTags" /> -->
   </div>

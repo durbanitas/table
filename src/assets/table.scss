@@ -1,0 +1,127 @@
+[data-theme="light"] {
+  --table-header: #1c1c1c;
+  --table-header-bg: #f6f7f9;
+  --table-cell-bg: #fff;
+  --font-color: #121416;
+  --table-surface: #fff;
+  --table-text: #fff;
+  --table-divider: #dbdcdc;
+  --table-row-hover: #e9f1fb;
+  --action: #2d72d2;
+  --disabled: #969ea9;
+}
+
+[data-theme="dark"] {
+  --table-header: #f6f7f9;
+  --table-header-bg: #383e47;
+  --table-cell-bg: #2f343c;
+  --font-color: #f4f4f4;
+  --table-surface: #363640;
+  --table-text: #fff;
+  --table-divider: #22272d;
+  --table-row-hover: #323e4f;
+  --action: #4c90f0;
+  --disabled: #7d838f;
+}
+
+
+table {
+  border-collapse: collapse; // removes border-spacing
+  font-family: helvetica;
+  width: 100%;
+
+  .table-name {
+    padding: 0 0 0 10px;
+  }
+
+  // cell settings & sizes
+  th,
+  td {
+    border: 0px;
+    padding: 10px;
+    min-width: auto;
+    box-sizing: border-box;
+  }
+
+  // custom headers
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--table-header-bg);
+    color: var(--table-header);
+    white-space: nowrap;
+    user-select: none;
+
+    &:first-child {
+      left: 0;
+      z-index: 3;
+    }
+
+    &:hover {
+      background-color: var(--table-row-hover);
+    }
+  }
+
+  // border settings & sizes
+  tbody {
+    overflow: scroll;
+    // height: 200px;
+    text-transform: capitalize;
+    white-space: nowrap;
+
+    tr {
+      border-top: 1px solid red;
+      border-bottom: 1px solid var(--table-divider);
+    }
+
+    // sticky left row
+    tr> :first-child {
+      position: sticky;
+      background: var(--table-header-bg);
+      left: 0;
+      min-width: 90px;
+    }
+
+    & tr:nth-child(odd) {
+      background: var(--table-cell-bg);
+    }
+
+    & tr:hover {
+      background: var(--table-row-hover);
+      color: var(--font-color);
+      border-color: #4c90f0;
+
+      & :first-child {
+        background: var(--table-row-hover);
+      }
+    }
+  }
+}
+
+// PAGINATION
+.icon {
+  height: 16px;
+  width: auto;
+  cursor: pointer;
+  user-select: none;
+
+  &.--pagination {
+    height: 20px;
+    fill: var(--icon-color);
+    margin-top: 2px;
+  }
+
+  &:hover {
+    fill: var(--action);
+  }
+}
+
+.disabled {
+  cursor: not-allowed;
+  fill: var(--disabled) !important;
+
+  &:hover {
+    fill: var(--disabled);
+  }
+}

@@ -1,5 +1,8 @@
 <script setup>
-const theme = $ref(false)
+import IconSun from './assets/svgs/sun.svg'
+import IconMoon from './assets/svgs/moon.svg'
+
+let theme = $ref(false)
 function changeTheme () {
   theme = !theme
   const strTheme = theme ? 'dark' : 'light'
@@ -11,7 +14,10 @@ function changeTheme () {
   <nav>
     <div class="nav-container">
       <h1>Table demo</h1>
-      <button class="btn" @click="changeTheme()" v-text="theme ? 'light' : 'dark'" />
+      <div class="btn nav-theme inline-center" @click="changeTheme()">
+        <IconSun class="icon" v-if="theme" />
+        <IconMoon class="icon" v-else />
+      </div>
     </div>
   </nav>
   <div class="container">
@@ -21,4 +27,5 @@ function changeTheme () {
 
 <style lang="scss">
 @import "./assets/main.scss";
+@import "./assets/table.scss";
 </style>

@@ -26,7 +26,9 @@ Current benchmark to filter, sort and render  ROWS x Cols in MS.
   - table dividers (on/off)
   - table striped (on/off)
   - table hierachies of sticky elements
-  - pagination icons
+  - Table loading states (placeholder animated elements) 
+  - hover cross effect. Highlight row + col
+  - sort indicator (always visible -> bcs a sorted col can be outside the view)
 
 - readable date
   - pass function via props?

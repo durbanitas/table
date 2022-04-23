@@ -1,6 +1,9 @@
 <script setup>
 import { watch } from 'vue'
 import FilteringPills from './FilteringPills.vue'
+import IconFilter from '../assets/svgs/filter.svg'
+import IconPlus from '../assets/svgs/plus.svg'
+import IconMinus from '../assets/svgs/minus.svg'
 
 const props = defineProps({
   headers: {
@@ -12,9 +15,11 @@ const TIMEOUT = 400
 
 // TODO: add input types validations
 
-const filtersScope = $ref([])
-const filterTags = $ref([])
-const itemRefs = $ref([])
+// TODO: open filters change theme, ignore header
+
+let filtersScope = $ref([])
+let filterTags = $ref([])
+let itemRefs = $ref([])
 
 function addFilter () {
   const filterObj = {
@@ -76,9 +81,9 @@ const debounce = (func, wait) => {
 const updateValue = debounce((e, filterIdx) => emitValue(e.target.value, filterIdx), TIMEOUT)
 
 // template filter modal
-const showFilterMenu = $ref(false)
-const filterModal = $ref(null)
-const filterBtn = $ref(null)
+let showFilterMenu = $ref(false)
+let filterModal = $ref(null)
+let filterBtn = $ref(null)
 
 function openModal () {
   showFilterMenu = !showFilterMenu
@@ -104,7 +109,7 @@ function isClickedOutsideModal (e, btnDims, modalDims) {
 }
 
 // validations
-const inputValids = $ref([])
+let inputValids = $ref([])
 function validate (userInput) {
   return !isNaN(parseFloat(userInput)) && isFinite(userInput)
 }
@@ -112,8 +117,15 @@ function validate (userInput) {
 
 <template>
   <button @click="openModal()" ref="filterBtn" type="button" class="filter-btn">
+    <IconFilter class="icon" />
     Filter <span v-if="filterTags.length">| {{ filterTags.length }} applied</span>
   </button>
+
+  <!-- TODO: add sorting btn -->
+  <!-- <button type="button" class="sort-btn">
+    <IconFilter class="icon" />
+    Sort by Col 1
+  </button> -->
 
   <!-- pills -->
   <FilteringPills v-if="filterTags.length" :filterTags="filterTags" :headers="headers"
@@ -146,8 +158,12 @@ function validate (userInput) {
       <div class="error" v-if="!inputValids[idx]">Invalid value</div>
     </div>
     <div class="space-between mt-6">
-      <button @click="addFilter()" v-text="'+ Add filter'" />
-      <button @click="removeAllfilters()" :disabled="filterTags.length === 0" v-text="'- Remove all filter'" />
+      <button @click="addFilter()">
+        <IconPlus class="icon" /> Add filter
+      </button>
+      <button @click="removeAllfilters()" :disabled="filterTags.length === 0">
+        <IconMinus class="icon" /> Remove all filter
+      </button>
     </div>
   </div>
 </template>
@@ -162,15 +178,21 @@ function validate (userInput) {
 }
 
 .filter-btn {
-  margin-left: 24px;
+  margin-left: 47px;
+  margin-bottom: 6px;
+}
+
+.sort-btn {
+  margin-top: -6px;
+  margin-left: 10px;
 }
 
 .filter-modal {
   position: absolute;
   z-index: 5;
   background-color: var(--bg-color1);
-  top: 40px;
-  left: 24px;
+  top: 46px;
+  left: 47px;
 }
 
 .invalid,

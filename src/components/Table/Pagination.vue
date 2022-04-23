@@ -1,5 +1,9 @@
 <script setup>
 import { ref, watch } from 'vue'
+import IconBackward from '../../assets/svgs/chevron-backward.svg'
+import IconLeft from '../../assets/svgs/chevron-left.svg'
+import IconRight from '../../assets/svgs/chevron-right.svg'
+import IconForward from '../../assets/svgs/chevron-forward.svg'
 
 const props = defineProps({
   entries: {
@@ -13,9 +17,9 @@ const props = defineProps({
 })
 
 // custom rows per page
-const currentPage = $ref(0)
-const rowsOptions = $ref([5, 10, 20, 50])
-const selectedRows = ref(props.rowsPerPage)
+let currentPage = $ref(0)
+let rowsOptions = $ref([5, 10, 20, 50])
+let selectedRows = ref(props.rowsPerPage)
 
 function prevPage () {
   if (currentPage > 0) {
@@ -60,7 +64,7 @@ const currentPageView = $computed(() => {
 <template>
   <div class="pagination-wrapper space-between">
     <!-- navigation -->
-    <div>
+    <div class="inline-center">
       <span>Rows per page:</span>
       <select v-model.number="selectedRows" @change="changePage(currentPage)">
         <option v-for="r in rowsOptions" :key="r.id">
@@ -69,11 +73,19 @@ const currentPageView = $computed(() => {
       </select>
     </div>
     <!-- entries -->
-    <div>{{ currentPageView }} of {{ entries }}
-      <span class="icon" @click="changePage(0)" :class="{ 'disabled': currentPage === 0 }"> |&#8249; </span>
-      <span class="icon" @click="prevPage()" :class="{ 'disabled': currentPage === 0 }"> &#8249; </span>
-      <span class="icon" @click="nextPage()" :class="{ 'disabled': currentPage === numPages }"> &#8250; </span>
-      <span class="icon" @click="changePage(numPages)" :class="{ 'disabled': currentPage === numPages }"> &#8250;|
+    <div class="inline-center">
+      <span class="mr-6">{{ currentPageView }} of {{ entries }}</span>
+      <span @click="changePage(0)">
+        <IconBackward class="icon --pagination" :class="{ 'disabled': currentPage === 0 }" />
+      </span>
+      <span @click="prevPage()">
+        <IconLeft class="icon --pagination" :class="{ 'disabled': currentPage === 0 }" />
+      </span>
+      <span @click="nextPage()">
+        <IconRight class="icon --pagination" :class="{ 'disabled': currentPage === numPages }" />
+      </span>
+      <span @click="changePage(numPages)">
+        <IconForward class="icon --pagination" :class="{ 'disabled': currentPage === numPages }" />
       </span>
     </div>
   </div>
@@ -82,32 +94,16 @@ const currentPageView = $computed(() => {
 <style lang="scss" scoped>
 .pagination-wrapper {
   padding: 8px;
-  border: 1px solid #ccc;
+  margin-right: -2px;
+  border-left: 1px solid var(--table-divider);
+  border-right: 1px solid var(--table-divider);
+  border-bottom: 1px solid var(--table-divider);
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
 }
 
 .space-between {
   display: flex;
   justify-content: space-between;
-}
-
-.icon {
-  padding-left: 4px;
-  padding-right: 4px;
-  font-size: 1.15rem;
-  cursor: pointer;
-  user-select: none;
-
-  &:hover {
-    color: red;
-  }
-}
-
-.disabled {
-  cursor: not-allowed;
-  color: grey;
-
-  &:hover {
-    color: grey;
-  }
 }
 </style>

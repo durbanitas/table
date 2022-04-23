@@ -41,7 +41,7 @@ function sort (head, colIdx) {
         <tr>
           <th v-for="(head, colIdx) in headers" :key="head.id" :class="{ 'cursor-pointer': head.sortable }"
             v-on="head.sortable ? { click: () => sort(head, colIdx) } : {}">
-            <div class="space-center">
+            <div class="space-center table-name">
               <div v-html="head.label" />
               <div class="pl-8" v-if="head.sortable">
                 <div class="up-arrow"
@@ -76,72 +76,14 @@ function sort (head, colIdx) {
 
 <style lang="scss" scoped>
 .table-wrapper {
+  border: 1px solid var(--table-divider);
   position: relative;
   min-height: 100px;
   max-height: 500px;
   height: auto;
   width: 100%;
   overflow: auto;
-}
-
-table {
-  border-collapse: collapse; // removes border-spacing
-  font-family: helvetica;
-  width: 100%;
-
-  // cell settings & sizes
-  td,
-  th {
-    border: 0;
-    padding: 8px;
-    min-width: auto;
-    box-sizing: border-box;
-  }
-
-  // custom headers
-  thead th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background: var(--table-surface);
-    color: var(--table-header);
-    white-space: nowrap;
-    user-select: none;
-
-    &:first-child {
-      left: 0;
-      z-index: 3;
-    }
-  }
-
-  // border settings & sizes
-  tbody {
-    overflow: scroll;
-    // height: 200px;
-    text-transform: capitalize;
-    white-space: nowrap;
-
-    // sticky left row
-    tr> :first-child {
-      position: sticky;
-      background: var(--table-surface);
-      left: 0;
-      min-width: 100px;
-    }
-
-    & tr:nth-child(odd) {
-      background: var(--table-surface);
-    }
-
-    & tr:hover {
-      background: yellow;
-      color: #000;
-
-      & :first-child {
-        background: yellow;
-      }
-    }
-  }
+  border-radius: 3px;
 }
 
 // sortings
@@ -154,7 +96,7 @@ table {
   height: 0;
   border: solid 5px transparent;
   background: transparent;
-  border-bottom: solid 7px #999;
+  border-bottom: solid 7px var(--disabled);
   border-top-width: 0;
   cursor: pointer;
 }
@@ -164,18 +106,18 @@ table {
   height: 0;
   border: solid 5px transparent;
   background: transparent;
-  border-top: solid 7px #999;
+  border-top: solid 7px var(--disabled);
   border-bottom-width: 0;
   margin-top: 2px;
   cursor: pointer;
 }
 
 .active-up {
-  border-bottom: solid 7px red;
+  border-bottom: solid 7px var(--action);
 }
 
 .active-down {
-  border-top: solid 7px red;
+  border-top: solid 7px var(--action);
 }
 
 // HELPERS
@@ -189,20 +131,5 @@ table {
 
 .start {
   text-align: left;
-}
-
-.space-center {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.space-between {
-  display: flex;
-  justify-content: space-between;
-}
-
-.pl-8 {
-  padding-left: 8px;
 }
 </style>

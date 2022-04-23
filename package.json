@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "vite-svg-loader": "^3.2.0",
     "vue": "^3.2.25",
     "vue-router": "4"
   },

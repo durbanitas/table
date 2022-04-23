@@ -1,4 +1,7 @@
 <script setup>
+import IconClose from '../assets/svgs/cross.svg'
+import IconSmallClose from '../assets/svgs/small-cross.svg'
+
 const props = defineProps({
   filterTags: {
     type: Array
@@ -29,48 +32,64 @@ function removeAllfilters () {
 
 <template>
   <div class="global-pill">
-    <div v-for="(filter, filterIdx) in filterTags" :key="filter.id" class="single-pill">
+    <div v-for="(filter, filterIdx) in filterTags" :key="filter.id" class="single-pill align-center">
       {{ pillLabel(filter) }}
-      <button @click="removeSingleFilter(filterIdx)" class="remove-single">&#9587;</button>
+      <span @click="removeSingleFilter(filterIdx)" class="remove-single">
+        <IconSmallClose />
+      </span>
     </div>
-    <button @click="removeAllfilters()" class="remove-all" title="remove all filters">&#9587;</button>
+    <span @click="removeSingleFilter(filterIdx)" class="remove-all">
+      <IconClose />
+    </span>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .global-pill {
-  background-color: #ccc;
-  padding: 2px;
-  font-size: 12px;
   width: fit-content;
-  margin: 6px 0 6px 0;
-  border-radius: 32px;
+  padding: 6px;
+  margin: 4px;
+  border-radius: 3px;
+  background-color: var(--bg-color0);
 
   .single-pill {
-    background-color: var(--bg-color1);
+    background-color: var(--single-pill-bg);
     color: var(--font-color);
+    display: inline-flex;
+    flex-direction: row;
+    font-size: 12px;
+    line-height: 16px;
+    max-width: 100%;
+    // height: 20px;
+    min-width: 20px;
     padding: 2px 6px;
-    margin: 6px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    border-radius: 12px;
-  }
-
-  button {
-    cursor: pointer;
-  }
-
-  .remove-all {
     position: relative;
-    margin: 8px;
-    text-decoration: none;
-    font-size: 12px;
+    margin-right: 4px;
+    border-radius: 3px
   }
 
-  .remove-single {
-    text-decoration: none;
-    font-size: 12px;
+  .remove-single svg {
+    margin-top: 2px;
+    margin-left: 2px;
+    width: 16px;
+    height: 16px;
+
+    &:hover {
+      fill: #CD4246;
+      cursor: pointer;
+    }
+  }
+
+  .remove-all svg {
+    margin-top: 2px;
+    margin-left: 2px;
+    width: 16px;
+    height: 16px;
+
+    &:hover {
+      fill: #CD4246;
+      cursor: pointer;
+    }
   }
 }
 </style>
