@@ -143,15 +143,42 @@ button:disabled {
   cursor: no-drop;
 }
 
-// https: //moderncss.dev/custom-select-styles-with-pure-css/
-// select {
-//   appearance: none;
-//   background-color: transparent;
-//   border: none;
-//   padding: 8px;
-//   margin: 0;
-//   font-size: 16px;
-//   color: var(--font-color)
+.dropdown {
+  position: relative;
+  display: inline-block;
+  letter-spacing: normal;
+  margin-left: 6px;
+}
+
+select,
+input {
+  background-color: var(--btn-color);
+  color: var(--font-color);
+  flex-direction: row;
+  font-size: 14px;
+  height: 30px;
+  border: 1px solid var(--table-divider);
+  border-radius: 3px;
+  padding: 0 10px 0 10px;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--btn-bg-hover);
+  }
+
+  // TODO: chrome vs. ff
+  option {
+    background-color: var(--btn-bg-hover);
+    border: 1px solid var(--table-divider);
+    box-shadow: none;
+  }
+}
+
+// .fa {
+//   position: absolute;
+//   top: 8px;
+//   right: 25px
 // }
 
 .btn {

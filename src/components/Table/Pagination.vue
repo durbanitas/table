@@ -4,6 +4,7 @@ import IconBackward from '../../assets/svgs/chevron-backward.svg'
 import IconLeft from '../../assets/svgs/chevron-left.svg'
 import IconRight from '../../assets/svgs/chevron-right.svg'
 import IconForward from '../../assets/svgs/chevron-forward.svg'
+// import IconDropdown from '../../assets/svgs/double-carets.svg'
 
 const props = defineProps({
   entries: {
@@ -66,11 +67,14 @@ const currentPageView = $computed(() => {
     <!-- navigation -->
     <div class="inline-center">
       <span>Rows per page:</span>
-      <select v-model.number="selectedRows" @change="changePage(currentPage)">
-        <option v-for="r in rowsOptions" :key="r.id">
-          {{ r }}
-        </option>
-      </select>
+      <div class="dropdown">
+        <select v-model.number="selectedRows" @change="changePage(currentPage)">
+          <option v-for="r in rowsOptions" :key="r.id">
+            {{ r }}
+          </option>
+        </select>
+        <!-- <IconDropdown class="icon fa" /> -->
+      </div>
     </div>
     <!-- entries -->
     <div class="inline-center">
