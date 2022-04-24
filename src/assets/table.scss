@@ -6,8 +6,8 @@
   --table-surface: #fff;
   --table-text: #fff;
   --table-divider: #dbdcdc;
-  --table-row-hover: #4C90F0;
-  --table-first-cell-hover: #8ABBFF;
+  --table-row-hover: #8ABBFF;
+  --table-first-cell-hover: #4C90F0;
   --action: #2d72d2;
   --disabled: #969ea9;
 }
@@ -20,12 +20,11 @@
   --table-surface: #363640;
   --table-text: #fff;
   --table-divider: #22272d;
-  --table-row-hover: #147EB3;
-  --table-first-cell-hover: #184A90;
+  --table-row-hover: #184A90;
+  --table-first-cell-hover: #147EB3;
   --action: #4c90f0;
   --disabled: #7d838f;
 }
-
 
 table {
   border-collapse: collapse; // removes border-spacing
@@ -98,13 +97,13 @@ table {
 
     // inner cells
     & tr:hover {
-      background: var(--table-first-cell-hover);
+      background: var(--table-row-hover);
       color: var(--font-color);
 
       // border-color: var(--table-first-cell-hover);
       // left first row cell
       & :first-child {
-        background: var(--table-row-hover);
+        background: var(--table-first-cell-hover);
       }
     }
   }

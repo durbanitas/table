@@ -44,16 +44,16 @@ function removeFilter (filterIdx) {
   itemRefs.splice(filterIdx, 1)
   inputValids.splice(filterIdx, 1)
   filtersScope.splice(filterIdx, 1)
-  filterTags = filtersScope.filter(f => f.value.length)
+  filterTags = getValidValues()
   emit('submit', filterTags)
 }
 
-function alterDeleteFilters () {
+function alertDeleteFilters () {
   return confirm('Delete all filters?')
 }
 
 function removeAllfilters () {
-  // alterDeleteFilters()
+  // alertDeleteFilters()
   const len = filterTags.length
   itemRefs.splice(0, len)
   inputValids.splice(0, len)
@@ -63,15 +63,20 @@ function removeAllfilters () {
 }
 
 function emitValue (inputVal, filterIdx) {
-  let isValidInput = validate(inputVal) || inputVal.length === 0
-  if (isValidInput) {
-    inputValids[filterIdx] = true
-    filtersScope[filterIdx].value = inputVal
-    filterTags = filtersScope.filter(f => f.value.length)
-    emit('submit', filterTags)
-  } else {
-    inputValids[filterIdx] = false
-  }
+  let isValidInput = validate(inputVal, filterIdx) || inputVal.length === 0
+  inputValids[filterIdx] = isValidInput
+  filtersScope[filterIdx].value = inputVal
+  filterTags = getValidValues()
+  emit('submit', filterTags)
+}
+function getValidValues () {
+  const arr = []
+  inputValids.forEach((v, idx) => {
+    if (v && filtersScope[idx].value.length) {
+      arr.push(filtersScope[idx])
+    }
+  })
+  return arr
 }
 const debounce = (func, wait) => {
   let timeout
@@ -160,7 +165,7 @@ function validate (userInput) {
         <!-- TODO: inputmode="numeric" with floats? -->
         <!-- FIXME: :value="filter.value" for removing specific filters -->
         <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
-          pattern="[0-9.]+" :class="{ 'invalid': !inputValids[idx] }">
+          pattern="[0-9.]+" :class="{ 'invalid': !inputValids[idx] }" :value="filter.value">
         <!-- remove filter -->
         <button @click="removeFilter(idx)" v-text="'&#9587;'" />
       </div>
