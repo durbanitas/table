@@ -257,6 +257,13 @@ const tableData = {
 | 4 | 1430 | 650.4 | 651 | 2731.4 | 100_000 | 5 |
 | 5 | 99929 | 100056 | 100057 | 300042 | 1_000_000 | 5 |
 
+# Performance Tests v6
+
+## Localhost (1x filter)
+
+| Run | Filtering | Sorting | Rendering | Total | Rows | Columns |
+| 1 | 161 | 229 | 241 | 631 | 100_000 | 20 |
+
 ---
 
 mergeSort

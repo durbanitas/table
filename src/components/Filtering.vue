@@ -163,7 +163,6 @@ function validate (userInput) {
         </select>
         <!-- filter by value -->
         <!-- TODO: inputmode="numeric" with floats? -->
-        <!-- FIXME: :value="filter.value" for removing specific filters -->
         <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
           pattern="[0-9.]+" :class="{ 'invalid': !inputValids[idx] }" :value="filter.value">
         <!-- remove filter -->

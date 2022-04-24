@@ -7,7 +7,7 @@ import { createDataset } from '../utils/demo_data.js'
 let tableData = $ref({})
 let showTable = $ref(false)
 
-const N_ROWS_PER_PAGE = 10_000
+const N_ROWS_PER_PAGE = 100_000
 const N_COLUMNS = 20
 
 // TODO: input validate 00045 values
