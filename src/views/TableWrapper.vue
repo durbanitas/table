@@ -10,6 +10,7 @@ let showTable = $ref(false)
 const N_ROWS_PER_PAGE = 10_000
 const N_COLUMNS = 20
 
+// TODO: input validate 00045 values
 // TODO: demo data add negative values
 // TODO: add filter presets
 

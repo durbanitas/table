@@ -38,7 +38,7 @@ function removeAllfilters () {
         <IconSmallClose />
       </span>
     </div>
-    <span @click="removeSingleFilter(filterIdx)" class="remove-all">
+    <span @click="removeAllfilters()" class="remove-all">
       <IconClose />
     </span>
   </div>
@@ -70,24 +70,26 @@ function removeAllfilters () {
 
   .remove-single svg {
     margin-top: 2px;
-    margin-left: 2px;
+    margin-left: 4px;
     width: 16px;
     height: 16px;
+    fill: var(--icon-color);
 
     &:hover {
-      fill: #CD4246;
+      fill: var(--remove);
       cursor: pointer;
     }
   }
 
   .remove-all svg {
-    margin-top: 2px;
-    margin-left: 2px;
+    position: relative;
+    top: 3px;
     width: 16px;
     height: 16px;
+    fill: var(--icon-color);
 
     &:hover {
-      fill: #CD4246;
+      fill: var(--remove);
       cursor: pointer;
     }
   }

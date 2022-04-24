@@ -4,7 +4,6 @@ import IconBackward from '../../assets/svgs/chevron-backward.svg'
 import IconLeft from '../../assets/svgs/chevron-left.svg'
 import IconRight from '../../assets/svgs/chevron-right.svg'
 import IconForward from '../../assets/svgs/chevron-forward.svg'
-// import IconDropdown from '../../assets/svgs/double-carets.svg'
 
 const props = defineProps({
   entries: {
@@ -56,9 +55,10 @@ const numPages = $computed(() => Math.ceil(props.entries / selectedRows.value) -
 const currentPageView = $computed(() => {
   const fromEntries = selectedRows.value * currentPage
   const uptoEntries = fromEntries + selectedRows.value
-  const uptoStr = fromEntries + selectedRows.value <= props.entries ? uptoEntries : props.entries
+  const beginStr = (fromEntries + 1).toLocaleString()
+  const uptoStr = (fromEntries + selectedRows.value <= props.entries ? uptoEntries : props.entries).toLocaleString()
 
-  return `${fromEntries + 1} - ${uptoStr}`
+  return `${beginStr} - ${uptoStr}`
 })
 </script>
 
@@ -66,30 +66,28 @@ const currentPageView = $computed(() => {
   <div class="pagination-wrapper space-between">
     <!-- navigation -->
     <div class="inline-center">
-      <span>Rows per page:</span>
+      <!-- <span>Rows per page:</span> -->
       <div class="dropdown">
-        <select v-model.number="selectedRows" @change="changePage(currentPage)">
-          <option v-for="r in rowsOptions" :key="r.id">
-            {{ r }}
-          </option>
+        <select v-model="selectedRows" @change="changePage(currentPage)">
+          <option v-for="r in rowsOptions" :key="r.id" :value="r" v-text="r + ' rows'" />
         </select>
-        <!-- <IconDropdown class="icon fa" /> -->
       </div>
     </div>
     <!-- entries -->
     <div class="inline-center">
-      <span class="mr-6">{{ currentPageView }} of {{ entries }}</span>
-      <span @click="changePage(0)">
-        <IconBackward class="icon --pagination" :class="{ 'disabled': currentPage === 0 }" />
+      <span class="mr-6">{{ currentPageView }} <span class="text-muted">of</span> {{ entries.toLocaleString() }}</span>
+      <span @click="changePage(0)" class="icon-btn align-center" :class="{ 'disabled': currentPage === 0 }">
+        <IconBackward class="icon --pagination" />
       </span>
-      <span @click="prevPage()">
-        <IconLeft class="icon --pagination" :class="{ 'disabled': currentPage === 0 }" />
+      <span @click="prevPage()" class="icon-btn align-center" :class="{ 'disabled': currentPage === 0 }">
+        <IconLeft class="icon --pagination" />
       </span>
-      <span @click="nextPage()">
-        <IconRight class="icon --pagination" :class="{ 'disabled': currentPage === numPages }" />
+      <span @click="nextPage()" class="icon-btn align-center" :class="{ 'disabled': currentPage === numPages }">
+        <IconRight class="icon --pagination" />
       </span>
-      <span @click="changePage(numPages)">
-        <IconForward class="icon --pagination" :class="{ 'disabled': currentPage === numPages }" />
+      <span @click="changePage(numPages)" class="icon-btn align-center"
+        :class="{ 'disabled': currentPage === numPages }">
+        <IconForward class="icon --pagination" />
       </span>
     </div>
   </div>
@@ -109,5 +107,33 @@ const currentPageView = $computed(() => {
 .space-between {
   display: flex;
   justify-content: space-between;
+}
+
+.icon-btn {
+  height: 30px;
+  width: 30px;
+  background-color: var(--single-pill-bg);
+  border: 1px solid var(--btn-border);
+  margin: 2px;
+  border-radius: 3px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--btn-bg-hover);
+
+    .--pagination {
+      fill: var(--action);
+    }
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    background-color: var(--btn-bg-disabled);
+
+    .--pagination {
+      cursor: not-allowed;
+      fill: var(--text-disabled);
+    }
+  }
 }
 </style>

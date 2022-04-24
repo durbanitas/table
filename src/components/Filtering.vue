@@ -13,9 +13,9 @@ const props = defineProps({
 const OPERATORS = ['==', '>', '<']
 const TIMEOUT = 400
 
-// TODO: add input types validations
+// TODO: set autofocus on first element if filters are created, but got no value
 
-// TODO: open filters change theme, ignore header
+// TODO: add input types validations
 
 let filtersScope = $ref([])
 let filterTags = $ref([])
@@ -47,7 +47,13 @@ function removeFilter (filterIdx) {
   filterTags = filtersScope.filter(f => f.value.length)
   emit('submit', filterTags)
 }
+
+function alterDeleteFilters () {
+  return confirm('Delete all filters?')
+}
+
 function removeAllfilters () {
+  // alterDeleteFilters()
   const len = filterTags.length
   itemRefs.splice(0, len)
   inputValids.splice(0, len)
@@ -104,7 +110,8 @@ function isClickedOutsideModal (e, btnDims, modalDims) {
   const isOuterBtnY = (e.clientY < btnDims.top) && e.clientY > 0
   const isOuterX = (e.clientX < modalDims.left || e.clientX > modalDims.right) && e.clientX > 0
   const isOuterY = (e.clientY < modalDims.top || e.clientY > modalDims.bottom) && e.clientY > 0
-  const isOuterClick = (isOuterX || isOuterY) && (isOuterBtnX || isOuterBtnY)
+  const isNav = (e.clientY > 40)
+  const isOuterClick = (isOuterX || isOuterY) && (isOuterBtnX || isOuterBtnY) && isNav
   return isOuterClick
 }
 
@@ -118,7 +125,7 @@ function validate (userInput) {
 <template>
   <button @click="openModal()" ref="filterBtn" type="button" class="filter-btn">
     <IconFilter class="icon" />
-    Filter <span v-if="filterTags.length">| {{ filterTags.length }} applied</span>
+    Filter
   </button>
 
   <!-- TODO: add sorting btn -->
@@ -138,30 +145,33 @@ function validate (userInput) {
     </div>
     <!-- filter inputs -->
     <div v-for="(filter, idx) in filtersScope" :key="idx">
-      <!-- choose a column -->
-      <select v-model="filter.columnKey">
-        <option v-for="head in headers" :key="head.id" :value="head.columnKey">
-          {{ head.label }} <span class="text-muted subtitle">({{ head.type }})</span>
-        </option>
-      </select>
-      <!-- choose an operator -->
-      <select v-model="filter.operator">
-        <option v-for="operator in OPERATORS" :key="operator.id" v-text="operator" />
-      </select>
-      <!-- filter by value -->
-      <!-- TODO: inputmode="numeric" with floats? -->
-      <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }" pattern="[0-9.]+"
-        :class="{ 'invalid': !inputValids[idx] }">
-      <!-- remove filter -->
-      <button @click="removeFilter(idx)" v-text="'&#9587;'" />
+      <div class="button-group">
+        <!-- choose a column -->
+        <select v-model="filter.columnKey">
+          <option v-for="head in headers" :key="head.id" :value="head.columnKey">
+            {{ head.label }} <span class="text-muted subtitle">({{ head.type }})</span>
+          </option>
+        </select>
+        <!-- choose an operator -->
+        <select v-model="filter.operator">
+          <option v-for="operator in OPERATORS" :key="operator.id" v-text="operator" />
+        </select>
+        <!-- filter by value -->
+        <!-- TODO: inputmode="numeric" with floats? -->
+        <!-- FIXME: :value="filter.value" for removing specific filters -->
+        <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
+          pattern="[0-9.]+" :class="{ 'invalid': !inputValids[idx] }">
+        <!-- remove filter -->
+        <button @click="removeFilter(idx)" v-text="'&#9587;'" />
+      </div>
       <!-- show invalid message -->
       <div class="error" v-if="!inputValids[idx]">Invalid value</div>
     </div>
     <div class="space-between mt-6">
-      <button @click="addFilter()">
+      <button @click="addFilter()" class="mr-6">
         <IconPlus class="icon" /> Add filter
       </button>
-      <button @click="removeAllfilters()" :disabled="filterTags.length === 0">
+      <button @click="removeAllfilters()" :disabled="filterTags.length === 0" class="remove-btn">
         <IconMinus class="icon" /> Remove all filter
       </button>
     </div>
@@ -174,12 +184,14 @@ function validate (userInput) {
 }
 
 .error {
-  color: red;
+  color: var(--remove);
+  margin: 0 10px;
 }
 
 .filter-btn {
   margin-left: 47px;
   margin-bottom: 6px;
+  text-transform: uppercase;
 }
 
 .sort-btn {
@@ -191,14 +203,17 @@ function validate (userInput) {
   position: absolute;
   z-index: 5;
   background-color: var(--bg-color1);
-  top: 46px;
+  top: 50px;
   left: 47px;
+  border-radius: 3px;
+  border-color: var(--btn-border);
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .invalid,
 input:invalid,
 input:invalid:focus {
-  border-color: red;
+  border-color: var(--remove);
   outline: none;
 }
 </style>
