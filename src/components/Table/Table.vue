@@ -52,21 +52,29 @@ function sort (head, colIdx) {
             </div>
           </th>
         </tr>
+        <!-- <tr class="table-divider">
+          <td class="td-underline" :colspan="headers.length" />
+        </tr> -->
       </thead>
       <!-- BODY -->
       <tbody>
         <template v-if="tableData[0].length">
           <template v-for="(_, rowIdx) in tableData[0].length">
             <tr>
-              <td v-for="(data, colIdx) in tableData" :class="headers[colIdx].align" :key="data.id"
-                v-html="data[rowIdx]" />
+              <td v-for="(data, colIdx) in tableData" :class="[headers[colIdx].align, { 'parent': colIdx === 0 }]"
+                :key="data.id">
+                <span class="td-first" v-if="colIdx === 0">{{ data[rowIdx] }}</span>
+                <template v-else>
+                  {{ data[rowIdx] }}
+                </template>
+              </td>
             </tr>
           </template>
         </template>
         <!-- handle no results -->
         <template v-else>
           <tr>
-            <td :colspan="headers.length" v-text="'No results'" />
+            <td :colspan="headers.length + 1" v-text="'No results'" />
           </tr>
         </template>
       </tbody>
@@ -123,14 +131,14 @@ function sort (head, colIdx) {
 
 // HELPERS
 .end {
-  text-align: right;
+  text-align: right !important;
 }
 
 .center {
-  text-align: center;
+  text-align: center !important;
 }
 
 .start {
-  text-align: left;
+  text-align: left !important;
 }
 </style>

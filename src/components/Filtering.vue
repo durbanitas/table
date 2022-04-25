@@ -105,7 +105,7 @@ window.onclick = e => {
   const btnDims = getDimensions(filterBtn)
   const modalDims = getDimensions(filterModal)
   const isOuterClick = isClickedOutsideModal(e, btnDims, modalDims)
-  console.log(isOuterClick);
+  // console.log(isOuterClick);
   if (showFilterMenu && isOuterClick) showFilterMenu = false
 }
 function getDimensions (tempRef) {

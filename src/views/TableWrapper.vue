@@ -7,13 +7,25 @@ import { createDataset } from '../utils/demo_data.js'
 let tableData = $ref({})
 let showTable = $ref(false)
 
-const N_ROWS_PER_PAGE = 100_000
-const N_COLUMNS = 20
+let N_ROWS_PER_PAGE
+let N_COLUMNS
+let SHOW_ROWS_PER_PAGE
+const _DEV = import.meta.env.DEV
+if (_DEV) {
+  N_ROWS_PER_PAGE = 10_000
+  N_COLUMNS = 20
+  SHOW_ROWS_PER_PAGE = 5
+} else {
+  N_ROWS_PER_PAGE = 100_000
+  N_COLUMNS = 20
+  SHOW_ROWS_PER_PAGE = 20
+}
 
-// TODO: better hover styles
 // TODO: input validate 00045 values
 // TODO: demo data add negative values
 // TODO: add filter presets
+// TODO: chrome -> scroll update highlight row
+// TODO: pagination on small devices
 
 onBeforeMount(() => {
   initTable()
@@ -34,9 +46,10 @@ function useFilterTags (filters) {
 <template>
   <Filtering :headers="tableData.headers" @submit="useFilterTags" />
   <div v-if="showTable" class="table-bg">
-    <TableParent :tableData="tableData" :defaultSortDirection="1" :rowsPerPage="5" :filterTags="filterTags" />
-    <!-- <pre v-text="filterTags" /> -->
+    <TableParent :tableData="tableData" :defaultSortDirection="1" :rowsPerPage="SHOW_ROWS_PER_PAGE"
+      :filterTags="filterTags" />
   </div>
+  <pre v-if="_DEV" v-text="filterTags" />
 </template>
 
 <style>
