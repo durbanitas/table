@@ -4,6 +4,7 @@ import FilteringPills from './FilteringPills.vue'
 import IconFilter from '../assets/svgs/filter.svg'
 import IconPlus from '../assets/svgs/plus.svg'
 import IconMinus from '../assets/svgs/minus.svg'
+import IconClose from '../assets/svgs/cross.svg'
 
 const props = defineProps({
   headers: {
@@ -54,7 +55,7 @@ function alertDeleteFilters () {
 
 function removeAllfilters () {
   // alertDeleteFilters()
-  const len = filterTags.length
+  const len = filtersScope.length
   itemRefs.splice(0, len)
   inputValids.splice(0, len)
   filtersScope.splice(0, len)
@@ -104,6 +105,7 @@ window.onclick = e => {
   const btnDims = getDimensions(filterBtn)
   const modalDims = getDimensions(filterModal)
   const isOuterClick = isClickedOutsideModal(e, btnDims, modalDims)
+  console.log(isOuterClick);
   if (showFilterMenu && isOuterClick) showFilterMenu = false
 }
 function getDimensions (tempRef) {
@@ -130,7 +132,7 @@ function validate (userInput) {
 <template>
   <button @click="openModal()" ref="filterBtn" type="button" class="filter-btn">
     <IconFilter class="icon" />
-    Filter
+    <span class="pl-6">Filter</span>
   </button>
 
   <!-- TODO: add sorting btn -->
@@ -166,17 +168,19 @@ function validate (userInput) {
         <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
           pattern="[0-9.]+" :class="{ 'invalid': !inputValids[idx] }" :value="filter.value">
         <!-- remove filter -->
-        <button @click="removeFilter(idx)" v-text="'&#9587;'" />
+        <button @click="removeFilter(idx)" close="close-btn">
+          <IconClose class="icon" />
+        </button>
       </div>
       <!-- show invalid message -->
       <div class="error" v-if="!inputValids[idx]">Invalid value</div>
     </div>
     <div class="space-between mt-6">
       <button @click="addFilter()" class="mr-6">
-        <IconPlus class="icon" /> Add filter
+        <IconPlus class="icon" /><span class="pl-6">Add filter</span>
       </button>
-      <button @click="removeAllfilters()" :disabled="filterTags.length === 0" class="remove-btn">
-        <IconMinus class="icon" /> Remove all filter
+      <button @click="removeAllfilters()" :disabled="filtersScope.length === 0" class="remove-btn">
+        <IconMinus class="icon" /><span class="pl-6">Remove all filter</span>
       </button>
     </div>
   </div>
@@ -193,14 +197,9 @@ function validate (userInput) {
 }
 
 .filter-btn {
-  margin-left: 47px;
-  margin-bottom: 6px;
+  margin: 4px;
   text-transform: uppercase;
-}
-
-.sort-btn {
-  margin-top: -6px;
-  margin-left: 10px;
+  letter-spacing: 1.1;
 }
 
 .filter-modal {
@@ -208,8 +207,8 @@ function validate (userInput) {
   z-index: 5;
   background-color: var(--bg-color1);
   top: 50px;
-  left: 47px;
-  border-radius: 3px;
+  left: 4px;
+  border-radius: 4px;
   border-color: var(--btn-border);
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }

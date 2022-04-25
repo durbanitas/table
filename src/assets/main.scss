@@ -1,9 +1,9 @@
 // VARIABLES
 [data-theme="light"] {
   --bg-color0: #fff;
-  --bg-color1: #edeff2;
+  --bg-color1: #dee2e6;
   --font-color: #121416;
-  --btn-color: #edeff2;
+  --btn-color: #dee2e6;
   --btn-border: #c4c6c8;
   --btn-bg-hover: #dce0e5;
   --btn-bg-disabled: #e9ebee;
@@ -25,7 +25,7 @@
   --btn-bg-hover: #252a31;
   --btn-bg-disabled: #373e48;
   --text-disabled: #737b87;
-  --input-bg: var(--btn-bg-hover);
+  --input-bg: #272a31;
   --icon-color: #abb3bf;
   --single-pill-bg: #3d434c;
   --pill-icon-fill: #abb3bf;
@@ -77,7 +77,7 @@ nav {
 
     .nav-theme {
       height: 24px;
-      margin: 8px;
+      padding: 8px;
       cursor: pointer;
     }
 
@@ -117,7 +117,6 @@ nav {
 .icon {
   height: 16px;
   width: auto;
-  margin-right: 7px;
   font-size: 1.15rem;
   user-select: none;
   fill: var(--icon-color);
@@ -133,16 +132,14 @@ button {
   background-color: var(--btn-color);
   color: var(--font-color);
   border: 1px solid var(--btn-border);
-  border-radius: 3px;
-  display: inline-flex;
-  flex-direction: row;
+  border-radius: 4px;
+  display: flex;
   font-size: 14px;
   justify-content: center;
-  min-height: 30px;
-  min-width: 30px;
+  align-items: center;
+  // min-height: 30px;
+  // min-width: 30px;
   padding: 5px 10px;
-  text-align: left;
-  vertical-align: middle;
   background-image: linear-gradient(180deg, rgba(17, 20, 24, 0), rgba(17, 20, 24, .05));
 
   &:hover {
@@ -181,7 +178,7 @@ input {
   font-size: 14px;
   height: 30px;
   border: 1px solid var(--btn-border);
-  border-radius: 3px;
+  border-radius: 4px;
 
   // margin: 2px 3px;
 
@@ -207,25 +204,21 @@ input {
   cursor: text;
   padding: 0 10px;
   height: 28px;
-  border-bottom-color: var(--icon-color);
   background-color: var(--input-bg);
-  border-radius: 3px;
-  width: 140px;
+  border-radius: 4px;
+  min-width: 50px;
+  max-width: 127px;
   overflow: visible;
 }
-
-// .fa {
-//   position: absolute;
-//   top: 8px;
-//   right: 25px
-// }
 
 .button-group {
   margin: 3px 0;
   border: 1px solid var(--btn-border);
-  border-radius: 3px;
+  border-radius: 4px;
   height: 30px;
   background-color: var(--btn-color);
+  display: flex;
+  justify-content: left;
 
   select {
     border-style: none;
@@ -237,12 +230,12 @@ input {
   input {
     border-radius: 0;
     border-left: 1px solid var(--btn-border);
+    z-index: 4;
   }
 
   button {
     padding: 3px;
-    min-height: 30px;
-    margin-top: -3px;
+    height: 30px;
     border-style: none;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -261,7 +254,7 @@ input {
 }
 
 .inline-center {
-  display: inline-flex;
+  display: flex;
   align-items: center;
 }
 
@@ -310,7 +303,7 @@ input {
 }
 
 .mr-6 {
-  margin-right: 6px;
+  margin-right: 6px !important;
 }
 
 .pointer {

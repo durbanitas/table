@@ -79,7 +79,7 @@ const currentPageView = $computed(() => {
       <span @click="changePage(0)" class="icon-btn align-center" :class="{ 'disabled': currentPage === 0 }">
         <IconBackward class="icon --pagination" />
       </span>
-      <span @click="prevPage()" class="icon-btn align-center" :class="{ 'disabled': currentPage === 0 }">
+      <span @click="prevPage()" class="icon-btn align-center mr-6" :class="{ 'disabled': currentPage === 0 }">
         <IconLeft class="icon --pagination" />
       </span>
       <span @click="nextPage()" class="icon-btn align-center" :class="{ 'disabled': currentPage === numPages }">
@@ -100,8 +100,8 @@ const currentPageView = $computed(() => {
   border-left: 1px solid var(--table-divider);
   border-right: 1px solid var(--table-divider);
   border-bottom: 1px solid var(--table-divider);
-  border-bottom-left-radius: 3px;
-  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 
 .space-between {
@@ -110,12 +110,11 @@ const currentPageView = $computed(() => {
 }
 
 .icon-btn {
-  height: 30px;
-  width: 30px;
+  padding: 6px;
   background-color: var(--single-pill-bg);
   border: 1px solid var(--btn-border);
   margin: 2px;
-  border-radius: 3px;
+  border-radius: 4px;
   cursor: pointer;
 
   &:hover {

@@ -83,7 +83,8 @@ function sort (head, colIdx) {
   height: auto;
   width: 100%;
   overflow: auto;
-  border-radius: 3px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 }
 
 // sortings

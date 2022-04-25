@@ -1,6 +1,6 @@
 [data-theme="light"] {
   --table-header: #1c1c1c;
-  --table-header-bg: #edeff2;
+  --table-header-bg: #dee2e6;
   --table-cell-bg: #fff;
   --font-color: #121416;
   --table-surface: #fff;
@@ -118,7 +118,6 @@ table {
 
   &.--pagination {
     height: 20px;
-    margin-left: 6px;
   }
 
   // &:hover {

@@ -45,31 +45,31 @@ function removeAllfilters () {
 </template>
 
 <style lang="scss" scoped>
+// TODO: better contrast for closing icons
 .global-pill {
   width: fit-content;
   padding: 6px;
   margin: 4px;
-  border-radius: 3px;
+  border-radius: 4px;
   background-color: var(--bg-color0);
 
   .single-pill {
     background-color: var(--single-pill-bg);
     color: var(--font-color);
     display: inline-flex;
-    flex-direction: row;
     font-size: 12px;
-    line-height: 16px;
     max-width: 100%;
-    // height: 20px;
+    height: 20px;
     min-width: 20px;
     padding: 2px 6px;
     position: relative;
     margin-right: 4px;
-    border-radius: 3px
+    border-radius: 4px
   }
 
   .remove-single svg {
-    margin-top: 2px;
+    display: flex;
+    align-items: center;
     margin-left: 4px;
     width: 16px;
     height: 16px;
@@ -83,7 +83,7 @@ function removeAllfilters () {
 
   .remove-all svg {
     position: relative;
-    top: 3px;
+    top: 4px;
     width: 16px;
     height: 16px;
     fill: var(--icon-color);
