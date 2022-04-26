@@ -38,9 +38,9 @@
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 300;
-  src: url('../../public/fonts/roboto-300.woff2') format('woff2'),
-    url('../../public/fonts/roboto-300.woff') format('woff'),
-    url('../../public/fonts/roboto-300.ttf') format('truetype');
+  src: url('/fonts/roboto-300.woff2') format('woff2'),
+    url('/fonts/roboto-300.woff') format('woff'),
+    url('/fonts/roboto-300.ttf') format('truetype');
 }
 
 /* barlow-700 - latin */
@@ -48,14 +48,14 @@
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 700;
-  src: url('../../public/fonts/roboto-700.woff2') format('woff2'),
-    url('../../public/fonts/roboto-700.woff') format('woff'),
-    url('../../public/fonts/roboto-700.ttf') format('truetype');
+  src: url('/fonts/roboto-700.woff2') format('woff2'),
+    url('/fonts/roboto-700.woff') format('woff'),
+    url('/fonts/roboto-700.ttf') format('truetype');
 }
 
 // MAIN
 #app {
-  font-family: 'Helvetica';
+  font-family: 'Roboto';
 }
 
 h1 {
