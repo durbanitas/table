@@ -46,7 +46,7 @@ function useFilterTags (filters) {
 <template>
   <Filtering :headers="tableData.headers" @submit="useFilterTags" />
   <div v-if="showTable" class="table-bg">
-    <TableParent :tableData="tableData" :defaultSortDirection="1" :rowsPerPage="SHOW_ROWS_PER_PAGE"
+    <TableParent :tableData="tableData" :defaultSortDirection="-1" :rowsPerPage="SHOW_ROWS_PER_PAGE"
       :filterTags="filterTags" />
   </div>
   <pre v-if="_DEV" v-text="filterTags" />
