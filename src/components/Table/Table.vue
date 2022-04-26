@@ -31,22 +31,6 @@ function sort (head, colIdx) {
   const newDirection = newHeader ? defaultSortDirection : sortDirection * -1
   emit('onHeaderSort', head, newDirection, colIdx)
 }
-
-// add zeros
-const FLOATS = 4
-function addZeros (val) {
-  const str = val.toString().split('.')
-  if (str.length > 1 && str[1].length === FLOATS) return [val]
-  if (str.length === 1) {
-    str[1] = '.' + '0'.repeat(FLOATS)
-    return str
-  } else {
-    const addLen = FLOATS - str[1].length
-    str[0] = str[0] + '.' + str[1]
-    str[1] = '0'.repeat(addLen)
-  }
-  return str
-}
 </script>
 
 <template>
@@ -68,9 +52,6 @@ function addZeros (val) {
             </div>
           </th>
         </tr>
-        <!-- <tr class="table-divider">
-          <td class="td-underline" :colspan="headers.length" />
-        </tr> -->
       </thead>
       <!-- BODY -->
       <tbody>
@@ -78,12 +59,7 @@ function addZeros (val) {
           <template v-for="(_, rowIdx) in tableData[0].length">
             <tr>
               <td v-for="(data, colIdx) in tableData" :class="[headers[colIdx].align, { 'parent': colIdx === 0 }]"
-                :key="data.id">
-                <template v-for="(val, valIdx) in addZeros(data[rowIdx])">
-                  <span v-if="valIdx === 0" style="background: transparent;">{{ val }}</span>
-                  <span v-if="valIdx === 1" class="text-muted">{{ val }}</span>
-                </template>
-              </td>
+                :key="data.id" v-html="data[rowIdx]" />
             </tr>
           </template>
         </template>
@@ -109,10 +85,6 @@ function addZeros (val) {
   overflow: auto;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
-}
-
-tr span:hover {
-  background-color: transparent;
 }
 
 // sortings
@@ -155,14 +127,14 @@ tr span:hover {
 
 // HELPERS
 .end {
-  text-align: right !important;
+  text-align: right;
 }
 
 .center {
-  text-align: center !important;
+  text-align: center;
 }
 
 .start {
-  text-align: left !important;
+  text-align: left;
 }
 </style>

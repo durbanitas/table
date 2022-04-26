@@ -299,7 +299,7 @@ input {
 }
 
 .text-center {
-  text-align: center !important;
+  text-align: center;
 }
 
 .text-underline {
@@ -327,22 +327,9 @@ input {
 }
 
 .mr-6 {
-  margin-right: 6px !important;
+  margin-right: 6px;
 }
 
 .pointer {
   cursor: pointer;
 }
-
-// .overlay-backdrop {
-//   background-color: rgba(17, 20, 24, .7);
-//   bottom: 0;
-//   left: 0;
-//   opacity: 1;
-//   overflow: auto;
-//   position: fixed;
-//   right: 0;
-//   top: 0;
-//   user-select: none;
-//   z-index: 20;
-// }
