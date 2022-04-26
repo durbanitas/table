@@ -83,8 +83,6 @@ function addZeros (val) {
                   <span v-if="valIdx === 0" style="background: transparent;">{{ val }}</span>
                   <span v-if="valIdx === 1" class="text-muted">{{ val }}</span>
                 </template>
-                <!-- <span class=""></span>
-                {{ data[rowIdx] }} 001 -->
               </td>
             </tr>
           </template>
