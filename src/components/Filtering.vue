@@ -47,13 +47,16 @@ function removeFilter (filterIdx) {
   filtersScope.splice(filterIdx, 1)
   filterTags = getValidValues()
   emit('submit', filterTags)
+  if (filtersScope.length === 0) removeAll = true
 }
 
 function alertDeleteFilters () {
   return confirm('Delete all filters?')
 }
 
+let removeAll = $ref(false)
 function removeAllfilters () {
+  removeAll = true
   // alertDeleteFilters()
   const len = filtersScope.length
   itemRefs.splice(0, len)
@@ -101,12 +104,13 @@ function openModal () {
   showFilterMenu = !showFilterMenu
 }
 window.onclick = e => {
+  // console.log(e.clientX, e.clientY);
   if (!showFilterMenu) return
   const btnDims = getDimensions(filterBtn)
   const modalDims = getDimensions(filterModal)
   const isOuterClick = isClickedOutsideModal(e, btnDims, modalDims)
-  // console.log(isOuterClick);
-  if (showFilterMenu && isOuterClick) showFilterMenu = false
+  if (showFilterMenu && isOuterClick && !removeAll) showFilterMenu = false
+  removeAll = false
 }
 function getDimensions (tempRef) {
   const { left, top, right, bottom } = tempRef.getBoundingClientRect()
@@ -118,6 +122,8 @@ function isClickedOutsideModal (e, btnDims, modalDims) {
   const isOuterX = (e.clientX < modalDims.left || e.clientX > modalDims.right) && e.clientX > 0
   const isOuterY = (e.clientY < modalDims.top || e.clientY > modalDims.bottom) && e.clientY > 0
   const isNav = (e.clientY > 40)
+
+  // console.log(e.clientX, modalDims.left, e.clientX, modalDims.right);
   const isOuterClick = (isOuterX || isOuterY) && (isOuterBtnX || isOuterBtnY) && isNav
   return isOuterClick
 }
@@ -205,7 +211,7 @@ function validate (userInput) {
 .filter-modal {
   position: absolute;
   z-index: 5;
-  background-color: var(--bg-color1);
+  background-color: var(--bg-color0);
   top: 50px;
   left: 4px;
   border-radius: 4px;

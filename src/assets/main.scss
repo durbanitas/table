@@ -1,39 +1,63 @@
 // VARIABLES
 [data-theme="light"] {
   --bg-color0: #fff;
-  --bg-color1: #dee2e6;
+  --bg-color1: #e0e0e0;
   --font-color: #121416;
   --btn-color: #dee2e6;
   --btn-border: #c4c6c8;
   --btn-bg-hover: #dce0e5;
-  --btn-bg-disabled: #e9ebee;
+  --btn-bg-disabled: #969ea9;
   --text-disabled: #969ea9;
   --input-bg: var(--btn-bg-hover);
   --icon-color: #5f6b7c;
-  --single-pill-bg: #e9ebee;
+  --single-pill-bg: #e8e8e8;
   --pill-icon-fill: #5f6b7c;
   --pill-icon-hover: #404854;
   --remove: #CD4246;
 }
 
 [data-theme="dark"] {
-  --bg-color0: #2f343c;
-  --bg-color1: #383e47;
+  --bg-color0: #383e47;
+  --bg-color1: #2f343c;
   --font-color: #f6f7f9;
-  --btn-color: #3f4753;
+  --btn-color: #454d58;
   --btn-border: #22272d;
   --btn-bg-hover: #252a31;
   --btn-bg-disabled: #373e48;
   --text-disabled: #737b87;
   --input-bg: #272a31;
   --icon-color: #abb3bf;
-  --single-pill-bg: #3d434c;
+  --single-pill-bg: #454d58;
   --pill-icon-fill: #abb3bf;
   --pill-icon-hover: #d3d8de;
   --remove: #CD4246;
 }
 
+/* share-regular - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: url('./fonts/roboto-300.woff2') format('woff2'),
+    url('./fonts/roboto-300.woff') format('woff'),
+    url('./fonts/roboto-300.ttf') format('truetype');
+}
+
+/* barlow-700 - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./fonts/roboto-700.woff2') format('woff2'),
+    url('./fonts/roboto-700.woff') format('woff'),
+    url('./fonts/roboto-700.ttf') format('truetype');
+}
+
 // MAIN
+#app {
+  font-family: 'Roboto';
+}
+
 h1 {
   color: var(--font-color)
 }
@@ -59,7 +83,7 @@ nav {
   display: flex;
   justify-content: space-between;
   height: 40px;
-  background-color: #2c3139;
+  background-color: #3f4650;
 
   .nav-container {
     width: 100%;

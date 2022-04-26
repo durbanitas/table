@@ -31,6 +31,22 @@ function sort (head, colIdx) {
   const newDirection = newHeader ? defaultSortDirection : sortDirection * -1
   emit('onHeaderSort', head, newDirection, colIdx)
 }
+
+// add zeros
+const FLOATS = 4
+function addZeros (val) {
+  const str = val.toString().split('.')
+  if (str.length > 1 && str[1].length === FLOATS) return [val]
+  if (str.length === 1) {
+    str[1] = '.' + '0'.repeat(FLOATS)
+    return str
+  } else {
+    const addLen = FLOATS - str[1].length
+    str[0] = str[0] + '.' + str[1]
+    str[1] = '0'.repeat(addLen)
+  }
+  return str
+}
 </script>
 
 <template>
@@ -43,7 +59,7 @@ function sort (head, colIdx) {
             v-on="head.sortable ? { click: () => sort(head, colIdx) } : {}">
             <div class="space-center table-name">
               <div v-html="head.label" />
-              <div class="pl-8" v-if="head.sortable">
+              <div class="pl-30" v-if="head.sortable">
                 <div class="up-arrow"
                   :class="{ 'active-up': head.columnKey === sortedHeader.columnKey && sortDirection === -1 }" />
                 <div class="down-arrow"
@@ -63,10 +79,12 @@ function sort (head, colIdx) {
             <tr>
               <td v-for="(data, colIdx) in tableData" :class="[headers[colIdx].align, { 'parent': colIdx === 0 }]"
                 :key="data.id">
-                <span class="td-first" v-if="colIdx === 0">{{ data[rowIdx] }}</span>
-                <template v-else>
-                  {{ data[rowIdx] }}
+                <template v-for="(val, valIdx) in addZeros(data[rowIdx])">
+                  <span v-if="valIdx === 0" style="background: transparent;">{{ val }}</span>
+                  <span v-if="valIdx === 1" class="text-muted">{{ val }}</span>
                 </template>
+                <!-- <span class=""></span>
+                {{ data[rowIdx] }} 001 -->
               </td>
             </tr>
           </template>
@@ -95,9 +113,17 @@ function sort (head, colIdx) {
   border-top-right-radius: 4px;
 }
 
+tr span:hover {
+  background-color: transparent;
+}
+
 // sortings
 .cursor-pointer {
   cursor: pointer;
+}
+
+.pl-30 {
+  padding-left: 30px;
 }
 
 .up-arrow {

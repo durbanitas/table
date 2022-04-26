@@ -1,9 +1,8 @@
 [data-theme="light"] {
   --table-header: #1c1c1c;
-  --table-header-bg: #dee2e6;
+  --table-header-bg: #cacaca;
   --table-cell-bg: #fff;
   --font-color: #121416;
-  --table-surface: #fff;
   --table-text: #fff;
   --table-divider: #c4c6c8;
   --table-row-hover: #68C1EE;
@@ -14,45 +13,27 @@
 
 [data-theme="dark"] {
   --table-header: #f6f7f9;
-  --table-header-bg: #383e47;
-  --table-cell-bg: #2f343c;
+  --table-header-bg: #3f4650;
+  --table-cell-bg: #24282e;
   --font-color: #f4f4f4;
-  --table-surface: #363640;
   --table-text: #fff;
-  --table-divider: #22272d;
+  --table-divider: #2f343c;
   --table-row-hover: #0F6894;
   --table-first-cell-hover: #0C5174;
   --action: #68C1EE;
   --disabled: #7d838f;
 }
 
-/* WebKit and Chromiums */
-::-webkit-scrollbar {
-  width: 14px;
-  height: 14px;
-  background-color: var(--table-divider);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--disabled);
-}
-
-::-webkit-scrollbar-corner {
-  background: var(--table-divider);
-}
-
 table {
   border-collapse: collapse; // removes border-spacing
-  font-family: helvetica;
   width: 100%;
 
   // cell settings & sizes
   th,
   td {
-    padding: 10px;
+    padding: 10px 10px 10px 30px;
     min-width: auto;
     box-sizing: border-box;
-    border-right: 1px solid var(--table-divider);
   }
 
   th {
@@ -68,6 +49,7 @@ table {
     color: var(--table-header);
     white-space: nowrap;
     user-select: none;
+    font-weight: 700;
 
     &:first-child {
       left: 0px;
@@ -79,11 +61,7 @@ table {
     }
 
     .table-name {
-      padding: 10px;
-      border-bottom: 2px solid var(--table-divider);
-      border-right: 1px solid var(--table-divider);
-      margin-bottom: -2px;
-      margin-right: -1px;
+      padding: 10px 10px 10px 30px;
     }
   }
 
@@ -96,6 +74,7 @@ table {
 
     tr {
       border-bottom: 1px solid var(--table-divider);
+      background: var(--table-cell-bg);
     }
 
     // sticky left row
@@ -106,16 +85,16 @@ table {
       min-width: 90px;
     }
 
-    & tr:nth-child(odd) {
-      background: var(--table-cell-bg);
-    }
+    // striped effect
+    // & tr:nth-child(odd) {
+    //   background: var(--table-cell-bg);
+    // }
 
     // inner cells
     & tr:hover {
       background: var(--table-row-hover);
       color: var(--font-color);
 
-      // border-color: var(--table-first-cell-hover);
       // left first row cell
       & :first-child {
         background: var(--table-first-cell-hover);
@@ -123,8 +102,6 @@ table {
     }
   }
 }
-
-
 
 .td-first {
   display: flex;
@@ -144,9 +121,6 @@ table {
   right: 0;
   color: var(--table-header);
   background: var(--table-header-bg);
-  // border-top: 1px solid var(--table-divider);
-  border-right: 2px solid var(--table-divider);
-  // border-bottom: 1px solid var(--table-divider);
 }
 
 // PAGINATION
@@ -159,8 +133,4 @@ table {
   &.--pagination {
     height: 20px;
   }
-
-  // &:hover {
-  //   fill: var(--action);
-  // }
 }
