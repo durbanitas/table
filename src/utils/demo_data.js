@@ -6,29 +6,25 @@ export const createDataset = (userColumns, userRows) => {
     const col = new Array(userRows).fill(null)
     for (let idx = 0; idx < col.length; idx++) {
       // create first column strings
-      // if (i === 0) {
-      //   col[idx] = COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)].code
-      // } else if (i === 1) { // create second column dates
+      if (i === 0) {
+        col[idx] = COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)].code
+      }
+      // else if (i === 1) { // create second column dates
       //   col[idx] = createDate()
-      // } else { // create another columns as numbers
-      //   col[idx] = createNumber(randomNumber(0, 4))
-      // }
-      col[idx] = createNumber(randomNumber(0, 4))
+      // } 
+      else { // create another columns as numbers
+        col[idx] = createNumber(randomNumber(0, 4))
+      }
     }
     data.push(col)
 
     // create string header
-
     const head = {
       columnKey: i,
-      // label: i === 0 ? 'Country' : i === 1 ? 'Created' : 'Col' + i,
-      // type: i === 0 ? 'string' : 'number',
-      // sortable: true,
-      // align: i === 0 ? 'start' : 'end'
-      label: 'Col ' + i,
-      type: 'number',
+      label: i === 0 ? 'ISO Code' : 'Col ' + i,
+      type: i === 0 ? 'string' : 'number',
       sortable: true,
-      align: 'end'
+      align: i === 0 ? 'start' : 'end'
     }
     headers.push(head)
   }

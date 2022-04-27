@@ -104,7 +104,6 @@ function openModal () {
   showFilterMenu = !showFilterMenu
 }
 window.onclick = e => {
-  // console.log(e.clientX, e.clientY);
   if (!showFilterMenu) return
   const btnDims = getDimensions(filterBtn)
   const modalDims = getDimensions(filterModal)
@@ -122,16 +121,25 @@ function isClickedOutsideModal (e, btnDims, modalDims) {
   const isOuterX = (e.clientX < modalDims.left || e.clientX > modalDims.right) && e.clientX > 0
   const isOuterY = (e.clientY < modalDims.top || e.clientY > modalDims.bottom) && e.clientY > 0
   const isNav = (e.clientY > 40)
-
-  // console.log(e.clientX, modalDims.left, e.clientX, modalDims.right);
   const isOuterClick = (isOuterX || isOuterY) && (isOuterBtnX || isOuterBtnY) && isNav
   return isOuterClick
 }
 
+function getFilterType (filterIdx) {
+  const KEY = filtersScope[filterIdx].columnKey
+  return props.headers.find(h => h.columnKey === KEY).type
+}
 // validations
 let inputValids = $ref([])
-function validate (userInput) {
-  return !isNaN(parseFloat(userInput)) && isFinite(userInput)
+function validate (userInput, filterIdx) {
+  const type = getFilterType(filterIdx)
+  if (type === 'number') {
+    return !isNaN(parseFloat(userInput)) && isFinite(userInput)
+  } else if (type === 'string') {
+    return userInput
+  } else if (type === 'date') {
+    return userInput
+  }
 }
 </script>
 
@@ -140,12 +148,6 @@ function validate (userInput) {
     <IconFilter class="icon" />
     <span class="pl-6">Filter</span>
   </button>
-
-  <!-- TODO: add sorting btn -->
-  <!-- <button type="button" class="sort-btn">
-    <IconFilter class="icon" />
-    Sort by Col 1
-  </button> -->
 
   <!-- pills -->
   <FilteringPills v-if="filterTags.length" :filterTags="filterTags" :headers="headers"
@@ -171,8 +173,18 @@ function validate (userInput) {
         </select>
         <!-- filter by value -->
         <!-- TODO: inputmode="numeric" with floats? -->
-        <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
-          pattern="[0-9.]+" :class="{ 'invalid': !inputValids[idx] }" :value="filter.value">
+
+        <!-- {{ getFilterType(idx) }} -->
+        <template v-if="getFilterType(idx) === 'number'">
+          <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
+            pattern="[0 - 9.]+" :class="{ 'invalid': !inputValids[idx] }" :value="filter.value">
+        </template>
+        <template v-else>
+          <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
+            :class="{ 'invalid': !inputValids[idx] }" :value="filter.value">
+        </template>
+
+
         <!-- remove filter -->
         <button @click="removeFilter(idx)" close="close-btn">
           <IconClose class="icon" />
