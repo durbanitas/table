@@ -93,6 +93,14 @@ function getValidValues () {
   return arr
 }
 
+let lastChangedCol = $ref('')
+function changeColumn (filterIdx) {
+  const type = getFilterType(filterIdx)
+  if (lastChangedCol !== type) {
+    emitValue('', filterIdx)
+    lastChangedCol = type
+  }
+}
 function changeOperator (filterIdx) {
   const type = getFilterType(filterIdx)
   const gotValue = filtersScope[filterIdx].value.length > 0
@@ -181,7 +189,7 @@ function validate (userInput, filterIdx) {
     <div v-for="(filter, idx) in filtersScope" :key="idx">
       <div class="button-group">
         <!-- choose a column -->
-        <select v-model="filter.columnKey">
+        <select v-model="filter.columnKey" @change="changeColumn(idx)">
           <option v-for="head in headers" :key="head.id" :value="head.columnKey">
             {{ head.label }} <span class="text-muted subtitle">({{ head.type }})</span>
           </option>
@@ -205,7 +213,6 @@ function validate (userInput, filterIdx) {
           <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
             :class="{ 'invalid': !inputValids[idx] }" :value="filter.value">
         </template>
-
 
         <!-- remove filter -->
         <button @click="removeFilter(idx)" close="close-btn">

@@ -25,7 +25,7 @@ function getColLabel (colKey) {
 function transformData (data, type) {
   if (type === 'date') {
     const dateObject = new Date(data)
-    return dateObject.toLocaleString('us-US', { year: 'numeric', month: 'numeric', day: 'numeric' })
+    return dateObject.toLocaleString('us-US', { year: '2-digit', month: '2-digit', day: '2-digit' })
   } else {
     return data
   }
