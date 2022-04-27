@@ -68,8 +68,8 @@ function removeAllfilters () {
 
 function emitValue (inputVal, filterIdx) {
   let isValidInput = validate(inputVal, filterIdx) || inputVal.length === 0
-  inputValids[filterIdx] = isValidInput
   filtersScope[filterIdx].value = inputVal
+  inputValids[filterIdx] = isValidInput
   filterTags = getValidValues()
   emit('submit', filterTags)
 }
@@ -77,11 +77,29 @@ function getValidValues () {
   const arr = []
   inputValids.forEach((v, idx) => {
     if (v && filtersScope[idx].value.length) {
-      arr.push(filtersScope[idx])
+      const type = getFilterType(idx)
+      if (type === 'date') {
+        const unix = parseInt(new Date(filtersScope[idx].value).getTime().toFixed(0))
+        const obj = JSON.parse(JSON.stringify(filtersScope[idx]))
+        obj.value = unix
+        obj.operator = filtersScope[idx].operator
+        arr.push(obj)
+      } else {
+        arr.push(filtersScope[idx])
+      }
     }
   })
   return arr
 }
+
+function changeOperator (filterIdx) {
+  const type = getFilterType(filterIdx)
+  const gotValue = filtersScope[filterIdx].value.length > 0
+  if (type === 'date' && gotValue) {
+    emitValue(filtersScope[filterIdx].value, filterIdx)
+  }
+}
+
 const debounce = (func, wait) => {
   let timeout
   return function executedFunction (...args) {
@@ -168,16 +186,19 @@ function validate (userInput, filterIdx) {
           </option>
         </select>
         <!-- choose an operator -->
-        <select v-model="filter.operator">
+        <select v-model="filter.operator" @change="changeOperator(idx)">
           <option v-for="operator in OPERATORS" :key="operator.id" v-text="operator" />
         </select>
         <!-- filter by value -->
         <!-- TODO: inputmode="numeric" with floats? -->
 
-        <!-- {{ getFilterType(idx) }} -->
         <template v-if="getFilterType(idx) === 'number'">
           <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
-            pattern="[0 - 9.]+" :class="{ 'invalid': !inputValids[idx] }" :value="filter.value">
+            pattern="[0-9.]+" :class="{ 'invalid': !inputValids[idx] }" :value="filter.value">
+        </template>
+        <template v-else-if="getFilterType(idx) === 'date'">
+          <input type="date" @change="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
+            :value="filter.value">
         </template>
         <template v-else>
           <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
@@ -229,6 +250,10 @@ function validate (userInput, filterIdx) {
   border-radius: 4px;
   border-color: var(--btn-border);
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+input[type="date"] {
+  width: 149px;
 }
 
 .invalid,

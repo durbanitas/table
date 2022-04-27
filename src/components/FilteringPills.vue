@@ -14,10 +14,24 @@ const emit = defineEmits(['removeSingleFilter', 'removeAllfilters'])
 
 // template labeling
 function pillLabel (filter) {
-  return getColLabel(filter.columnKey) + ' ' + filter.operator + ' ' + filter.value
+  const pillLabel = getColLabel(filter.columnKey)
+  const type = getFilterType(filter.columnKey)
+  const val = transformData(filter.value, type)
+  return pillLabel + ' ' + filter.operator + ' ' + val
 }
 function getColLabel (colKey) {
   return props.headers.find(h => h.columnKey === colKey).label
+}
+function transformData (data, type) {
+  if (type === 'date') {
+    const dateObject = new Date(data)
+    return dateObject.toLocaleString('us-US', { year: 'numeric', month: 'numeric', day: 'numeric' })
+  } else {
+    return data
+  }
+}
+function getFilterType (colKey) {
+  return props.headers.find(h => h.columnKey === colKey).type
 }
 
 // remove filters
@@ -27,6 +41,7 @@ function removeSingleFilter (filterIdx) {
 function removeAllfilters () {
   emit('removeAllfilters')
 }
+
 // TODO: remove all filters -> show question really? yes/no
 </script>
 

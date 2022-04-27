@@ -8,11 +8,9 @@ export const createDataset = (userColumns, userRows) => {
       // create first column strings
       if (i === 0) {
         col[idx] = COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)].code
-      }
-      // else if (i === 1) { // create second column dates
-      //   col[idx] = createDate()
-      // } 
-      else { // create another columns as numbers
+      } else if (i === 1) { // create second column dates
+        col[idx] = createDate()
+      } else { // create another columns as numbers
         col[idx] = createNumber(randomNumber(0, 4))
       }
     }
@@ -21,17 +19,18 @@ export const createDataset = (userColumns, userRows) => {
     // create string header
     const head = {
       columnKey: i,
-      label: i === 0 ? 'ISO Code' : 'Col ' + i,
-      type: i === 0 ? 'string' : 'number',
+      label: i === 0 ? 'ISO Code' : i === 1 ? 'Created' : 'Col ' + i,
+      type: i === 0 ? 'string' : i === 1 ? 'date' : 'number',
       sortable: true,
-      align: i === 0 ? 'start' : 'end'
+      align: i < 2 ? 'start' : 'end'
     }
     headers.push(head)
   }
 
   // create date
   function createDate () {
-    return 1418129410
+    const unixToday = Date.now()
+    return randomNumber(0, unixToday)
   }
 
   return { data, headers }

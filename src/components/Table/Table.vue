@@ -31,6 +31,15 @@ function sort (head, colIdx) {
   const newDirection = newHeader ? defaultSortDirection : sortDirection * -1
   emit('onHeaderSort', head, newDirection, colIdx)
 }
+
+function transformData (data, type) {
+  if (type === 'date') {
+    const dateObject = new Date(data)
+    return dateObject.toLocaleString()
+  } else {
+    return data
+  }
+}
 </script>
 
 <template>
@@ -59,7 +68,7 @@ function sort (head, colIdx) {
           <template v-for="(_, rowIdx) in tableData[0].length">
             <tr>
               <td v-for="(data, colIdx) in tableData" :class="[headers[colIdx].align, { 'parent': colIdx === 0 }]"
-                :key="data.id" v-html="data[rowIdx]" />
+                :key="data.id" v-html="transformData(data[rowIdx], headers[colIdx].type)" />
             </tr>
           </template>
         </template>
