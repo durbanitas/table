@@ -75,6 +75,7 @@ function emitValue (inputVal, filterIdx) {
 }
 function getValidValues () {
   const arr = []
+  // console.log(inputValids);
   inputValids.forEach((v, idx) => {
     if (v && filtersScope[idx].value.length) {
       const type = getFilterType(idx)
