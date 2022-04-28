@@ -124,6 +124,7 @@ const currentPageView = $computed(() => {
 
 .page-position {
   white-space: nowrap;
+  padding: 4px 0;
 }
 
 .icon-btn {

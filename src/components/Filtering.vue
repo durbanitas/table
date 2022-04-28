@@ -14,10 +14,6 @@ const props = defineProps({
 const OPERATORS = ['==', '>', '<']
 const TIMEOUT = 400
 
-// TODO: set autofocus on first element if filters are created, but got no value
-
-// TODO: add input types validations
-
 let filtersScope = $ref([])
 let filterTags = $ref([])
 let itemRefs = $ref([])
@@ -29,7 +25,7 @@ function addFilter () {
     value: ''
   }
   filtersScope.push(filterObj)
-  inputValids.push(true)
+  validInputs.push(true)
 }
 // set autofocus
 watch(() => [...itemRefs], (oldVal, newVal) => setFocus(oldVal, newVal))
@@ -43,24 +39,20 @@ const emit = defineEmits(['submit', 'remove'])
 // cleaning up
 function removeFilter (filterIdx) {
   itemRefs.splice(filterIdx, 1)
-  inputValids.splice(filterIdx, 1)
+  validInputs.splice(filterIdx, 1)
   filtersScope.splice(filterIdx, 1)
   filterTags = getValidValues()
   emit('submit', filterTags)
+  // added if condition to prevent closing by click
   if (filtersScope.length === 0) removeAll = true
-}
-
-function alertDeleteFilters () {
-  return confirm('Delete all filters?')
 }
 
 let removeAll = $ref(false)
 function removeAllfilters () {
   removeAll = true
-  // alertDeleteFilters()
   const len = filtersScope.length
   itemRefs.splice(0, len)
-  inputValids.splice(0, len)
+  validInputs.splice(0, len)
   filtersScope.splice(0, len)
   filterTags = []
   emit('submit', [])
@@ -69,14 +61,13 @@ function removeAllfilters () {
 function emitValue (inputVal, filterIdx) {
   let isValidInput = validate(inputVal, filterIdx) || inputVal.length === 0
   filtersScope[filterIdx].value = inputVal
-  inputValids[filterIdx] = isValidInput
+  validInputs[filterIdx] = isValidInput
   filterTags = getValidValues()
   emit('submit', filterTags)
 }
 function getValidValues () {
   const arr = []
-  // console.log(inputValids);
-  inputValids.forEach((v, idx) => {
+  validInputs.forEach((v, idx) => {
     if (v && filtersScope[idx].value.length) {
       const type = getFilterType(idx)
       if (type === 'date') {
@@ -86,7 +77,8 @@ function getValidValues () {
         obj.operator = filtersScope[idx].operator
         arr.push(obj)
       } else {
-        arr.push(filtersScope[idx])
+        const obj = JSON.parse(JSON.stringify(filtersScope[idx]))
+        arr.push(obj)
       }
     }
   })
@@ -120,7 +112,18 @@ const debounce = (func, wait) => {
     timeout = setTimeout(later, wait)
   }
 }
-const updateValue = debounce((e, filterIdx) => emitValue(e.target.value, filterIdx), TIMEOUT)
+const updateValue = debounce((userInput, filterIdx) => emitValue(userInput, filterIdx), TIMEOUT)
+const handleInput = function (e, filterIdx) {
+  const userInput = e.target.value
+  filtersScope[filterIdx].value = userInput
+  const isValid = e.target.validity.valid
+  if (isValid) {
+    validInputs[filterIdx] = true
+    updateValue(userInput, filterIdx)
+  } else {
+    validInputs[filterIdx] = false
+  }
+}
 
 // template filter modal
 let showFilterMenu = $ref(false)
@@ -157,7 +160,7 @@ function getFilterType (filterIdx) {
   return props.headers.find(h => h.columnKey === KEY).type
 }
 // validations
-let inputValids = $ref([])
+let validInputs = $ref([])
 function validate (userInput, filterIdx) {
   const type = getFilterType(filterIdx)
   if (type === 'number') {
@@ -167,11 +170,6 @@ function validate (userInput, filterIdx) {
   } else if (type === 'date') {
     return userInput
   }
-}
-function test (e, filterIdx) {
-  const isInvalid = e.target.validity.valid
-  console.log(isInvalid);
-  inputValids[filterIdx] = isInvalid
 }
 </script>
 
@@ -207,15 +205,15 @@ function test (e, filterIdx) {
         <!-- TODO: inputmode="numeric" with floats? -->
 
         <template v-if="getFilterType(idx) === 'number'">
-          <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
-            pattern="[0-9.]+" :value="filter.value">
+          <input type="text" @input="handleInput($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
+            :class="{ 'invalid': !validInputs }" pattern="[0-9.]+" :value="filter.value">
         </template>
         <template v-else-if="getFilterType(idx) === 'date'">
-          <input type="date" @change="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
+          <input type="date" @change="handleInput($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
             :value="filter.value">
         </template>
         <template v-else>
-          <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
+          <input type="text" @keyup="handleInput($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
             :value="filter.value">
         </template>
 
@@ -225,7 +223,8 @@ function test (e, filterIdx) {
         </button>
       </div>
       <!-- show invalid message -->
-      <!-- <div class="error" v-if="!inputValids[idx]">Invalid value</div> -->
+      <!-- TODO: show detailed error message. By type - what went wrong -->
+      <div class="error" v-if="!validInputs[idx]">Invalid value</div>
     </div>
     <div class="space-between mt-6">
       <button @click="addFilter()" class="mr-6">
@@ -270,6 +269,7 @@ input[type="date"] {
   width: 149px;
 }
 
+.invalid,
 input:invalid,
 input:invalid:focus {
   border-color: var(--remove);
