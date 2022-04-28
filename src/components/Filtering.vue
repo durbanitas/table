@@ -176,7 +176,7 @@ function test (e, filterIdx) {
 </script>
 
 <template>
-  <button @click="openModal()" ref="filterBtn" type="button" class="filter-btn">
+  <button @click="openModal()" ref="filterBtn" type="button" class="filter-btn" :class="{ 'active': showFilterMenu }">
     <IconFilter class="icon" />
     <span class="pl-6">Filter</span>
   </button>
@@ -220,7 +220,7 @@ function test (e, filterIdx) {
         </template>
 
         <!-- remove filter -->
-        <button @click="removeFilter(idx)" close="close-btn">
+        <button @click="removeFilter(idx)" class="close-btn">
           <IconClose class="icon" />
         </button>
       </div>
@@ -263,7 +263,7 @@ function test (e, filterIdx) {
   border-radius: 4px;
   border-color: var(--btn-border);
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  min-width: 396px;
+  min-width: 350px;
 }
 
 input[type="date"] {

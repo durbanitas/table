@@ -74,7 +74,8 @@ const currentPageView = $computed(() => {
     </div>
     <!-- entries -->
     <div class="inline-center">
-      <span class="mr-6">{{ currentPageView }} <span class="text-muted">of</span> {{ entries.toLocaleString() }}</span>
+      <span class="mr-6">{{ currentPageView }} <span class="text-muted">of</span> {{ entries.toLocaleString()
+      }}</span>
       <span @click="changePage(0)" class="icon-btn align-center" :class="{ 'disabled': currentPage === 0 }">
         <IconBackward class="icon --pagination" />
       </span>
