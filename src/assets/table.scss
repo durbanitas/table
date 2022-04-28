@@ -38,6 +38,7 @@ table {
 
   th {
     padding: 0px;
+    cursor: pointer;
   }
 
   // custom headers
@@ -62,7 +63,8 @@ table {
 
     .table-name {
       padding: 10px;
-      margin-left: 10px;
+      margin-left: 14px;
+      justify-content: right;
     }
   }
 

@@ -57,7 +57,6 @@ const currentPageView = $computed(() => {
   const uptoEntries = fromEntries + selectedRows.value
   const beginStr = (fromEntries + 1).toLocaleString()
   const uptoStr = (fromEntries + selectedRows.value <= props.entries ? uptoEntries : props.entries).toLocaleString()
-
   return `${beginStr} - ${uptoStr}`
 })
 </script>

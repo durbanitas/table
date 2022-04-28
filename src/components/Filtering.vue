@@ -168,6 +168,11 @@ function validate (userInput, filterIdx) {
     return userInput
   }
 }
+function test (e, filterIdx) {
+  const isInvalid = e.target.validity.valid
+  console.log(isInvalid);
+  inputValids[filterIdx] = isInvalid
+}
 </script>
 
 <template>
@@ -203,7 +208,7 @@ function validate (userInput, filterIdx) {
 
         <template v-if="getFilterType(idx) === 'number'">
           <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
-            pattern="[0-9.]+" :class="{ 'invalid': !inputValids[idx] }" :value="filter.value">
+            pattern="[0-9.]+" :value="filter.value">
         </template>
         <template v-else-if="getFilterType(idx) === 'date'">
           <input type="date" @change="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
@@ -211,7 +216,7 @@ function validate (userInput, filterIdx) {
         </template>
         <template v-else>
           <input type="text" @keyup="updateValue($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
-            :class="{ 'invalid': !inputValids[idx] }" :value="filter.value">
+            :value="filter.value">
         </template>
 
         <!-- remove filter -->
@@ -220,7 +225,7 @@ function validate (userInput, filterIdx) {
         </button>
       </div>
       <!-- show invalid message -->
-      <div class="error" v-if="!inputValids[idx]">Invalid value</div>
+      <!-- <div class="error" v-if="!inputValids[idx]">Invalid value</div> -->
     </div>
     <div class="space-between mt-6">
       <button @click="addFilter()" class="mr-6">
@@ -258,13 +263,13 @@ function validate (userInput, filterIdx) {
   border-radius: 4px;
   border-color: var(--btn-border);
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  min-width: 396px;
 }
 
 input[type="date"] {
   width: 149px;
 }
 
-.invalid,
 input:invalid,
 input:invalid:focus {
   border-color: var(--remove);

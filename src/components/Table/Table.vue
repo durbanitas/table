@@ -50,11 +50,14 @@ function transformData (data, type) {
       <!-- headers -->
       <thead>
         <tr>
-          <th v-for="(head, colIdx) in headers" :key="head.id" :class="{ 'cursor-pointer': head.sortable }"
+          <!-- TODO: hide class cursor pointer? make default and add class only, if unsortable? -->
+          <!-- :class="{ 'cursor-pointer': head.sortable }" -->
+          <th v-for="(head, colIdx) in headers" :key="head.id"
             v-on="head.sortable ? { click: () => sort(head, colIdx) } : {}">
-            <div class="space-center table-name">
+            <div class="align-center table-name">
+              <div />
               <div v-html="head.label" />
-              <div class="pl-30" v-if="head.sortable">
+              <div class="pl-6" v-if="head.sortable">
                 <div class="up-arrow"
                   :class="{ 'active-up': head.columnKey === sortedHeader.columnKey && sortDirection === -1 }" />
                 <div class="down-arrow"
@@ -66,6 +69,7 @@ function transformData (data, type) {
       </thead>
       <!-- BODY -->
       <tbody>
+        <!-- FIXME: get longest name and adapt cell width -->
         <template v-if="tableData[0].length">
           <template v-for="(_, rowIdx) in tableData[0].length">
             <tr>
@@ -99,9 +103,9 @@ function transformData (data, type) {
 }
 
 // sortings
-.cursor-pointer {
-  cursor: pointer;
-}
+// .cursor-pointer {
+//   cursor: pointer;
+// }
 
 .pl-30 {
   padding-left: 30px;
