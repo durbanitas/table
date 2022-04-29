@@ -64,7 +64,7 @@ const currentPageView = $computed(() => {
 <template>
   <div class="pagination-wrapper space-between">
     <!-- navigation -->
-    <div class="inline-center">
+    <div class="inline-center rows-controls">
       <!-- <span>Rows per page:</span> -->
       <div class="dropdown">
         <select v-model="selectedRows" @change="changePage(currentPage)">
@@ -72,24 +72,33 @@ const currentPageView = $computed(() => {
         </select>
       </div>
     </div>
-    <!-- entries -->
-    <div class="inline-center">
-      <span class="mr-6">{{ currentPageView }} <span class="text-muted">of</span> {{ entries.toLocaleString()
-      }}</span>
-      <span @click="changePage(0)" class="icon-btn align-center" :class="{ 'disabled': currentPage === 0 }">
-        <IconBackward class="icon --pagination" />
-      </span>
-      <span @click="prevPage()" class="icon-btn align-center mr-6" :class="{ 'disabled': currentPage === 0 }">
-        <IconLeft class="icon --pagination" />
-      </span>
-      <span @click="nextPage()" class="icon-btn align-center" :class="{ 'disabled': currentPage === numPages }">
-        <IconRight class="icon --pagination" />
-      </span>
-      <span @click="changePage(numPages)" class="icon-btn align-center"
-        :class="{ 'disabled': currentPage === numPages }">
-        <IconForward class="icon --pagination" />
-      </span>
+
+    <!-- controls -->
+    <div class="controls-wrapper">
+      <div class="page-position inline-center">
+        <span class="mr-6">{{ currentPageView }} <span class="text-muted">of</span> {{ entries.toLocaleString()
+        }}</span>
+      </div>
+      <!-- controls -->
+      <div class="inline-center">
+        <span @click="changePage(0)" class="icon-btn align-center" :class="{ 'disabled': currentPage === 0 }">
+          <IconBackward class="icon --pagination" />
+        </span>
+        <span @click="prevPage()" class="icon-btn align-center mr-6" :class="{ 'disabled': currentPage === 0 }">
+          <IconLeft class="icon --pagination" />
+        </span>
+        <span @click="nextPage()" class="icon-btn align-center" :class="{ 'disabled': currentPage === numPages }">
+          <IconRight class="icon --pagination" />
+        </span>
+        <span @click="changePage(numPages)" class="icon-btn align-center"
+          :class="{ 'disabled': currentPage === numPages }">
+          <IconForward class="icon --pagination" />
+        </span>
+      </div>
+
     </div>
+
+
   </div>
 </template>
 
@@ -104,9 +113,17 @@ const currentPageView = $computed(() => {
   border-bottom-right-radius: 4px;
 }
 
+.controls-wrapper {
+  display: flex;
+}
+
 .space-between {
   display: flex;
   justify-content: space-between;
+}
+
+.page-position {
+  white-space: nowrap;
 }
 
 .icon-btn {
@@ -133,6 +150,24 @@ const currentPageView = $computed(() => {
       cursor: not-allowed;
       fill: var(--text-disabled);
     }
+  }
+}
+
+@media only screen and (max-width: 550px) {
+  .rows-controls {
+    align-items: start;
+    margin: 2px;
+  }
+
+  .controls-wrapper {
+    flex-flow: row wrap;
+    justify-content: end;
+  }
+
+  .page-position {
+    order: 1;
+    width: 100%;
+    justify-content: end;
   }
 }
 </style>

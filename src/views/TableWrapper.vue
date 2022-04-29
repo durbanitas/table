@@ -12,7 +12,7 @@ let N_COLUMNS
 let SHOW_ROWS_PER_PAGE
 const _DEV = import.meta.env.DEV
 if (_DEV) {
-  N_ROWS_PER_PAGE = 10_000
+  N_ROWS_PER_PAGE = 100_000
   N_COLUMNS = 20
   SHOW_ROWS_PER_PAGE = 5
 } else {
