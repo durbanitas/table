@@ -7,13 +7,17 @@ export const createDataset = (userColumns, userRows) => {
     for (let idx = 0; idx < col.length; idx++) {
       // create first column strings
       if (i === 0) {
-        col[idx] = COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)].code
-      } else if (i === 1) { // create second column dates
+        col[idx] = idx + 1
+      }
+      else if (i === 1) { // create second column dates
         col[idx] = createDate()
       }
-      //  else if (i === 2) {
-      //   col[idx] = PERSONS[Math.floor(Math.random() * PERSONS.length)].name
-      // }
+      else if (i === 2) {
+        col[idx] = PERSONS[Math.floor(Math.random() * PERSONS.length)].name
+      }
+      else if (i === 3) {
+        col[idx] = COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)].code
+      }
       else { // create another columns as numbers
         col[idx] = createNumber(randomNumber(0, 4))
       }
@@ -28,16 +32,19 @@ export const createDataset = (userColumns, userRows) => {
       // type: 'number',
       // sortable: true,
       // align: 'end'
-      label: i === 0 ? 'ISO Code' :
+      label: i === 0 ? 'ID' :
         i === 1 ? 'Created' :
-          // i === 2 ? 'Names' :
-          'Num ' + (i - 1),
-      type: i === 0 ? 'string' :
+          i === 2 ? 'Name' :
+            i === 3 ? 'ISO Code' :
+              'Num ' + (i - 3),
+      type: i === 0 ? 'number' :
         i === 1 ? 'date' :
-          // i === 2 ? 'string' :
-          'number',
+          i === 2 ? 'string' :
+            i === 3 ? 'string' :
+              'number',
       sortable: true,
-      align: i < 2 ? 'start' : 'end'
+      align: i < 4 ? 'start' :
+        'end'
     }
     headers.push(head)
   }
