@@ -14,7 +14,7 @@
   --single-pill-bg: #e8e8e8;
   --pill-icon-fill: #6c737c;
   --pill-icon-hover: #404854;
-  --remove: #C6393D;
+  --remove: #dc3545;
 }
 
 [data-theme="dark"] {
@@ -98,12 +98,14 @@ nav {
       font-size: 12pt;
       color: var(--text-disabled);
       margin-top: 10px;
-      padding: 0 10px;
+      padding: 0 12px;
+      margin-left: 12px;
     }
 
     .nav-theme {
       height: 24px;
       padding: 8px;
+      margin-right: 12px;
       cursor: pointer;
     }
 
@@ -202,6 +204,7 @@ button:disabled {
 .remove-btn:hover svg {
   background-color: var(--remove);
   fill: #fff;
+  color: #fff;
 }
 
 .remove-btn:hover:disabled,
