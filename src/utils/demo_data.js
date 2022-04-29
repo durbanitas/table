@@ -43,8 +43,10 @@ export const createDataset = (userColumns, userRows) => {
             i === 3 ? 'string' :
               'number',
       sortable: true,
-      align: i < 4 ? 'start' :
-        'end'
+      align:
+        i === 0 ? 'end' :
+          i < 4 ? 'start' :
+            'end'
     }
     headers.push(head)
   }
