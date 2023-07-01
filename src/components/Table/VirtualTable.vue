@@ -25,9 +25,13 @@ const props = defineProps({
     type: Number,
     required: true
   },
+  tableHeight: {
+    type: Number,
+    required: true
+  }
 })
 
-const rootHeight = 400;
+const rootHeight = props.tableHeight;
 const rowHeight = 30;
 const scrollTop = $ref(0);
 const nodePadding = 20;
@@ -100,6 +104,7 @@ const sort = (head, colIdx) => {
   <div 
     class="virtual-scroll" 
     @scroll="handleScroll"
+    :style="{ 'height': tableHeight + 'px' }"
   >
     <div class="sticky-header">
       <div
@@ -152,7 +157,6 @@ const sort = (head, colIdx) => {
 
 <style lang="scss">
 .virtual-scroll {
-  height: 400px;
   overflow-y: scroll;
   overflow-x: scroll;
 }
@@ -169,8 +173,10 @@ const sort = (head, colIdx) => {
   user-select: none;
   font-weight: 700;
   width: fit-content;
+  border-bottom: 1px solid var(--table-divider);
+
   .header-item {
-    min-width: 220px;
+    min-width: 160px;
     display: flex;
     align-items: center;
     padding: 0 10px;
@@ -186,6 +192,7 @@ const sort = (head, colIdx) => {
     background-color: var(--table-header-bg);
     min-width: 60px;
     justify-content: center;
+    border-right: 1px solid var(--table-divider);
   }
 }
 
@@ -200,7 +207,7 @@ const sort = (head, colIdx) => {
   border-bottom: 1px solid var(--table-divider);
   
   .cell-item {
-    min-width: 200px;
+    min-width: 140px;
     display: flex;
     align-items: center;
     padding: 10px 10px 10px 30px;

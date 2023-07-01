@@ -1,4 +1,5 @@
 <script setup>
+import { onMounted } from 'vue'
 import VirtualTable from './VirtualTable.vue';
 
 const props = defineProps({
@@ -47,8 +48,25 @@ const props = defineProps({
 // add sorting
 // virtual list bottom -> show current visible results
 
-// v2: add search bar 
+// v2: add search bar
 
+
+onMounted(() => {
+  handleResize()
+  window.addEventListener('resize', handleResize)
+});
+
+let innerHeight = $ref(0)
+const handleResize = () => {
+  innerHeight = window.innerHeight
+}
+const navH = 40
+const filterH = 60
+const bottomH = 100
+const tableHeight = $computed(() => {
+  const deg = navH + filterH + bottomH
+  return innerHeight - deg
+})
 
 // sort events
 const emit = defineEmits(['onHeaderSort', 'trimVirtualList'])
@@ -75,7 +93,7 @@ function transformData(data, type) {
 </script>
 
 <template>
-  <div class="table-wrapper" :style="{ 'height': 'auto' }">
+  <div class="table-wrapper" :style="{ 'max-height': tableHeight + 'px' }">
     <table v-if="listType === 'pagination'">
       <!-- headers -->
       <thead>
@@ -129,6 +147,7 @@ function transformData(data, type) {
       :tableItemsCount="tableItemsCount"
       :sortedHeader="sortedHeader"
       :sortDirection="sortDirection"
+      :tableHeight="tableHeight"
     />
 
   </div>
@@ -139,7 +158,6 @@ function transformData(data, type) {
   border: 1px solid var(--table-divider);
   background-color: var(--table-cell-bg);
   position: relative;
-  min-height: 100px;
   height: auto;
   width: 100%;
   overflow: auto;

@@ -18,9 +18,9 @@
   --input-bg: var(--btn-bg-hover);
   --icon-color: #5f6b7c;
   --single-pill-bg: #e8e8e8;
-  --pill-icon-fill: #6c737c;
-  --pill-icon-hover: #404854;
   --remove: #dc3545;
+  --pill-icon-fill: #abb3bf;
+  --pill-icon-hover: #d3d8de;
 }
 
 [data-theme="dark"] {
@@ -36,8 +36,8 @@
   --input-bg: #272a31;
   --icon-color: #abb3bf;
   --single-pill-bg: #454d58;
-  --pill-icon-fill: #abb3bf;
-  --pill-icon-hover: #d3d8de;
+  --pill-icon-fill: #6c737c;
+  --pill-icon-hover: #404854;
   --remove: #F7444A;
 }
 
@@ -225,6 +225,10 @@ button:disabled {
   fill: var(--text-disabled);
 }
 
+.minimal {
+  background-color: transparent;
+  border-color: transparent;
+}
 
 .dropdown {
   position: relative;
@@ -286,6 +290,7 @@ input {
   select {
     border-style: none;
     padding: 0;
+    padding-left: 8px;
     border-radius: 0;
   }
 
@@ -294,10 +299,12 @@ input {
     border-radius: 0;
     border-left: 1px solid var(--btn-border);
     z-index: 4;
+    text-align: center;
+    padding: 0 4px;
   }
 
   button {
-    padding: 3px;
+    // padding: 3px;
     height: 30px;
     border-style: none;
     border-top-left-radius: 0;
@@ -307,6 +314,26 @@ input {
       background-color: var(--remove);
     }
   }
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--pill-icon-fill);
+  border: none;
+  border-radius: 2px;
+  color: var(--font-color);
+  font-size: 12px;
+  min-height: 8px;
+  min-width: 8px;
+  padding: 2px 6px;
+  position: relative;
+  margin-left: 6px;
+}
+
+.pill-active {
+
 }
 
 .align-center {
@@ -346,6 +373,11 @@ input {
 
 .text-muted {
   color: var(--text-disabled)
+}
+
+.flex-end {
+  display: flex;
+  justify-content: end;
 }
 
 .p-12 {

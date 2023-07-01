@@ -48,7 +48,10 @@ let listType = $ref('pagination')
 
 <template>
   <div class="table-header">
-    <Filtering :headers="tableData.headers" @submit="useFilterTags" />
+    <Filtering 
+      @submit="useFilterTags"
+      :headers="tableData.headers" 
+    />
 
     <div class="space-between">
       <!-- TODO: make button-group -->
