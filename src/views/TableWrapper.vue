@@ -12,9 +12,9 @@ let N_COLUMNS
 let SHOW_ROWS_PER_PAGE
 const _DEV = import.meta.env.DEV
 if (_DEV) {
-  N_ROWS_PER_PAGE = 10_000
-  N_COLUMNS = 20
-  SHOW_ROWS_PER_PAGE = 5
+  N_ROWS_PER_PAGE = 200
+  N_COLUMNS = 12
+  SHOW_ROWS_PER_PAGE = 10
 } else {
   N_ROWS_PER_PAGE = 100_000
   N_COLUMNS = 20
@@ -41,15 +41,31 @@ let filterTags = $ref([])
 function useFilterTags (filters) {
   filterTags = filters
 }
+
+// select pagination or virtual list
+let listType = $ref('pagination')
 </script>
 
 <template>
-  <Filtering :headers="tableData.headers" @submit="useFilterTags" />
-  <div v-if="showTable" class="table-bg">
-    <TableParent :tableData="tableData" :defaultSortDirection="1" :rowsPerPage="SHOW_ROWS_PER_PAGE"
-      :filterTags="filterTags" />
+  <div class="table-header">
+    <Filtering :headers="tableData.headers" @submit="useFilterTags" />
+
+    <div class="space-between">
+      <!-- TODO: make button-group -->
+      <button @click="listType = 'pagination'" :class="{ 'active': listType === 'pagination' }">Pagination</button>
+      <button @click="listType = 'virtual'" :class="{ 'active': listType === 'virtual' }">Virtual</button>
+    </div>
   </div>
-  <pre v-if="_DEV" v-text="filterTags" />
+  <div v-if="showTable" class="table-bg">
+    <TableParent 
+      :tableData="tableData" 
+      :defaultSortDirection="1" 
+      :rowsPerPage="SHOW_ROWS_PER_PAGE"
+      :N_ROWS_PER_PAGE="N_ROWS_PER_PAGE"
+      :filterTags="filterTags"
+      :listType="listType"
+    />
+  </div>
 </template>
 
 <style>

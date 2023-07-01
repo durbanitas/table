@@ -1,7 +1,7 @@
 <script setup>
 import Table from './Table.vue'
 import Pagination from './Pagination.vue'
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 
 const props = defineProps({
   // REQUIRED PROPS
@@ -46,6 +46,11 @@ const props = defineProps({
       return equalHeadersColumnsLength && equalRowsLength
     }
   },
+  listType: {
+    type: String,
+    default: 'pagination',
+    required: true
+  },
   // OPTIONAL PROPS
   defaultSortDirection: {
     type: Number,
@@ -83,6 +88,10 @@ const props = defineProps({
         value: '' // filter value
       }
     ]
+  },
+  N_ROWS_PER_PAGE: {
+    type: Number,
+    default: 200
   }
 })
 
@@ -201,6 +210,11 @@ function changePage (newPages) {
   Object.assign(pages, newPages)
 }
 
+const trimList = (val) => {
+  // console.log({ val });
+  Object.assign(pages, val)
+}
+
 // RENDERING
 const filteredData = computed(() => {
   const rangeSortedIdxs = sortedIdxs.slice(pages.startIdx, pages.endIdx)
@@ -210,11 +224,36 @@ const filteredData = computed(() => {
     })
   })
 })
+
+watch(
+  () => props.listType,
+  (newVal) => {
+    if (newVal === 'pagination') {
+      pages.startIdx = 0,
+      pages.endIdx = props.rowsPerPage
+    } else {
+      pages.endIdx = props.N_ROWS_PER_PAGE
+    }
+  }
+)
 </script>
 
 <template>
-  <!-- Filtering.vue  -->
-  <Table @onHeaderSort="sort" :tableData="filteredData" :headers="tableData.headers" :sortedHeader="sortedHeader"
-    :sortDirection="sortDirection" :defaultSortDirection="defaultSortDirection" />
-  <Pagination @onChangePage="changePage" :entries="filteredIdxs.length" :rowsPerPage="rowsPerPage" />
+  <Table 
+    @onHeaderSort="sort"
+    @trimVirtualList="trimList"
+    :tableData="filteredData" 
+    :headers="tableData.headers" 
+    :sortedHeader="sortedHeader"
+    :sortDirection="sortDirection" 
+    :defaultSortDirection="defaultSortDirection"
+    :listType="listType"
+    :tableItemsCount="filteredIdxs.length"
+  />
+  <Pagination 
+    v-if="listType == 'pagination'"
+    @onChangePage="changePage" 
+    :entries="filteredIdxs.length" 
+    :rowsPerPage="rowsPerPage" 
+  />
 </template>

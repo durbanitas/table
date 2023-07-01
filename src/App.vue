@@ -20,7 +20,7 @@ function changeTheme () {
       </div>
     </div>
   </nav>
-  <div class="container">
+  <div>
     <router-view />
   </div>
 </template>

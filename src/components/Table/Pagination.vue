@@ -104,13 +104,15 @@ const currentPageView = $computed(() => {
 
 <style lang="scss" scoped>
 .pagination-wrapper {
-  padding: 8px;
+  padding: 0 8px;
   margin-right: -2px;
   border-left: 1px solid var(--table-divider);
   border-right: 1px solid var(--table-divider);
   border-bottom: 1px solid var(--table-divider);
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+  background-color: var(--bg-color0);
+  height: var(--pagination-height);
 }
 
 .controls-wrapper {
@@ -132,7 +134,7 @@ const currentPageView = $computed(() => {
   background-color: var(--single-pill-bg);
   border: 1px solid var(--btn-border);
   margin: 2px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   cursor: pointer;
 
   &:hover {

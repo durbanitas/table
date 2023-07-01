@@ -259,7 +259,7 @@ function validate (userInput, filterIdx) {
   background-color: var(--bg-color0);
   top: 50px;
   left: 4px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   border-color: var(--btn-border);
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   min-width: 350px;

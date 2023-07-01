@@ -1,4 +1,6 @@
 <script setup>
+import VirtualTable from './VirtualTable.vue';
+
 const props = defineProps({
   headers: {
     type: Array,
@@ -20,11 +22,36 @@ const props = defineProps({
   defaultSortDirection: {
     type: Number,
     default: 1
+  },
+  listType: {
+    type: String,
+    default: 'pagination',
+    required: true
+  },
+  tableItemsCount: {
+    type: Number,
+    default: 100,
+    required: true
   }
 })
 
+// TODO: filters:
+// - remove normal pills
+// - add badge counter
+// - icons for button group pagination / virtual list
+
+// TODO: table:
+// table height from client height
+// better spacing
+// style headers
+// add sorting
+// virtual list bottom -> show current visible results
+
+// v2: add search bar 
+
+
 // sort events
-const emit = defineEmits(['onHeaderSort'])
+const emit = defineEmits(['onHeaderSort', 'trimVirtualList'])
 function sort (head, colIdx) {
   const { sortedHeader, defaultSortDirection, sortDirection } = props
   const newHeader = head !== sortedHeader
@@ -32,7 +59,8 @@ function sort (head, colIdx) {
   emit('onHeaderSort', head, newDirection, colIdx)
 }
 
-function transformData (data, type) {
+function transformData(data, type) {
+  console.log({data, type});
   if (type === 'date') {
     const dateObject = new Date(data)
     const dateOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -47,15 +75,16 @@ function transformData (data, type) {
 </script>
 
 <template>
-  <div class="table-wrapper">
-    <table>
+  <div class="table-wrapper" :style="{ 'height': 'auto' }">
+    <table v-if="listType === 'pagination'">
       <!-- headers -->
       <thead>
         <tr>
-          <!-- TODO: hide class cursor pointer? make default and add class only, if unsortable? -->
-          <!-- :class="{ 'cursor-pointer': head.sortable }" -->
-          <th v-for="(head, colIdx) in headers" :key="head.id"
-            v-on="head.sortable ? { click: () => sort(head, colIdx) } : {}">
+          <th 
+            v-for="(head, colIdx) in headers" 
+            :key="head.id"
+            v-on="head.sortable ? { click: () => sort(head, colIdx) } : {}"
+          >
             <div class="align-center table-name">
               <div />
               <div v-html="head.label" />
@@ -75,8 +104,11 @@ function transformData (data, type) {
         <template v-if="tableData[0].length">
           <template v-for="(_, rowIdx) in tableData[0].length">
             <tr>
-              <td v-for="(data, colIdx) in tableData" :class="[headers[colIdx].align, { 'parent': colIdx === 0 }]"
-                :key="data.id" v-html="transformData(data[rowIdx], headers[colIdx].type)" />
+              <td 
+                v-for="(data, colIdx) in tableData" 
+                :class="[headers[colIdx].align, { 'parent': colIdx === 0 }]"
+                :key="data.id" v-html="transformData(data[rowIdx], headers[colIdx].type)"
+              />
             </tr>
           </template>
         </template>
@@ -88,26 +120,32 @@ function transformData (data, type) {
         </template>
       </tbody>
     </table>
+
+    <VirtualTable
+      v-else
+      @sort="sort"
+      :headers="headers"
+      :tableData="tableData"
+      :tableItemsCount="tableItemsCount"
+      :sortedHeader="sortedHeader"
+      :sortDirection="sortDirection"
+    />
+
   </div>
 </template>
 
 <style lang="scss" scoped>
 .table-wrapper {
   border: 1px solid var(--table-divider);
+  background-color: var(--table-cell-bg);
   position: relative;
   min-height: 100px;
-  max-height: 500px;
   height: auto;
   width: 100%;
   overflow: auto;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
 }
-
-// sortings
-// .cursor-pointer {
-//   cursor: pointer;
-// }
 
 .pl-30 {
   padding-left: 30px;

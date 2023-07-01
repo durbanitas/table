@@ -65,7 +65,7 @@ function removeAllfilters () {
   width: fit-content;
   padding: 6px;
   margin: 4px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   background-color: var(--bg-color0);
 
   .single-pill {
@@ -79,7 +79,7 @@ function removeAllfilters () {
     padding: 2px 6px;
     position: relative;
     margin-right: 4px;
-    border-radius: 4px
+    border-radius: var(--border-radius);
   }
 
   .remove-single svg {

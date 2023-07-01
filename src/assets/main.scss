@@ -1,3 +1,9 @@
+:root {
+  --navbar-height: 40px;
+  --pagination-height: 60px;
+  --border-radius: var(--border-radius);
+}
+
 // VARIABLES
 [data-theme="light"] {
   --bg-color0: #fff;
@@ -84,7 +90,7 @@ nav {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  height: 40px;
+  height: var(--navbar-height);
   background-color: #3f4650;
 
   .nav-container {
@@ -113,7 +119,6 @@ nav {
       height: 18px;
     }
 
-
     .nav-theme:hover .icon {
       fill: #F0B726;
     }
@@ -129,11 +134,17 @@ nav {
   padding-top: 25px;
 }
 
+.table-header {
+  padding: 8px 12px 8px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .table-bg {
-  padding: 20px;
-  background: var(--bg-color0);
+  padding: 0 12px;
+  // background: var(--bg-color0);
   border-radius: 6px;
-  margin: 4px;
 }
 
 .box {
@@ -160,7 +171,7 @@ button {
   background-color: var(--btn-color);
   color: var(--font-color);
   border: 1px solid var(--btn-border);
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   display: flex;
   font-size: 14px;
   justify-content: center;
@@ -226,10 +237,10 @@ select,
 input {
   background-color: var(--btn-color);
   color: var(--font-color);
-  font-size: 14px;
+  font-size: 16px;
   height: 30px;
   border: 1px solid var(--btn-border);
-  border-radius: 4px;
+  border-radius: var(--border-radius);
 
   // margin: 2px 3px;
 
@@ -256,7 +267,7 @@ input {
   padding: 0 10px;
   height: 28px;
   background-color: var(--input-bg);
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   min-width: 50px;
   max-width: 127px;
   overflow: visible;
@@ -266,7 +277,7 @@ input {
   max-width: 350px;
   margin: 3px 0;
   border: 1px solid var(--btn-border);
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   height: 30px;
   background-color: var(--btn-color);
   display: flex;
