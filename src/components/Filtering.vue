@@ -1,6 +1,5 @@
 <script setup>
 import { watch } from 'vue'
-import FilteringPills from './FilteringPills.vue'
 import IconFilter from '../assets/svgs/filter.svg'
 import IconPlus from '../assets/svgs/plus.svg'
 import IconMinus from '../assets/svgs/minus.svg'
@@ -272,13 +271,14 @@ function validate (userInput, filterIdx) {
 .filter-modal {
   position: absolute;
   z-index: 5;
-  background-color: var(--bg-color0);
+  background-color: var(--bg-color2);
   top: 50px;
-  left: 4px;
   border-radius: var(--border-radius);
   border-color: var(--btn-border);
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   min-width: 350px;
+  margin-left: 12px;
+  margin-top: 34px;
 }
 
 input[type="date"] {

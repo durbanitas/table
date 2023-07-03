@@ -1,6 +1,7 @@
 <script setup>
 import { onBeforeUnmount } from 'vue';
 import { transformData } from './utils'
+import tableItems from '../../static/jsonObj.json'
 
 const props = defineProps({
   headers: {
@@ -28,13 +29,17 @@ const props = defineProps({
   tableHeight: {
     type: Number,
     required: true
+  },
+  sortedIdxs: {
+    type: Array,
+    required: true
   }
 })
 
 const rootHeight = props.tableHeight;
 const rowHeight = 30;
-const scrollTop = $ref(0);
 const nodePadding = 20;
+let scrollTop = $ref(0);
 
 // COMPUTED
 const itemCount = $computed(() => props.tableItemsCount)
@@ -50,7 +55,8 @@ const visibleNodeCount = $computed(() => {
   return count;
 })
 const visibleItems = $computed(() => {
-  return tableItems.slice(startIndex, startIndex + visibleNodeCount);
+  const sortedArray = props.sortedIdxs.map(idx => tableItems[idx])
+  return sortedArray.slice(startIndex, startIndex + visibleNodeCount);
 })
 const offsetY = $computed(() => {
   return startIndex * rowHeight
@@ -62,10 +68,9 @@ const spacerStyle = $computed(() => {
 })
 const viewportStyle = $computed(() => {
   return {
-    // overflow: "hidden",
-    height: `${viewportHeight}px`,
+    'min-height': '41px',
+    'height': `${viewportHeight}px`,
     position: "relative",
-    // 'overflow-x': 'scroll',
   };
 })
 
@@ -77,26 +82,12 @@ onBeforeUnmount(() => {
   removeEventListener('scroll', handleScroll)
 })
 
-// TABLE OPTIONS
-const tableItems = $computed(() => {
-  const groupedItems = []
-  for (let i = 0; i < props.tableItemsCount; i++) {
-    const item = {}
-    for (let headerIdx = 0; headerIdx < props.headers.length; headerIdx++) {
-      const label = props.headers[headerIdx].label
-      const value = props.tableData[headerIdx][i]
-      Object.assign(item, { [label]: value })
-    }
-
-    groupedItems.push(item)
-  }
-  return groupedItems
-})
-
 // TABLE INTERACTION
+const virtualScrollRef = $ref(null)
 const emit = defineEmits(['sort'])
 const sort = (head, colIdx) => {
   emit('sort', head, colIdx)
+  virtualScrollRef.scrollTop = 0
 }
 </script>
 
@@ -104,6 +95,7 @@ const sort = (head, colIdx) => {
   <div 
     class="virtual-scroll" 
     @scroll="handleScroll"
+    ref="virtualScrollRef"
     :style="{ 'height': tableHeight + 'px' }"
   >
     <div class="sticky-header">
@@ -113,7 +105,8 @@ const sort = (head, colIdx) => {
         v-on="head.sortable ? { click: () => sort(head, colIdx) } : {}"
         class="header-item"
         :class="{ 'first-header-item': colIdx === 0 }"
-      >
+        >
+        <!-- :style="{ 'width': `${head.charLen * 10}px` }" -->
         <div class="align-center table-name">
           <div />
           <div v-html="head.label" />
@@ -140,9 +133,10 @@ const sort = (head, colIdx) => {
               v-for="(value, key, index) in item" 
               class="cell-item"
               :class="[{ 'first-cell-item': index === 0}, headers[index].align ]"
-              v-html="transformData(value, headers[index].type)"
               :key="index.id"
-            />
+              v-html="transformData(value, headers[index].type, index)"
+              />
+              <!-- :style="{ 'width': `${headers[index].charLen * 10}px` }" -->
   
           </div>
         </div>
@@ -176,10 +170,9 @@ const sort = (head, colIdx) => {
   border-bottom: 1px solid var(--table-divider);
 
   .header-item {
-    min-width: 160px;
     display: flex;
     align-items: center;
-    padding: 0 10px;
+    padding: 0 12px;
     &:hover {
       cursor: pointer;
       background-color: var(--table-first-cell-hover);
@@ -207,10 +200,9 @@ const sort = (head, colIdx) => {
   border-bottom: 1px solid var(--table-divider);
   
   .cell-item {
-    min-width: 140px;
     display: flex;
     align-items: center;
-    padding: 10px 10px 10px 30px;
+    padding: 0 12px;
   }
   .first-cell-item {
     min-width: 60px;
@@ -219,7 +211,7 @@ const sort = (head, colIdx) => {
     z-index: 3;
     background-color: var(--table-header-bg);
     font-weight: 700;
-    padding: 0 10px;
+    padding: 0 12px;
   }
 
   display: flex;

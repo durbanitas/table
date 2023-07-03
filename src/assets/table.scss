@@ -1,6 +1,6 @@
 [data-theme="light"] {
   --table-header: #1c1c1c;
-  --table-header-bg: #cacaca;
+  --table-header-bg: #e2e2e0;
   --table-cell-bg: #fff;
   --font-color: #121416;
   --table-text: #fff;
@@ -13,8 +13,8 @@
 
 [data-theme="dark"] {
   --table-header: #f6f7f9;
-  --table-header-bg: #3f4650;
-  --table-cell-bg: #24282e;
+  --table-header-bg: #2F343C;
+  --table-cell-bg: #1C2127;
   --font-color: #f4f4f4;
   --table-text: #fff;
   --table-divider: #2f343c;
@@ -63,8 +63,12 @@ table {
 
     .table-name {
       padding: 10px;
-      margin-left: 14px;
-      justify-content: right;
+      margin-left: 20px;
+      justify-content: left;
+    }
+
+    &:last-child {
+      padding-right: 10px;
     }
   }
 
@@ -100,9 +104,13 @@ table {
       color: var(--font-color);
 
       // left first row cell
-      & :first-child {
+      & td:first-child {
         background: var(--table-first-cell-hover);
       }
+    }
+
+    & td:last-child{
+      padding-right: 20px;
     }
   }
 }

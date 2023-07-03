@@ -249,6 +249,7 @@ watch(
     :defaultSortDirection="defaultSortDirection"
     :listType="listType"
     :tableItemsCount="filteredIdxs.length"
+    :sortedIdxs="sortedIdxs"
   />
   <Pagination 
     v-if="listType == 'pagination'"

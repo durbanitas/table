@@ -111,7 +111,7 @@ const currentPageView = $computed(() => {
   border-bottom: 1px solid var(--table-divider);
   border-bottom-left-radius: var(--border-radius);
   border-bottom-right-radius: var(--border-radius);
-  background-color: var(--bg-color0);
+  background-color: var(--bg-color1);
   height: var(--pagination-height);
 }
 
@@ -157,6 +157,9 @@ const currentPageView = $computed(() => {
 }
 
 @media only screen and (max-width: 550px) {
+  .pagination-wrapper {
+    padding: 10px 8px;
+  }
   .rows-controls {
     align-items: start;
     margin: 2px;
