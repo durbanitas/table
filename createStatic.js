@@ -1,5 +1,11 @@
-// Create dataset of numbers
-export const createDataset = (userColumns, userRows) => {
+var fs = require('fs');
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// GENERATE DATASET
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+const createDataset = (userColumns, userRows) => {
   const data = []
   const headers = []
   for (let i = 0; i < userColumns; i++) {
@@ -9,47 +15,78 @@ export const createDataset = (userColumns, userRows) => {
       if (i === 0) {
         col[idx] = idx + 1
       }
-      else if (i === 1) { // create second column dates
-        col[idx] = createDate()
-      }
-      else if (i === 2) {
+      else if (i === 1) {
         col[idx] = PERSONS[Math.floor(Math.random() * PERSONS.length)].name
       }
+      else if (i === 2) { // create second column dates
+        col[idx] = createDate()
+      }
       else if (i === 3) {
+        col[idx] = getScoreNumber()
+      }
+      else if (i === 4) {
         col[idx] = COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)].code
       }
-      else { // create another columns as numbers
+      else if (i === 5) {
+        col[idx] = REGIONS[Math.floor(Math.random() * REGIONS.length)].region
+      } else if (i === 6) {
+        col[idx] = normalDistribution(100).toFixed(4)
+      }
+      // create another columns as numbers
+      else {
         col[idx] = createNumber(randomNumber(0, 4))
       }
-      // col[idx] = createNumber(randomNumber(0, 4))
     }
     data.push(col)
 
     // create string header
     const head = {
       columnKey: i,
+      charLen: 0,
       // label: 'Col ' + i,
       // type: 'number',
       // sortable: true,
       // align: 'end'
       label: i === 0 ? 'ID' :
-        i === 1 ? 'Created' :
-          i === 2 ? 'Name' :
-            i === 3 ? 'ISO Code' :
-              'Num ' + (i - 3),
+        i === 1 ? 'Name' :
+          i === 2 ? 'Created' :
+            i === 3 ? 'Score' :
+              i === 4 ? 'ISO Code' :
+                i === 5 ? 'Region' :
+                'Num ' + (i - 5),
       type: i === 0 ? 'number' :
-        i === 1 ? 'date' :
-          i === 2 ? 'string' :
-            i === 3 ? 'string' :
-              'number',
+        i === 1 ? 'string' :
+          i === 2 ? 'date' :
+            i === 3 ? 'number' :
+              i === 4 ? 'string' :
+                i === 5 ? 'string' :
+                'number',
       sortable: true,
       align:
         i === 0 ? 'end' :
-          i < 4 ? 'start' :
-            'end'
+          i === 3 ? 'end' :
+            i === 5 ? 'start' :
+            i < 6 ? 'start' :
+              'end'
     }
     headers.push(head)
   }
+
+  // get max character length
+  // const getCharLength = (str) => str.toString().length
+  // headers.forEach(header => {
+  //   header.charLen = getCharLength(header.label)
+  // })
+  // data.forEach((colData, colIdx) => {
+    
+  //   colData.forEach(item => {
+  //     currentHeaderLen = headers[colIdx].charLen
+  //     currentItemLength = getCharLength(item)
+  //     if (currentItemLength > currentHeaderLen) {
+  //       headers[colIdx].charLen = currentItemLength
+  //     }
+  //   })
+  // })
 
   // create date
   function createDate () {
@@ -63,22 +100,18 @@ const createNumber = (trim) => Number((Math.random() * 100).toFixed(trim))
 
 const randomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
-// create randomized filters
-const OPERATORS = ['==', '>', '<']
-export const randomFilters = (userColumns, useValid) => {
-  const filters = []
-  const nFilters = randomNumber(1, 5)
-  for (let i = 0; i < nFilters; i++) {
-    const colIdx = randomNumber(0, userColumns)
-    const opIdx = randomNumber(0, OPERATORS.length - 1)
-    const filter = {
-      columnKey: colIdx,
-      operator: OPERATORS[opIdx],
-      value: createNumber(randomNumber(0, 4))
-    }
-    filters.push(filter)
+const normalDistribution = (scale) => Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(2 * Math.PI * Math.random()) * scale
+
+// TODO: make not linear, make normaly (Glockenkurve)
+const getScoreNumber = () => {
+  const flipCoin = (odds=0.85) => {
+    return Math.random() < odds ? 1 : 0
   }
-  return filters
+  const posNumber = (trim=4) => Number((Math.random() * 100).toFixed(trim)) 
+  const negNumber = (trim=4) => Number((Math.random() * -100).toFixed(trim)) 
+
+  // 75% chance pos number 30% chance neg number
+  return flipCoin() ? posNumber() : negNumber()
 }
 
 const COUNTRIES = [
@@ -334,3 +367,51 @@ const PERSONS = [
 const REGIONS = [
   { "region": "Merionethshire" }, { "region": "Western Cape" }, { "region": "Aisén" }, { "region": "Alajuela" }, { "region": "Luxemburg" }, { "region": "Lazio" }, { "region": "Niedersachsen" }, { "region": "Bremen" }, { "region": "Munster" }, { "region": "North West" }, { "region": "Tyrol" }, { "region": "Puglia" }, { "region": "Biobío" }, { "region": "North Island" }, { "region": "Quindío" }, { "region": "FATA" }, { "region": "Jönköpings län" }, { "region": "Central Sulawesi" }, { "region": "Vĩnh Phúc" }, { "region": "Sóc Trăng" }, { "region": "Bayern" }, { "region": "Sląskie" }, { "region": "Niger" }, { "region": "Cajamarca" }, { "region": "Northern Mindanao" }, { "region": "Lanarkshire" }, { "region": "Salzburg" }, { "region": "Loreto" }, { "region": "Mersin" }, { "region": "Mpumalanga" }, { "region": "Antwerpen" }, { "region": "Gävleborgs län" }, { "region": "Valparaíso" }, { "region": "Alajuela" }, { "region": "Oregon" }, { "region": "National Capital Region" }, { "region": "Waals-Brabant" }, { "region": "Balochistan" }, { "region": "Hà Nội" }, { "region": "Istanbul" }, { "region": "FATA" }, { "region": "Connacht" }, { "region": "Puglia" }, { "region": "Nord-Pas-de-Calais" }, { "region": "Kharkiv oblast" }, { "region": "Zhōngnán" }, { "region": "Cajamarca" }, { "region": "North Island" }, { "region": "Aydın" }, { "region": "Ross-shire" }, { "region": "Jönköpings län" }, { "region": "Alajuela" }, { "region": "Friuli-Venezia Giulia" }, { "region": "Cauca" }, { "region": "Ulster" }, { "region": "Stirlingshire" }, { "region": "Tasmania" }, { "region": "Limpopo" }, { "region": "West Sulawesi" }, { "region": "Dōngběi" }, { "region": "Huáběi" }, { "region": "Sơn La" }, { "region": "Baden Württemberg" }, { "region": "Kayseri" }, { "region": "Eastern Cape" }, { "region": "Ilocos Region" }, { "region": "Quebec" }, { "region": "Central Region" }, { "region": "La Libertad" }, { "region": "Lubuskie" }, { "region": "Östergötlands län" }, { "region": "Extremadura" }, { "region": "Upper Austria" }, { "region": "Imo" }, { "region": "Puno" }, { "region": "Kyiv oblast" }, { "region": "Nagaland" }, { "region": "Rio de Janeiro" }, { "region": "Cartago" }, { "region": "Vlaams-Brabant" }, { "region": "Belgorod Oblast" }, { "region": "Calabria" }, { "region": "Adana" }, { "region": "Västra Götalands län" }, { "region": "Newfoundland and Labrador" }, { "region": "Delta" }, { "region": "Western Australia" }, { "region": "Munster" }, { "region": "Maluku" }, { "region": "Goiás" }, { "region": "São Paulo" }, { "region": "Magallanes y Antártica Chilena" }, { "region": "Azad Kashmir" }, { "region": "Connacht" }, { "region": "Goiás" }, { "region": "Araucanía" }, { "region": "Gangwon" }, { "region": "Bursa" }, { "region": "Styria" }, { "region": "Queensland" }, { "region": "Puebla" }, { "region": "Agder" }, { "region": "Punjab" }, { "region": "Emilia-Romagna" }, { "region": "Borno" }, { "region": "Munster" }, { "region": "Antwerpen" }, { "region": "Uttar Pradesh" }, { "region": "Bayern" }, { "region": "Zeeland" }, { "region": "Azad Kashmir" }, { "region": "West Region" }, { "region": "Limón" }, { "region": "Guanacaste" }, { "region": "Mississippi" }, { "region": "Bengkulu" }, { "region": "Sutherland" }, { "region": "La Libertad" }, { "region": "Haryana" }, { "region": "Gelderland" }, { "region": "Coquimbo" }, { "region": "West Region" }, { "region": "Lima" }, { "region": "North Island" }, { "region": "Nordland" }, { "region": "Nunavut" }, { "region": "Imo" }, { "region": "Vinnytsia oblast" }, { "region": "Brandenburg" }, { "region": "Tiền Giang" }, { "region": "Kogi" }, { "region": "Querétaro" }, { "region": "Xīnán" }, { "region": "Utrecht" }, { "region": "Ulster" }, { "region": "Munster" }, { "region": "Aydın" }, { "region": "Los Lagos" }, { "region": "Los Ríos" }, { "region": "Namen" }, { "region": "Bremen" }, { "region": "Bauchi" }, { "region": "Santander" }, { "region": "Jeju" }, { "region": "Ilocos Region" }, { "region": "Jigawa" }, { "region": "Newfoundland and Labrador" }, { "region": "Durham" }, { "region": "Vorarlberg" }, { "region": "Central Luzon" }, { "region": "Mecklenburg-Vorpommern" }, { "region": "Kujawsko-pomorskie" }, { "region": "Radnorshire" }, { "region": "Xīběi" }, { "region": "Southeast Sulawesi" }, { "region": "Oost-Vlaanderen" }, { "region": "Trøndelag" }, { "region": "North West" }, { "region": "Victoria" }, { "region": "Nariño" }, { "region": "Saskatchewan" }, { "region": "Cajamarca" }, { "region": "Ohio" }, { "region": "Gangwon" }, { "region": "Goa" }, { "region": "West Sumatra" }, { "region": "Central Region" }, { "region": "West Region" }, { "region": "Flintshire" }, { "region": "Maule" }, { "region": "Munster" }, { "region": "Maluku" }, { "region": "Sicilia" }, { "region": "Querétaro" }, { "region": "Madrid" }, { "region": "Ogun" }, { "region": "Western Cape" }, { "region": "Chhattisgarh" }, { "region": "Western Visayas" }, { "region": "Surrey" }, { "region": "KwaZulu-Natal" }, { "region": "Jönköpings län" }, { "region": "Kogi" }, { "region": "Schleswig-Holstein" }, { "region": "North Sumatra" }, { "region": "Irkutsk Oblast" }, { "region": "Junín" }, { "region": "Los Lagos" }, { "region": "South Gyeongsang" }, { "region": "Nordland" }, { "region": "Tomsk Oblast" }, { "region": "Osun" }, { "region": "Odessa oblast" }, { "region": "Drenthe" }, { "region": "Alsace" }, { "region": "Carinthia" }, { "region": "Clackmannanshire" }, { "region": "North-East Region" }, { "region": "Alajuela" }, { "region": "Rio Grande do Sul" }, { "region": "Free State" }, { "region": "Vorarlberg" }, { "region": "Cantabria" }, { "region": "Thanh Hóa" }, { "region": "Northern Territory" }, { "region": "Bình Định" }, { "region": "Pays de la Loire" }, { "region": "Berlin" }, { "region": "Huáběi" }, { "region": "South Chungcheong" }, { "region": "Iowa" }, { "region": "Saarland" }, { "region": "Western Australia" }, { "region": "Tasmania" }, { "region": "Västra Götalands län" }, { "region": "Nunavut" }, { "region": "Argyllshire" }, { "region": "Prince Edward Island" }, { "region": "Astrakhan Oblast" }, { "region": "Mpumalanga" }, { "region": "Gloucestershire" }, { "region": "FATA" }, { "region": "Vestland" }, { "region": "Leinster" }, { "region": "Andhra Pradesh" }, { "region": "Balochistan" }, { "region": "Niedersachsen" }, { "region": "Limpopo" }, { "region": "Jönköpings län" }, { "region": "Magdalena" }, { "region": "Mpumalanga" }, { "region": "Northern Territory" }, { "region": "North Island" }, { "region": "Innlandet" }, { "region": "Yaroslavl Oblast" }, { "region": "Vlaams-Brabant" }, { "region": "Murcia" }, { "region": "Aquitaine" }, { "region": "San José" }, { "region": "Goiás" }, { "region": "National Capital Region" }, { "region": "South Island" }, { "region": "West Region" }, { "region": "East Java" }, { "region": "West Region" }, { "region": "Central Visayas" }, { "region": "Victoria" }, { "region": "Vorarlberg" }, { "region": "Utrecht" }, { "region": "Basilicata" }, { "region": "Querétaro" }, { "region": "Tomsk Oblast" }, { "region": "Puebla" }, { "region": "Pernambuco" }, { "region": "Ulster" }, { "region": "Salzburg" }, { "region": "Kentucky" }, { "region": "Loreto" }, { "region": "Piura" }, { "region": "Paraíba" }, { "region": "Saarland" }, { "region": "Special Region of Yogyakarta" }, { "region": "Midi-Pyrénées" }, { "region": "Western Australia" }, { "region": "Cesar" }, { "region": "Leningrad Oblast" }, { "region": "North Chungcheong" }, { "region": "Piemonte" }, { "region": "Đồng Tháp" }, { "region": "Midlothian" }, { "region": "Melilla" }, { "region": "Yucatán" }, { "region": "Northern Territory" }, { "region": "Essex" }, { "region": "Punjab" }, { "region": "Dōngběi" }, { "region": "Viken" }, { "region": "Sonora" }, { "region": "North Island" }, { "region": "Paraíba" }, { "region": "Picardie" }, { "region": "New South Wales" }, { "region": "Jönköpings län" }, { "region": "Swiętokrzyskie" }, { "region": "Limousin" }, { "region": "Connacht" }, { "region": "Dalarnas län" }, { "region": "Norfolk" }, { "region": "Astrakhan Oblast" }, { "region": "Nunavut" }, { "region": "South Gyeongsang" }, { "region": "Basilicata" }, { "region": "Iowa" }, { "region": "Ceará" }, { "region": "Uttar Pradesh" }, { "region": "Missouri" }, { "region": "Vestfold og Telemark" }, { "region": "Surrey" }, { "region": "Östergötlands län" }, { "region": "Flevoland" }, { "region": "Dōngběi" }, { "region": "Ulster" }, { "region": "Nordland" }, { "region": "Bihar" }, { "region": "Madhya Pradesh" }, { "region": "Khyber Pakhtoonkhwa" }, { "region": "San Andrés y Providencia" }, { "region": "Victoria" }, { "region": "Puntarenas" }, { "region": "Samsun" }, { "region": "Atacama" }, { "region": "Arequipa" }, { "region": "Västra Götalands län" }, { "region": "Limburg" }, { "region": "Ivano-Frankivsk oblast" }, { "region": "Viken" }, { "region": "Araucanía" }, { "region": "Kahramanmaraş" }, { "region": "Punjab" }, { "region": "Namen" }, { "region": "Opolskie" }, { "region": "Penza Oblast" }, { "region": "Vestfold og Telemark" }, { "region": "Lima" }, { "region": "Zhōngnán" }, { "region": "San José" }, { "region": "North Maluku" }, { "region": "Queensland" }, { "region": "Kinross-shire" }, { "region": "Île-de-France" }, { "region": "Poitou-Charentes" }, { "region": "Carinthia" }, { "region": "Kirkcudbrightshire" }, { "region": "Noord Holland" }, { "region": "Alabama" }, { "region": "Pomorskie" }, { "region": "Murcia" }, { "region": "Paraíba" }, { "region": "East Java" }, { "region": "Córdoba" }, { "region": "Pembrokeshire" }, { "region": "Azad Kashmir" }, { "region": "Xīběi" }, { "region": "Atacama" }, { "region": "Lima" }, { "region": "Magallanes y Antártica Chilena" }, { "region": "Saskatchewan" }, { "region": "Euskadi" }, { "region": "South Chungcheong" }, { "region": "Istanbul" }, { "region": "Arkansas" }, { "region": "Los Lagos" }, { "region": "Arequipa" }, { "region": "Huila" }, { "region": "North Island" }, { "region": "O'Higgins" }, { "region": "Lombardia" }, { "region": "Extremadura" }, { "region": "Khyber Pakhtoonkhwa" }, { "region": "Arequipa" }, { "region": "Mizoram" }, { "region": "Östergötlands län" }, { "region": "Zaporizhzhia oblast" }, { "region": "South Island" }, { "region": "Bạc Liêu" }, { "region": "Alajuela" }, { "region": "Delta" }, { "region": "South Gyeongsang" }, { "region": "Đắk Lắk" }, { "region": "Henegouwen" }, { "region": "Gilgit Baltistan" }, { "region": "Bretagne" }, { "region": "Florida" }, { "region": "KwaZulu-Natal" }, { "region": "Puntarenas" }, { "region": "Heredia" }, { "region": "Leinster" }, { "region": "West Nusa Tenggara" }, { "region": "La Rioja" }, { "region": "An Giang" }, { "region": "Puno" }, { "region": "Southwestern Tagalog Region" }, { "region": "Stockholms län" }, { "region": "Antalya" }, { "region": "Sachsen" }, { "region": "Vienna" }, { "region": "Sicilia" }, { "region": "North Island" }, { "region": "Munster" }, { "region": "North Island" }, { "region": "Caquetá" }, { "region": "Central Luzon" }, { "region": "Vestland" }, { "region": "Dadra and Nagar Haveli" }, { "region": "Paraná" }, { "region": "Essex" }, { "region": "Manitoba" }, { "region": "Zamboanga Peninsula" }, { "region": "North Island" }, { "region": "İzmir" }, { "region": "Gia Lai" }, { "region": "South Island" }, { "region": "Victoria" }, { "region": "Arauca" }, { "region": "Sverdlovsk Oblast" }, { "region": "Huádōng" }, { "region": "Aisén" }, { "region": "North-East Region" }, { "region": "Lakshadweep" }, { "region": "Northwest Territories" }, { "region": "Brussels Hoofdstedelijk Gewest" }, { "region": "Kansas" }, { "region": "Ceará" }, { "region": "North Gyeongsang" }, { "region": "Moscow Oblast" }, { "region": "Tasmania" }, { "region": "Zakarpattia oblast" }, { "region": "Basilicata" }, { "region": "Lviv oblast" }, { "region": "Agder" }, { "region": "Los Lagos" }, { "region": "Nova Scotia" }, { "region": "Västra Götalands län" }, { "region": "Stockholms län" }, { "region": "Sevastopol City" }, { "region": "Western Visayas" }, { "region": "Zhōngnán" }, { "region": "Northwest Territories" }, { "region": "Dadra and Nagar Haveli" }, { "region": "Sachsen-Anhalt" }, { "region": "Styria" }, { "region": "Pays de la Loire" }, { "region": "Kayseri" }, { "region": "Gauteng" }, { "region": "Imo" }, { "region": "Brandenburg" }, { "region": "Berwickshire" }, { "region": "South Island" }, { "region": "Troms og Finnmark" }, { "region": "North West" }, { "region": "Arequipa" }, { "region": "Loreto" }, { "region": "Bourgogne" }, { "region": "Stockholms län" }, { "region": "Gyeonggi" }, { "region": "Limburg" }, { "region": "Valle d'Aosta" }, { "region": "Bihar" }, { "region": "Van" }, { "region": "Navarra" }, { "region": "Aragón" }, { "region": "Styria" }, { "region": "Limón" }, { "region": "Munster" }, { "region": "Thái Bình" }, { "region": "Gaziantep" }, { "region": "KwaZulu-Natal" }, { "region": "Molise" }, { "region": "Nova Scotia" }, { "region": "Piura" }, { "region": "Assam" }, { "region": "California" }, { "region": "Alberta" }, { "region": "Cordillera Administrative Region" }, { "region": "Jönköpings län" }, { "region": "Basse-Normandie" }, { "region": "Namen" }, { "region": "Guanacaste" }, { "region": "Rheinland-Pfalz" }, { "region": "West Region" }, { "region": "Cundinamarca" }, { "region": "Picardie" }, { "region": "Eastern Visayas" }, { "region": "Antioquia" }, { "region": "Tula Oblast" }, { "region": "Luik" }, { "region": "Azad Kashmir" }, { "region": "Campania" }, { "region": "Denbighshire" }, { "region": "Ontario" }, { "region": "Maule" }, { "region": "Balochistan" }, { "region": "Ulster" }, { "region": "Quảng Bình" }, { "region": "Victoria" }, { "region": "New South Wales" }, { "region": "Västra Götalands län" }, { "region": "Daman and Diu" }, { "region": "Namen" }, { "region": "Veracruz" }, { "region": "Loreto" }, { "region": "Gauteng" }, { "region": "Dalarnas län" }, { "region": "Limburg" }, { "region": "Delaware" }, { "region": "San Luis Potosí" }, { "region": "Hidalgo" }, { "region": "Los Lagos" }, { "region": "Cordillera Administrative Region" }, { "region": "Gangwon" }, { "region": "Pará" }, { "region": "Smolensk Oblast" }, { "region": "Sicilia" }, { "region": "Konya" }, { "region": "Vaupés" }, { "region": "Kent" }, { "region": "Styria" }, { "region": "Balochistan" }, { "region": "Bedfordshire" }, { "region": "Xīnán" }, { "region": "Cardiganshire" }, { "region": "Lima" }, { "region": "Arkhangelsk Oblast" }, { "region": "Querétaro" }, { "region": "Northern Territory" }, { "region": "Luik" }, { "region": "Manitoba" }, { "region": "Liguria" }, { "region": "Xīběi" }, { "region": "Kahramanmaraş" }, { "region": "San José" }, { "region": "Wyoming" }, { "region": "Cartago" }, { "region": "Southeast Sulawesi" }, { "region": "Franche-Comté" }, { "region": "Arunachal Pradesh" }, { "region": "Oyo" }, { "region": "Metropolitana de Santiago" }, { "region": "Navarra" }, { "region": "Burgenland" }, { "region": "Magallanes y Antártica Chilena" }, { "region": "Volyn oblast" }, { "region": "Magdalena" }, { "region": "Languedoc-Roussillon" }, { "region": "Kentucky" }, { "region": "Catalunya" }, { "region": "Carmarthenshire" }, { "region": "Limpopo" }, { "region": "Ancash" }, { "region": "South Island" }, { "region": "La Rioja" }, { "region": "Agder" }, { "region": "Lubuskie" }, { "region": "Sląskie" }, { "region": "Anambra" }, { "region": "Antwerpen" }, { "region": "Hessen" }, { "region": "Kincardineshire" }, { "region": "Euskadi" }, { "region": "Noord Holland" }, { "region": "Pará" }, { "region": "Western Cape" }, { "region": "Maule" }, { "region": "Nevada" }, { "region": "Hessen" }, { "region": "Luxemburg" }, { "region": "Leinster" }, { "region": "Jeju" }, { "region": "Arequipa" }, { "region": "Vienna" }, { "region": "Alberta" }, { "region": "Arkansas" }, { "region": "North West" }, { "region": "Daman and Diu" }, { "region": "Zhōngnán" }, { "region": "Emilia-Romagna" }, { "region": "Castilla - La Mancha" }, { "region": "Puntarenas" }, { "region": "North Gyeongsang" }, { "region": "Western Cape" }, { "region": "Delta" }, { "region": "Cundinamarca" }, { "region": "Balochistan" }, { "region": "Jharkhand" }, { "region": "Gangwon" }, { "region": "Free State" }, { "region": "Magallanes y Antártica Chilena" }, { "region": "Limpopo" }, { "region": "Carmarthenshire" }, { "region": "Morelos" }, { "region": "Western Cape" }, { "region": "Baden Württemberg" }, { "region": "Friesland" }, { "region": "Limón" }, { "region": "Lagos" }, { "region": "Katsina" }, { "region": "Dōngběi" }, { "region": "North Island" }, { "region": "Northwest Territories" }, { "region": "Navarra" }, { "region": "Oyo" }, { "region": "Metropolitana de Santiago" }, { "region": "Dōngběi" }, { "region": "Styria" }, { "region": "Manisa" }, { "region": "West-Vlaanderen" }, { "region": "Western Cape" }, { "region": "Luxemburg" }, { "region": "Antalya" }, { "region": "Sachsen" }, { "region": "Mexico City" }, { "region": "Alajuela" }, { "region": "Victoria" }, { "region": "Central Luzon" }, { "region": "Central Luzon" }, { "region": "Volyn oblast" }, { "region": "Arequipa" }, { "region": "Pará" }, { "region": "Rivers" }, { "region": "Niger" }, { "region": "Rio Grande do Sul" }, { "region": "Brussels Hoofdstedelijk Gewest" }, { "region": "Stockholms län" }, { "region": "Burgenland" }, { "region": "Ulster" }, { "region": "Victoria" }, { "region": "Sucre" }, { "region": "Minas Gerais" }, { "region": "Calabria" }, { "region": "Zaporizhzhia oblast" }, { "region": "Swiętokrzyskie" }, { "region": "Central Region" }, { "region": "Bình Phước" }, { "region": "Zuid Holland" }, { "region": "Valparaíso" }, { "region": "Mecklenburg-Vorpommern" }, { "region": "West Kalimantan" }, { "region": "Puntarenas" }, { "region": "Chihuahua" }, { "region": "Alsace" }, { "region": "Hà Nam" }, { "region": "Sokoto" }, { "region": "Kahramanmaraş" }, { "region": "Cartago" }, { "region": "West Region" }, { "region": "Arica y Parinacota" }, { "region": "Cordillera Administrative Region" }, { "region": "Free State" }, { "region": "Friesland" }, { "region": "Murmansk Oblast" }, { "region": "North Jeolla" }, { "region": "Cesar" }, { "region": "Pernambuco" }, { "region": "Hà Nam" }, { "region": "Balıkesir" }, { "region": "Vinnytsia oblast" }, { "region": "Munster" }, { "region": "Ankara" }, { "region": "Abruzzo" }, { "region": "Xīnán" }, { "region": "Małopolskie" }, { "region": "Cajamarca" }, { "region": "Ontario" }, { "region": "Prince Edward Island" }, { "region": "Rajasthan" }, { "region": "Maule" }, { "region": "Zakarpattia oblast" }, { "region": "Puntarenas" }, { "region": "Cordillera Administrative Region" }, { "region": "Namen" }, { "region": "Jönköpings län" }, { "region": "Nordland" }, { "region": "O'Higgins" }, { "region": "Tabasco" }, { "region": "Cartago" }, { "region": "Pará" }, { "region": "South Gyeongsang" }, { "region": "Puntarenas" }, { "region": "Munster" }, { "region": "Opolskie" }, { "region": "Hưng Yên" }, { "region": "Punjab" }, { "region": "Xīnán" }, { "region": "North Island" }, { "region": "Manipur" }, { "region": "Nordrhein-Westphalen" }, { "region": "New Brunswick" }, { "region": "South Gyeongsang" }, { "region": "Valle d'Aosta" }, { "region": "Vinnytsia oblast" }, { "region": "Poitou-Charentes" }, { "region": "North Chungcheong" }, { "region": "Gorontalo" }, { "region": "Katsina" }, { "region": "Eastern Cape" }, { "region": "South Island" }, { "region": "North Island" }, { "region": "Veneto" }, { "region": "Andalucía" }, { "region": "Andaman and Nicobar Islands" }, { "region": "Zuid Holland" }, { "region": "Kharkiv oblast" }, { "region": "Cusco" }, { "region": "Bremen" }, { "region": "Oslo" }, { "region": "Ontario" }, { "region": "New Brunswick" }, { "region": "North West" }, { "region": "Jönköpings län" }, { "region": "Chandigarh" }, { "region": "Victoria" }, { "region": "North Kalimantan" }, { "region": "Gävleborgs län" }, { "region": "Hidalgo" }, { "region": "Picardie" }, { "region": "Bắc Kạn" }, { "region": "Puno" }, { "region": "Worcestershire" }, { "region": "Mazowieckie" }, { "region": "Special Capital Region of Jakarta" }, { "region": "Ancash" }, { "region": "Jeju" }, { "region": "Innlandet" }, { "region": "Zakarpattia oblast" }, { "region": "Jönköpings län" }, { "region": "Burgenland" }, { "region": "Khyber Pakhtoonkhwa" }, { "region": "Poitou-Charentes" }, { "region": "Antwerpen" }, { "region": "Vermont" }, { "region": "Caraga" }, { "region": "Vĩnh Phúc" }, { "region": "Paraíba" }, { "region": "Gävleborgs län" }, { "region": "Dalarnas län" }, { "region": "Pennsylvania" }, { "region": "Papua" }, { "region": "Cajamarca" }, { "region": "Bursa" }, { "region": "Aragón" }, { "region": "Eastern Cape" }, { "region": "Baja California" }, { "region": "Punjab" }, { "region": "Bauchi" }, { "region": "Brandenburg" }, { "region": "Sachsen" }, { "region": "Banten" }, { "region": "Anambra" }, { "region": "Stockholms län" }, { "region": "West Region" }, { "region": "Ivanovo Oblast" }, { "region": "Bắc Kạn" }, { "region": "Alajuela" }, { "region": "San José" }, { "region": "Saarland" }, { "region": "Sachsen-Anhalt" }, { "region": "Magdalena" }, { "region": "Sindh" }, { "region": "Khyber Pakhtoonkhwa" }, { "region": "Pernambuco" }, { "region": "Manitoba" }, { "region": "Radnorshire" }, { "region": "Provence-Alpes-Côte d'Azur" }, { "region": "Rheinland-Pfalz" }, { "region": "Xīnán" }, { "region": "Wyoming" }, { "region": "Chernivtsi oblast" }, { "region": "Baja California" }, { "region": "Orkney" }, { "region": "Balıkesir" }, { "region": "Manitoba" }, { "region": "Manisa" }, { "region": "Zaporizhzhia oblast" }, { "region": "Hà Nội" }, { "region": "Oryol Oblast" }, { "region": "North West" }, { "region": "Saskatchewan" }, { "region": "Kahramanmaraş" }, { "region": "Lima" }, { "region": "South Island" }, { "region": "Carinthia" }, { "region": "Tamaulipas" }, { "region": "Balochistan" }, { "region": "Flevoland" }, { "region": "Euskadi" }, { "region": "Balıkesir" }, { "region": "Gävleborgs län" }, { "region": "Lagos" }, { "region": "Paraná" }, { "region": "Zeeland" }, { "region": "Xīběi" }, { "region": "Central Luzon" }, { "region": "Magallanes y Antártica Chilena" }, { "region": "Rio de Janeiro" }, { "region": "Central Luzon" }, { "region": "Northern Cape" }, { "region": "Xīnán" }, { "region": "Corse" }, { "region": "North Region" }, { "region": "Northern Territory" }, { "region": "Manisa" }, { "region": "Schleswig-Holstein" }, { "region": "Central Region" }, { "region": "Nunavut" }, { "region": "Tyrol" }, { "region": "Nunavut" }, { "region": "Montana" }, { "region": "Hidalgo" }, { "region": "Western Visayas" }, { "region": "Cagayan Valley" }, { "region": "Cajamarca" }, { "region": "Northern Mindanao" }, { "region": "Kahramanmaraş" }, { "region": "Limón" }, { "region": "Sakhalin Oblast" }, { "region": "Aydın" }, { "region": "İzmir" }, { "region": "Emilia-Romagna" }, { "region": "Bicol Region" }, { "region": "Punjab" }, { "region": "Trøndelag" }, { "region": "Madrid" }, { "region": "Washington" }, { "region": "South Island" }, { "region": "Poltava oblast" }, { "region": "Arkansas" }, { "region": "North West" }, { "region": "Brandenburg" }, { "region": "Friesland" }, { "region": "Azad Kashmir" }, { "region": "Illes Balears" }, { "region": "Vestfold og Telemark" }, { "region": "Guainía" }, { "region": "Swiętokrzyskie" }, { "region": "East Region" }, { "region": "Kostroma Oblast" }, { "region": "Uttar Pradesh" }, { "region": "Northern Cape" }, { "region": "Møre og Romsdal" }, { "region": "Dalarnas län" }, { "region": "San Luis Potosí" }, { "region": "Southwestern Tagalog Region" }, { "region": "Davao Region" }, { "region": "North Chungcheong" }, { "region": "Sachsen" }, { "region": "California" }, { "region": "Quebec" }, { "region": "Bolívar" }, { "region": "Zhōngnán" }, { "region": "South Kalimantan" }, { "region": "Västra Götalands län" }, { "region": "Yucatán" }, { "region": "Vestfold og Telemark" }, { "region": "Podlaskie" }, { "region": "Limón" }, { "region": "Puglia" }, { "region": "Östergötlands län" }, { "region": "Davao Region" }, { "region": "Hòa Bình" }, { "region": "Veracruz" }, { "region": "Kharkiv oblast" }, { "region": "Saskatchewan" }, { "region": "East Region" }, { "region": "Drenthe" }, { "region": "Zeeland" }, { "region": "Leinster" }, { "region": "Virginia" }, { "region": "O'Higgins" }, { "region": "Chihuahua" }, { "region": "Goiás" }, { "region": "Northern Territory" }, { "region": "Murcia" }, { "region": "Flevoland" }, { "region": "Vladimir Oblast" }, { "region": "Guanacaste" }, { "region": "Aydın" }, { "region": "Pennsylvania" }, { "region": "KwaZulu-Natal" }, { "region": "North Island" }, { "region": "West Region" }, { "region": "Đà Nẵng" }, { "region": "South Island" }, { "region": "South Island" }, { "region": "Bahia" }, { "region": "Connacht" }, { "region": "Jeju" }, { "region": "Loreto" }, { "region": "Tver Oblast" }, { "region": "Östergötlands län" }, { "region": "Thanh Hóa" }, { "region": "Montana" }, { "region": "Huádōng" }, { "region": "Mykolaiv oblast" }, { "region": "Şanlıurfa" }, { "region": "Zeeland" }, { "region": "Lagos" }, { "region": "Azad Kashmir" }, { "region": "Leinster" }, { "region": "Styria" }, { "region": "Vorarlberg" }, { "region": "Aragón" }, { "region": "East Kalimantan" }, { "region": "North Sumatra" }, { "region": "Podlaskie" }, { "region": "Xīnán" }, { "region": "Bourgogne" }, { "region": "Zakarpattia oblast" }, { "region": "Navarra" }, { "region": "Voronezh Oblast" }, { "region": "South Island" }, { "region": "Eastern Visayas" }, { "region": "Quebec" }, { "region": "Kursk Oblast" }, { "region": "Piura" }, { "region": "Carinthia" }, { "region": "Upper Austria" }, { "region": "Friuli-Venezia Giulia" }, { "region": "Waals-Brabant" }, { "region": "Dōngběi" }, { "region": "Illinois" }, { "region": "Bursa" }, { "region": "Tyrol" }, { "region": "Cusco" }, { "region": "Huntingdonshire" }, { "region": "Vestland" }, { "region": "Jönköpings län" }, { "region": "Bắc Giang" }, { "region": "Brussels Hoofdstedelijk Gewest" }, { "region": "South Australia" }, { "region": "Namen" }, { "region": "British Columbia" }, { "region": "Kursk Oblast" }, { "region": "Warmińsko-mazurskie" }, { "region": "Trøndelag" }, { "region": "Noord Brabant" }, { "region": "Stockholms län" }, { "region": "New Brunswick" }, { "region": "Central Region" }, { "region": "Bursa" }, { "region": "West Papua" }, { "region": "Morelos" }, { "region": "Kujawsko-pomorskie" }, { "region": "KwaZulu-Natal" }, { "region": "Azad Kashmir" }, { "region": "Mazowieckie" }, { "region": "Xīnán" }, { "region": "Hamburg" }, { "region": "Puebla" }, { "region": "Limón" }, { "region": "Santa Catarina" }, { "region": "Manisa" }, { "region": "South Island" }, { "region": "Central Kalimantan" }, { "region": "Oyo" }, { "region": "South Chungcheong" }, { "region": "Vestland" }, { "region": "Molise" }, { "region": "Illinois" }, { "region": "North Region" }, { "region": "Hessen" }, { "region": "Quảng Ngãi" }, { "region": "Huádōng" }, { "region": "Luik" }, { "region": "Mersin" }, { "region": "North Jeolla" }, { "region": "Zhōngnán" }, { "region": "Bauchi" }, { "region": "Nagaland" }, { "region": "Sindh" }, { "region": "Rio Grande do Sul" }, { "region": "Newfoundland and Labrador" }, { "region": "Dadra and Nagar Haveli" }, { "region": "Aisén" }, { "region": "North Island" }, { "region": "Friesland" }, { "region": "Azad Kashmir" }, { "region": "Arequipa" }, { "region": "Henegouwen" }, { "region": "North Region" }, { "region": "Ross-shire" }, { "region": "Osun" }, { "region": "North Island" }, { "region": "Bangsamoro" }, { "region": "Cornwall" }, { "region": "Podkarpackie" }, { "region": "British Columbia" }, { "region": "Special Capital Region of Jakarta" }, { "region": "Zhōngnán" }, { "region": "West Kalimantan" }, { "region": "Friesland" }, { "region": "Monmouthshire" }, { "region": "Sachsen" }, { "region": "Metropolitana de Santiago" }, { "region": "Berkshire" }, { "region": "Chelyabinsk Oblast" }, { "region": "North Island" }, { "region": "Kinross-shire" }, { "region": "North-East Region" }, { "region": "Lorraine" }, { "region": "Đắk Nông" }, { "region": "Limón" }, { "region": "North Island" }, { "region": "Stockholms län" }, { "region": "East Lothian" }, { "region": "Assam" }, { "region": "Marche" }, { "region": "Cusco" }, { "region": "Oslo" }, { "region": "Dalarnas län" }, { "region": "Paraná" }
 ]
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// table data
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+let tableData = {}
+const N_ROWS_PER_PAGE = 10_000
+const N_COLUMNS = 12
+const createData = () => {
+  tableData = createDataset(N_COLUMNS, N_ROWS_PER_PAGE)
+
+  const transformToObj = (tableData) => {
+
+    const { headers, data } = tableData
+
+    const groupedItems = []
+    for (let i = 0; i < data[0].length; i++) {
+      const item = {}
+      for (let headerIdx = 0; headerIdx < headers.length; headerIdx++) {
+        const label = headers[headerIdx].label
+        const value = data[headerIdx][i]
+        Object.assign(item, { [label]: value })
+      }
+
+      groupedItems.push(item)
+    }
+    return groupedItems
+  }
+
+  // ----------------------------------------------------------------
+  // ----------------------------------------------------------------
+  // CREATE FILES
+  // ----------------------------------------------------------------
+  // ----------------------------------------------------------------
+
+  // const jsonArr = JSON.stringify(tableData.data, null, 2)
+
+  const jsonObj = transformToObj(tableData)
+
+  fs.writeFile('src/static/jsonArr.json', JSON.stringify(tableData, null, 2), function(err) {})
+  fs.writeFile('src/static/jsonObj.json', JSON.stringify(jsonObj, null, 2), function(err) {})
+  
+  console.log('--- CREATED ---');
+}
+
+createData()

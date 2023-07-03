@@ -1,4 +1,7 @@
 <script setup>
+import { onMounted } from 'vue'
+import VirtualTable from './VirtualTable.vue';
+
 const props = defineProps({
   headers: {
     type: Array,
@@ -20,11 +23,57 @@ const props = defineProps({
   defaultSortDirection: {
     type: Number,
     default: 1
+  },
+  listType: {
+    type: String,
+    default: 'pagination',
+    required: true
+  },
+  tableItemsCount: {
+    type: Number,
+    default: 100,
+    required: true
+  },
+  sortedIdxs: {
+    type: Array,
+    required: true
   }
 })
 
+// TODO: filters:
+// - remove normal pills
+// - add badge counter
+// - icons for button group pagination / virtual list
+
+// TODO: table:
+// table height from client height
+// better spacing
+// style headers
+// add sorting
+// virtual list bottom -> show current visible results
+
+// v2: add search bar
+
+
+onMounted(() => {
+  handleResize()
+  window.addEventListener('resize', handleResize)
+});
+
+let innerHeight = $ref(0)
+const handleResize = () => {
+  innerHeight = window.innerHeight
+}
+const navH = 40
+const filterH = 60
+const bottomH = 100
+const tableHeight = $computed(() => {
+  const deg = navH + filterH + bottomH
+  return props.listType === 'pagination' ? innerHeight - deg : innerHeight - (deg - 61)
+})
+
 // sort events
-const emit = defineEmits(['onHeaderSort'])
+const emit = defineEmits(['onHeaderSort', 'trimVirtualList'])
 function sort (head, colIdx) {
   const { sortedHeader, defaultSortDirection, sortDirection } = props
   const newHeader = head !== sortedHeader
@@ -32,14 +81,64 @@ function sort (head, colIdx) {
   emit('onHeaderSort', head, newDirection, colIdx)
 }
 
-function transformData (data, type) {
+const maxZeros = 4
+const transformNum = (num) => {
+  const str = num.toString()
+  const x = str.split('.')
+  let htmlStr
+  if (x.length === 1) {
+    htmlStr = x[0] + '<span class="text-muted">.0000</span>'
+  } else {
+    const floatLen = x[1].length
+    const zeroNums = maxZeros - floatLen
+    const zeros = '0'.repeat(zeroNums)
+    htmlStr = x[0] + `.${x[1]}<span class="text-muted">${zeros}</span>`
+  }
+  return htmlStr
+}
+const transformNumColored = (num) => { 
+  const isPos = num > 0
+  const str = num.toString()
+  const x = str.split('.')
+  let htmlStr
+  
+  if (isPos) {
+    if (x.length === 1) {
+      htmlStr = `<span class="text-positive">${x[0]}</span><span class="text-muted-positive">.0000</span>`
+    } else {
+      const floatLen = x[1].length
+      const zeroNums = 4 - floatLen
+      const zeros = '0'.repeat(zeroNums)
+      htmlStr = `<span class="text-positive">${x[0]}.${x[1]}</span><span class="text-muted-positive">${zeros}</span>`
+    }
+  } else {
+    if (x.length === 1) {
+      htmlStr = `<span class="text-negative">${x[0]}</span><span class="text-muted-negative">.0000</span>`
+    } else {
+      const floatLen = x[1].length
+      const zeroNums = 4 - floatLen
+      const zeros = '0'.repeat(zeroNums)
+      htmlStr = `<span class="text-negative">${x[0]}.${x[1]}</span><span class="text-muted-negative">${zeros}</span>`
+    }
+  }
+  return htmlStr
+}
+
+const transformData = (data, type, index) => {
   if (type === 'date') {
     const dateObject = new Date(data)
-    const dateOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
-    const timeOptions = { hour12: false, hour: '2-digit', minute: '2-digit', seconds: '2-digit' };
-    const dateDay = dateObject.toLocaleString('us-US', dateOptions)
-    const dateHour = dateObject.toLocaleTimeString('us-US', timeOptions)
-    return dateDay + ' ' + dateHour
+    const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+    const timeOptions = { hour12: true, hour: 'numeric', minute: '2-digit', seconds: '2-digit' };
+    const dateDay = dateObject.toLocaleDateString('en-US', dateOptions)
+    const dateHour = dateObject.toLocaleTimeString('en-US', timeOptions)
+
+    return `${dateDay} <span class="text-muted">${dateHour}</span>`
+  } else if (index === 0) {
+    return new Intl.NumberFormat('en-US').format(data)
+  } else if (index === 3) {
+    return `${transformNumColored(data)}`
+  } else if (type === 'number') {
+    return `${transformNum(data)}`
   } else {
     return data
   }
@@ -47,17 +146,20 @@ function transformData (data, type) {
 </script>
 
 <template>
-  <div class="table-wrapper">
-    <table>
+  <div class="table-wrapper" :style="{ 'max-height': tableHeight + 'px' }">
+    <table v-if="listType === 'pagination'">
       <!-- headers -->
       <thead>
         <tr>
-          <!-- TODO: hide class cursor pointer? make default and add class only, if unsortable? -->
-          <!-- :class="{ 'cursor-pointer': head.sortable }" -->
-          <th v-for="(head, colIdx) in headers" :key="head.id"
-            v-on="head.sortable ? { click: () => sort(head, colIdx) } : {}">
-            <div class="align-center table-name">
-              <div />
+          <th 
+            v-for="(head, colIdx) in headers" 
+            :key="head.id"
+            v-on="head.sortable ? { click: () => sort(head, colIdx) } : {}"
+          >
+            <div 
+              class="align-center table-name"
+              :class="head.align"
+            >
               <div v-html="head.label" />
               <div class="pl-6" v-if="head.sortable">
                 <div class="up-arrow"
@@ -71,12 +173,19 @@ function transformData (data, type) {
       </thead>
       <!-- BODY -->
       <tbody>
-        <!-- FIXME: get longest name and adapt cell width -->
         <template v-if="tableData[0].length">
           <template v-for="(_, rowIdx) in tableData[0].length">
             <tr>
-              <td v-for="(data, colIdx) in tableData" :class="[headers[colIdx].align, { 'parent': colIdx === 0 }]"
-                :key="data.id" v-html="transformData(data[rowIdx], headers[colIdx].type)" />
+              <td 
+                v-for="(data, colIdx) in tableData" 
+                :class="[
+                  headers[colIdx].align, 
+                  { 'parent': colIdx === 0 }, 
+                  { 'text-bold': colIdx === sortedHeader.columnKey },
+                  { 'date-between': colIdx === 2 }
+                ]"
+                :key="data.id" v-html="transformData(data[rowIdx], headers[colIdx].type, colIdx)"
+              />
             </tr>
           </template>
         </template>
@@ -88,26 +197,33 @@ function transformData (data, type) {
         </template>
       </tbody>
     </table>
+
+    <VirtualTable
+      v-else
+      @sort="sort"
+      :headers="headers"
+      :tableData="tableData"
+      :tableItemsCount="tableItemsCount"
+      :sortedHeader="sortedHeader"
+      :sortDirection="sortDirection"
+      :tableHeight="tableHeight"
+      :sortedIdxs="sortedIdxs"
+    />
+
   </div>
 </template>
 
 <style lang="scss" scoped>
 .table-wrapper {
   border: 1px solid var(--table-divider);
+  background-color: var(--table-cell-bg);
   position: relative;
-  min-height: 100px;
-  max-height: 500px;
   height: auto;
   width: 100%;
   overflow: auto;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
 }
-
-// sortings
-// .cursor-pointer {
-//   cursor: pointer;
-// }
 
 .pl-30 {
   padding-left: 30px;
@@ -142,16 +258,29 @@ function transformData (data, type) {
   border-top: solid 7px var(--action);
 }
 
+.text-bold {
+  font-weight: 700;
+}
+
 // HELPERS
 .end {
   text-align: right;
+  justify-content: end;
 }
 
 .center {
   text-align: center;
+  justify-content: center;
 }
 
 .start {
   text-align: left;
+  justify-content: start;
+}
+
+.date-between {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
 }
 </style>

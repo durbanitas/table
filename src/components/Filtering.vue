@@ -1,10 +1,10 @@
 <script setup>
 import { watch } from 'vue'
-import FilteringPills from './FilteringPills.vue'
 import IconFilter from '../assets/svgs/filter.svg'
 import IconPlus from '../assets/svgs/plus.svg'
 import IconMinus from '../assets/svgs/minus.svg'
 import IconClose from '../assets/svgs/cross.svg'
+import IconTrash from '../assets/svgs/trash.svg'
 
 const props = defineProps({
   headers: {
@@ -174,16 +174,31 @@ function validate (userInput, filterIdx) {
 </script>
 
 <template>
-  <button @click="openModal()" ref="filterBtn" type="button" class="filter-btn" :class="{ 'active': showFilterMenu }">
+  <button 
+    @click="openModal()" 
+    ref="filterBtn" 
+    type="button" 
+    class="filter-btn" 
+    :class="{ 'active': showFilterMenu }"
+  >
     <IconFilter class="icon" />
     <span class="pl-6">Filter</span>
+    <span class="pill">{{ filterTags.length }}</span>
   </button>
 
-  <!-- pills -->
-  <FilteringPills v-if="filterTags.length" :filterTags="filterTags" :headers="headers"
-    @removeSingleFilter="removeFilter" @removeAllfilters="removeAllfilters" />
-
-  <div v-show="showFilterMenu" ref="filterModal" class="filter-modal box">
+  <div 
+    v-show="showFilterMenu" 
+    ref="filterModal" 
+    class="filter-modal box"
+  >
+    <div class="flex-end">
+      <button 
+        @click="showFilterMenu = false" 
+        class="close-btn minimal"
+      >
+        <IconClose class="icon" />
+      </button>
+    </div>
     <!-- message -->
     <div v-if="filtersScope.length === 0">
       No filters applied
@@ -219,7 +234,7 @@ function validate (userInput, filterIdx) {
 
         <!-- remove filter -->
         <button @click="removeFilter(idx)" class="close-btn">
-          <IconClose class="icon" />
+          <IconTrash class="icon" />
         </button>
       </div>
       <!-- show invalid message -->
@@ -256,13 +271,14 @@ function validate (userInput, filterIdx) {
 .filter-modal {
   position: absolute;
   z-index: 5;
-  background-color: var(--bg-color0);
+  background-color: var(--bg-color2);
   top: 50px;
-  left: 4px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   border-color: var(--btn-border);
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   min-width: 350px;
+  margin-left: 12px;
+  margin-top: 34px;
 }
 
 input[type="date"] {

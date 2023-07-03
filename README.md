@@ -3,6 +3,35 @@
 Custom table component optimized for performance.
 Current benchmark to filter, sort and render  ROWS x Cols in MS.
 
+## ideas
+
+- create .json file w/ static data
+- user can choose the length of the dataset...
+
+- table head
+  - filter
+  - searchbar
+  - button group: Virtal || Pagination
+  - button group: add zeros / hide zeros
+
+
+- cell:
+  - format dates (Sep 1st, Oct 15th)
+  - stage: (with colored icons)
+    - demo scheduled (grey)
+    - in trial (blue)
+    - demo completed (orange)
+    - invoice send (white)
+    - trial expired (red)
+  - Name Avatar (Img or Initials)
+  - email-adress
+
+- left column -> about text
+- right colum -> table component
+
+- virtual scroll
+  - add longest strings in dead spacer to set cell width?
+
 ## Todo:
 
 - add type: urls?
@@ -36,12 +65,19 @@ Current benchmark to filter, sort and render  ROWS x Cols in MS.
 - scroll
   - virtualization (important for -> show rows per page: All)
 
+  - https://dev.to/adamklein/build-your-own-virtual-scroll-part-i-11ib
+
+
 - url, add queries
   - share table with applied filters, pagination, sorting
 
 - keyboard navigation
 
 - renderless component
+
+## Dependencies
+
+- [Blueprint Colors and Icons](https://blueprintjs.com/docs/)
 
 ## Links
 
