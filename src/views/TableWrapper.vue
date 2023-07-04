@@ -1,6 +1,7 @@
 <script setup>
 import TableParent from '../components/Table/TableParent.vue'
 import Filtering from '../components/Filtering.vue'
+import SearchBar from '../components/UI/SearchBar.vue'
 import { onBeforeMount } from 'vue'
 import tableDataJson from '../static/jsonArr.json'
 
@@ -57,19 +58,28 @@ const onUpdated = () => {
   isLoading = false
   console.log('hook ', {isLoading});
 }
+
+const searchQuery = $ref('')
+const handleSearch = (val) => {
+  searchQuery = val
+}
 </script>
 
 <template>
-  <div class="table-header container">
-    <Filtering 
-      @submit="useFilterTags"
-      :headers="tableData.headers" 
-    />
-
-    <!-- <div class="space-between">
-      <button @click="changeType('pagination')" :class="{ 'active': listType === 'pagination' }">Pagination</button>
-      <button @click="changeType('virtual')" :class="{ 'active': listType === 'virtual' }">Virtual</button>
-    </div> -->
+  <div class="container pl-12 pr-12">
+    <div class="table-header">
+      <Filtering 
+        @submit="useFilterTags"
+        :headers="tableData.headers" 
+      />
+  
+      <!-- <SearchBar @search="handleSearch" /> -->
+  
+      <!-- <div class="space-between">
+        <button @click="changeType('pagination')" :class="{ 'active': listType === 'pagination' }">Pagination</button>
+        <button @click="changeType('virtual')" :class="{ 'active': listType === 'virtual' }">Virtual</button>
+      </div> -->
+    </div>
   </div>
   <!-- <div >
     {{ isLoading }}
@@ -83,6 +93,7 @@ const onUpdated = () => {
       :N_ROWS_PER_PAGE="N_ROWS_PER_PAGE"
       :filterTags="filterTags"
       :listType="listType"
+      :searchQuery="searchQuery"
     />
   </div>
 </template>

@@ -89,6 +89,10 @@ const props = defineProps({
       }
     ]
   },
+  searchQuery: {
+    type: String,
+    default: ''
+  },
   N_ROWS_PER_PAGE: {
     type: Number,
     default: 200
@@ -118,6 +122,28 @@ function sort (newHeader, newDirection, headIdx) {
 
 // FILTERING
 const originalIdxs = $computed(() => [...Array(props.tableData.data[0].length).keys()]) // [0, 1, ...data[0].length ]
+
+// const filterByQuery = $computed(() => {
+//   if (props.searchQuery.length === 0) return originalIdxs
+//   let idxs = []
+//   props.tableData.data.forEach((colData, colIdx) => {
+//     const colType = props.tableData.headers[colIdx].type
+//     for (let rowIdx = 0; rowIdx < colData.length; rowIdx++) {
+//       const cellValue = colData[rowIdx]
+//       const cellItem = colType === 'number' ? cellValue.toString() : cellValue
+//       // TODO: filter by date
+//       if (colType === 'date') return
+//       if (cellItem.includes(props.searchQuery)) {
+//         idxs.push(rowIdx)
+//       }
+//     }
+//   })
+
+//   // TODO: better loop instead and prevent removing duplicated idxs
+//   const uniqueIdxs = [...new Set(idxs)]
+//   return uniqueIdxs
+// })
+
 const filteredIdxs = $computed(() => {
   const { filterTags, tableData } = props
   // console.log(filterTags);
