@@ -215,14 +215,11 @@ const transformData = (data, type, index) => {
 
 <style lang="scss" scoped>
 .table-wrapper {
-  border: 1px solid var(--table-divider);
   background-color: var(--table-cell-bg);
   position: relative;
   height: auto;
   width: 100%;
   overflow: auto;
-  border-top-left-radius: var(--border-radius);
-  border-top-right-radius: var(--border-radius);
 }
 
 .pl-30 {

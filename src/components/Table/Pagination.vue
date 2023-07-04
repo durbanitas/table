@@ -106,9 +106,7 @@ const currentPageView = $computed(() => {
 .pagination-wrapper {
   padding: 0 8px;
   margin-right: -2px;
-  border-left: 1px solid var(--table-divider);
-  border-right: 1px solid var(--table-divider);
-  border-bottom: 1px solid var(--table-divider);
+  border: 1px solid var(--border-color);
   border-bottom-left-radius: var(--border-radius);
   border-bottom-right-radius: var(--border-radius);
   background-color: var(--bg-color1);

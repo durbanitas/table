@@ -183,7 +183,7 @@ function validate (userInput, filterIdx) {
   >
     <IconFilter class="icon" />
     <span class="pl-6">Filter</span>
-    <span class="pill">{{ filterTags.length }}</span>
+    <span class="pill" :class="{ 'warning-pill': filterTags.length > 0 }">{{ filterTags.length }}</span>
   </button>
 
   <div 
@@ -199,6 +199,7 @@ function validate (userInput, filterIdx) {
         <IconClose class="icon" />
       </button>
     </div>
+    <!-- TODO: show filter input on opening -->
     <!-- message -->
     <div v-if="filtersScope.length === 0">
       No filters applied
@@ -220,16 +221,28 @@ function validate (userInput, filterIdx) {
         <!-- TODO: inputmode="numeric" with floats? -->
 
         <template v-if="getFilterType(idx) === 'number'">
-          <input type="text" @input="handleInput($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
-            :class="{ 'invalid': !validInputs }" pattern="[0-9.]+" :value="filter.value">
+          <input 
+            type="text" 
+            @input="handleInput($event, idx)" 
+            :ref="(input) => { itemRefs[idx] = input }"
+            :class="{ 'invalid': !validInputs }" 
+            pattern="[0-9.]+" 
+            :value="filter.value"
+            style="margin-top: -1px;padding-bottom: 2px;"
+          >
         </template>
         <template v-else-if="getFilterType(idx) === 'date'">
           <input type="date" @change="handleInput($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
             :value="filter.value">
         </template>
         <template v-else>
-          <input type="text" @keyup="handleInput($event, idx)" :ref="(input) => { itemRefs[idx] = input }"
-            :value="filter.value">
+          <input 
+            type="text" 
+            @keyup="handleInput($event, idx)" 
+            :ref="(input) => { itemRefs[idx] = input }"
+            :value="filter.value"
+            style="margin-top: -1px;padding-bottom: 2px;"
+          >
         </template>
 
         <!-- remove filter -->
@@ -263,9 +276,10 @@ function validate (userInput, filterIdx) {
 }
 
 .filter-btn {
-  margin: 4px;
-  text-transform: uppercase;
-  letter-spacing: 1.1;
+  font-size: 16px;
+  letter-spacing: 1.1px;
+  height: 30px;
+  margin: 4px 6px 4px 12px;
 }
 
 .filter-modal {
@@ -290,5 +304,9 @@ input:invalid,
 input:invalid:focus {
   border-color: var(--remove);
   outline: none;
+}
+
+.warning-pill {
+  background-color: var(--warning);
 }
 </style>
