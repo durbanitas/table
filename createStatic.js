@@ -72,22 +72,6 @@ const createDataset = (userColumns, userRows) => {
     headers.push(head)
   }
 
-  // get max character length
-  // const getCharLength = (str) => str.toString().length
-  // headers.forEach(header => {
-  //   header.charLen = getCharLength(header.label)
-  // })
-  // data.forEach((colData, colIdx) => {
-    
-  //   colData.forEach(item => {
-  //     currentHeaderLen = headers[colIdx].charLen
-  //     currentItemLength = getCharLength(item)
-  //     if (currentItemLength > currentHeaderLen) {
-  //       headers[colIdx].charLen = currentItemLength
-  //     }
-  //   })
-  // })
-
   // create date
   function createDate () {
     const unixToday = Date.now()
@@ -375,7 +359,7 @@ const REGIONS = [
 // ----------------------------------------------------------------
 
 let tableData = {}
-const N_ROWS_PER_PAGE = 10_000
+const N_ROWS_PER_PAGE = 200
 const N_COLUMNS = 12
 const createData = () => {
   tableData = createDataset(N_COLUMNS, N_ROWS_PER_PAGE)
