@@ -9,44 +9,59 @@ export const createDataset = (userColumns, userRows) => {
       if (i === 0) {
         col[idx] = idx + 1
       }
-      else if (i === 1) { // create second column dates
-        col[idx] = createDate()
-      }
-      else if (i === 2) {
+      else if (i === 1) {
         col[idx] = PERSONS[Math.floor(Math.random() * PERSONS.length)].name
       }
+      else if (i === 2) { // create second column dates
+        col[idx] = createDate()
+      }
       else if (i === 3) {
+        col[idx] = getScoreNumber()
+      }
+      else if (i === 4) {
         col[idx] = COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)].code
       }
-      else { // create another columns as numbers
+      else if (i === 5) {
+        col[idx] = REGIONS[Math.floor(Math.random() * REGIONS.length)].region
+      } else if (i === 6) {
+        col[idx] = normalDistribution(100).toFixed(4)
+      }
+      // create another columns as numbers
+      else {
         col[idx] = createNumber(randomNumber(0, 4))
       }
-      // col[idx] = createNumber(randomNumber(0, 4))
     }
     data.push(col)
 
     // create string header
     const head = {
       columnKey: i,
+      charLen: 0,
       // label: 'Col ' + i,
       // type: 'number',
       // sortable: true,
       // align: 'end'
       label: i === 0 ? 'ID' :
-        i === 1 ? 'Created' :
-          i === 2 ? 'Name' :
-            i === 3 ? 'ISO Code' :
-              'Num ' + (i - 3),
+        i === 1 ? 'Name' :
+          i === 2 ? 'Created' :
+            i === 3 ? 'Score' :
+              i === 4 ? 'ISO Code' :
+                i === 5 ? 'Region' :
+                'Num ' + (i - 5),
       type: i === 0 ? 'number' :
-        i === 1 ? 'date' :
-          i === 2 ? 'string' :
-            i === 3 ? 'string' :
-              'number',
+        i === 1 ? 'string' :
+          i === 2 ? 'date' :
+            i === 3 ? 'number' :
+              i === 4 ? 'string' :
+                i === 5 ? 'string' :
+                'number',
       sortable: true,
       align:
         i === 0 ? 'end' :
-          i < 4 ? 'start' :
-            'end'
+          i === 3 ? 'end' :
+            i === 5 ? 'start' :
+            i < 6 ? 'start' :
+              'end'
     }
     headers.push(head)
   }
@@ -62,6 +77,20 @@ export const createDataset = (userColumns, userRows) => {
 const createNumber = (trim) => Number((Math.random() * 100).toFixed(trim))
 
 const randomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
+
+const normalDistribution = (scale) => Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(2 * Math.PI * Math.random()) * scale
+
+// TODO: make not linear, make normaly (Glockenkurve)
+const getScoreNumber = () => {
+  const flipCoin = (odds=0.85) => {
+    return Math.random() < odds ? 1 : 0
+  }
+  const posNumber = (trim=4) => Number((Math.random() * 100).toFixed(trim)) 
+  const negNumber = (trim=4) => Number((Math.random() * -100).toFixed(trim)) 
+
+  // 75% chance pos number 30% chance neg number
+  return flipCoin() ? posNumber() : negNumber()
+}
 
 // create randomized filters
 const OPERATORS = ['==', '>', '<']

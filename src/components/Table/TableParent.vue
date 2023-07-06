@@ -89,10 +89,6 @@ const props = defineProps({
       }
     ]
   },
-  searchQuery: {
-    type: String,
-    default: ''
-  },
   N_ROWS_PER_PAGE: {
     type: Number,
     default: 200
@@ -100,6 +96,7 @@ const props = defineProps({
 })
 
 // SORTING
+
 let sortedHeaderIdx = $ref(0)
 let sortedHeader = $ref(getHeaderObj(props.tableData.headers))
 let sortDirection = $ref(props.defaultSortDirection)
@@ -109,12 +106,14 @@ function getHeaderObj (headers) {
   if (defaultSortByHeader) {
     sortedHeaderIdx = headers.findIndex(head => head.columnKey === defaultSortByHeader)
     return headers.find(head => head.columnKey === defaultSortByHeader)
-  } else { // return first header element to be sorted by
+  } else {
+    // return first header element to be sorted by
     return headers[0]
   }
 }
-// user interaction: sort
-function sort (newHeader, newDirection, headIdx) {
+
+// User interaction: sort
+const sort = (newHeader, newDirection, headIdx) => {
   sortedHeader = newHeader
   sortDirection = newDirection
   sortedHeaderIdx = headIdx
@@ -123,55 +122,43 @@ function sort (newHeader, newDirection, headIdx) {
 // FILTERING
 const originalIdxs = $computed(() => [...Array(props.tableData.data[0].length).keys()]) // [0, 1, ...data[0].length ]
 
-// const filterByQuery = $computed(() => {
-//   if (props.searchQuery.length === 0) return originalIdxs
-//   let idxs = []
-//   props.tableData.data.forEach((colData, colIdx) => {
-//     const colType = props.tableData.headers[colIdx].type
-//     for (let rowIdx = 0; rowIdx < colData.length; rowIdx++) {
-//       const cellValue = colData[rowIdx]
-//       const cellItem = colType === 'number' ? cellValue.toString() : cellValue
-//       // TODO: filter by date
-//       if (colType === 'date') return
-//       if (cellItem.includes(props.searchQuery)) {
-//         idxs.push(rowIdx)
-//       }
-//     }
-//   })
-
-//   // TODO: better loop instead and prevent removing duplicated idxs
-//   const uniqueIdxs = [...new Set(idxs)]
-//   return uniqueIdxs
-// })
-
 const filteredIdxs = $computed(() => {
   const { filterTags, tableData } = props
-  // console.log(filterTags);
-  // if no filters are applied, the original idxs are returned
-  if (filterTags.length === 0) return originalIdxs
-  let idxs = []
-  const mergedFilterObj = mergeFilters(filterTags)
-  Object.entries(mergedFilterObj).forEach(([colKey, filterElements], filterTagIdx) => {
+
+  if (filterTags.length === 0) {
+    return originalIdxs
+  }
+
+  return Object.entries(mergeFilters(filterTags)).reduce((idxs, [colKey, filterElements], filterTagIdx) => {
     const colIdx = tableData.headers.findIndex(head => head.columnKey == colKey)
     const filters = filterElements.map(f => filterTags[f])
     const colType = tableData.headers[colIdx].type
-    // compare first filter with whole column data
-    if (filterTagIdx === 0) return idxs = getColFilteredIdxs(tableData.data[colIdx], filters, colType)
-    // compare only the n-filtered results, not the whole column
+
+    if (filterTagIdx === 0) {
+      return getColFilteredIdxs(tableData.data[colIdx], filters, colType)
+    }
+
     const filteredColData = idxs.map(dataIdx => tableData.data[colIdx][dataIdx])
     const matchingIdxs = getColFilteredIdxs(filteredColData, filters, colType)
-    idxs = idxs.filter((_, matchIdx) => matchingIdxs.indexOf(matchIdx) !== -1)
-  })
-  return idxs
+    return idxs.filter((_, matchIdx) => matchingIdxs.indexOf(matchIdx) !== -1)
+  }, [])
 })
 // mergeFilters: { columnKey: [filterIdx0, filterIdx2], columnKey: [filterIdx1] }
-function mergeFilters (filters) {
+function mergeFilters(filters) {
   const helperObj = {}
-  const keys = filters.map(f => f.columnKey)
-  const uniqueKeys = [...new Set(keys)]
-  uniqueKeys.forEach(key => Object.assign(helperObj, { [key]: [] }))
-  filters.forEach((f, filterIdx) => helperObj[f.columnKey].push(filterIdx))
-  return helperObj
+  const uniqueKeys = [...new Set(filters.map(f => f.columnKey))]
+
+  for (const key of uniqueKeys) {
+    helperObj[key] = []
+  }
+
+  for (let i = 0; i < filters.length; i++) {
+    const filter = filters[i]
+    helperObj[filter.columnKey] ??= [] // use nullish coalescing operator (??=) to assign an empty array if the key does not exist
+    helperObj[filter.columnKey].push(i)
+  }
+
+  return helperObj;
 }
 function getColFilteredIdxs (colData, filters, type) {
   const filterMethod = getFilterMethod(filters, type)
@@ -192,36 +179,32 @@ function getFilterMethod (filters, type) {
 
 // SORTING
 const sortedIdxs = $computed(() => {
-  const columnData = props.tableData.data[sortedHeaderIdx]
-  const filteredColumn = filteredIdxs.map(dataIdx => columnData[dataIdx])
-  const sortFn = getSortMethod(filteredColumn, sortedHeader.type, sortDirection)
-  const idxRange = [...Array(filteredIdxs.length).keys()]
-  let idxs = []
-  if (sortedHeader.sortable) {
-    idxRange.sort(sortFn)
-    idxs = idxRange.map(dataIdx => filteredIdxs[dataIdx])
-  } else {
-    idxs = idxRange
-  }
-  return idxs
-})
-function getSortMethod (col, type, direction) {
-  if (direction === 1) {
-    switch (type) {
-      case 'number':
-      case 'date':
-        return (a, b) => col[a] - col[b]
-      case 'string':
-        return (a, b) => col[a] < col[b] ? -1 : col[a] > col[b] ? 1 : 0
-    }
-  } else {
-    switch (type) {
-      case 'number':
-      case 'date':
-        return (a, b) => col[b] - col[a]
-      case 'string':
-        return (a, b) => col[b] < col[a] ? -1 : col[b] > col[a] ? 1 : 0
-    }
+  const columnData = props.tableData.data[sortedHeaderIdx];
+  const filteredColumn = filteredIdxs.map(dataIdx => columnData[dataIdx]);
+  const sortFn = getSortMethod(filteredColumn, sortedHeader.type, sortDirection);
+
+  const idxRange = Array.from({ length: filteredIdxs.length }, (_, i) => i);
+  const idxs = sortedHeader.sortable ? idxRange.sort(sortFn) : idxRange;
+  return idxs.map(dataIdx => filteredIdxs[dataIdx]);
+});
+
+function getSortMethod(col, type, direction) {
+  const directionFactor = direction === 1 ? 1 : -1;
+
+  switch (type) {
+    case 'number':
+    case 'date':
+      return (a, b) => (col[a] - col[b]) * directionFactor;
+    case 'string':
+      return (a, b) => {
+        const valueA = col[a].toLowerCase();
+        const valueB = col[b].toLowerCase();
+        if (direction === 1) {
+          return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+        } else {
+          return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
+        }
+      }
   }
 }
 
@@ -243,13 +226,12 @@ const trimList = (val) => {
 
 // RENDERING
 const filteredData = computed(() => {
-  const rangeSortedIdxs = sortedIdxs.slice(pages.startIdx, pages.endIdx)
-  return props.tableData.headers.map((_, colIdx) => {
-    return rangeSortedIdxs.map(dataIdx => {
-      return props.tableData.data[colIdx][dataIdx]
-    })
-  })
-})
+  const rangeSortedIdxs = sortedIdxs.slice(pages.startIdx, pages.endIdx);
+  
+  return props.tableData.headers.map((_, colIdx) =>
+    rangeSortedIdxs.map(dataIdx => props.tableData.data[colIdx][dataIdx])
+  );
+});
 
 watch(
   () => props.listType,

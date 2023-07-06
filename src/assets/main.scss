@@ -157,6 +157,7 @@ nav {
   padding: 4px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   background-color: var(--bg-header);
   border-left: 1px solid var(--border-color);
   border-right: 1px solid var(--border-color);
@@ -235,7 +236,7 @@ input:focus {
 input[type="text"]:disabled,
 button:disabled {
   cursor: no-drop;
-  // background-color: var(--btn-bg-disabled);
+  background-color: var(--btn-bg-disabled);
   color: var(--text-disabled);
 
   svg {

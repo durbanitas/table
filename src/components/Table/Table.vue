@@ -1,6 +1,7 @@
 <script setup>
-import { onMounted } from 'vue'
-import VirtualTable from './VirtualTable.vue';
+import { onMounted, onBeforeUnmount } from 'vue'
+import TableHeader from './TableHeader.vue';
+import TableRow from './TableRow.vue'
 
 const props = defineProps({
   headers: {
@@ -40,21 +41,6 @@ const props = defineProps({
   }
 })
 
-// TODO: filters:
-// - remove normal pills
-// - add badge counter
-// - icons for button group pagination / virtual list
-
-// TODO: table:
-// table height from client height
-// better spacing
-// style headers
-// add sorting
-// virtual list bottom -> show current visible results
-
-// v2: add search bar
-
-
 onMounted(() => {
   handleResize()
   window.addEventListener('resize', handleResize)
@@ -74,12 +60,60 @@ const tableHeight = $computed(() => {
 
 // sort events
 const emit = defineEmits(['onHeaderSort', 'trimVirtualList'])
-function sort (head, colIdx) {
+function sort({ head, colIdx }) {
   const { sortedHeader, defaultSortDirection, sortDirection } = props
   const newHeader = head !== sortedHeader
   const newDirection = newHeader ? defaultSortDirection : sortDirection * -1
   emit('onHeaderSort', head, newDirection, colIdx)
+  virtualScrollRef.scrollTop = 0
 }
+
+// VIRTUAL TABLE
+const rowHeight = 30;
+const nodePadding = 20;
+let scrollTop = $ref(0);
+
+// COMPUTED
+const itemCount = $computed(() => props.tableItemsCount)
+const viewportHeight = $computed(() => itemCount * rowHeight)
+const startIndex = $computed(() => {
+  let startNode = Math.floor(scrollTop / rowHeight) - nodePadding;
+  startNode = Math.max(0, startNode);
+  return startNode;
+})
+const visibleNodeCount = $computed(() => {
+  let count = Math.ceil(tableHeight / rowHeight) + 2 * nodePadding;
+  count = Math.min(itemCount - startIndex, count);
+  return count;
+})
+const visibleItems = $computed(() => {
+  const sortedArray = props.sortedIdxs.map(idx => props.tableData[idx])
+  return sortedArray.slice(startIndex, startIndex + visibleNodeCount);
+})
+const offsetY = $computed(() => {
+  return startIndex * rowHeight
+})
+const spacerStyle = $computed(() => {
+  return {
+    transform: `translateY(${offsetY}px)`,
+  };
+})
+const viewportStyle = $computed(() => {
+  return {
+    'min-height': '41px',
+    'height': `${viewportHeight}px`,
+    position: "relative",
+  };
+})
+
+const handleScroll = (event) => {
+  scrollTop = event.target.scrollTop;
+  console.log({ scrollTop });
+}
+
+onBeforeUnmount(() => {
+  removeEventListener('scroll', handleScroll)
+})
 
 const maxZeros = 4
 const transformNum = (num) => {
@@ -96,6 +130,7 @@ const transformNum = (num) => {
   }
   return htmlStr
 }
+
 const transformNumColored = (num) => { 
   const isPos = num > 0
   const str = num.toString()
@@ -143,35 +178,45 @@ const transformData = (data, type, index) => {
     return data
   }
 }
+
+// TABLE INTERACTION
+const virtualScrollRef = $ref(null)
+
+const hasData = $computed(() => props.tableData[0].length > 0)
 </script>
 
 <template>
-  <div class="table-wrapper" :style="{ 'max-height': tableHeight + 'px' }">
+  <div 
+    class="table-wrapper" 
+    :style="{ 'max-height': tableHeight + 'px' }" 
+    @scroll="handleScroll"
+    ref="virtualScrollRef"
+  >
     <table v-if="listType === 'pagination'">
-      <!-- headers -->
-      <thead>
-        <tr>
-          <th 
-            v-for="(head, colIdx) in headers" 
-            :key="head.id"
-            v-on="head.sortable ? { click: () => sort(head, colIdx) } : {}"
-          >
-            <div 
-              class="align-center table-name"
-              :class="head.align"
-            >
-              <div v-html="head.label" />
-              <div class="pl-6" v-if="head.sortable">
-                <div class="up-arrow"
-                  :class="{ 'active-up': head.columnKey === sortedHeader.columnKey && sortDirection === -1 }" />
-                <div class="down-arrow"
-                  :class="{ 'active-down': head.columnKey === sortedHeader.columnKey && sortDirection === 1 }" />
-              </div>
-            </div>
-          </th>
-        </tr>
-      </thead>
-      <!-- BODY -->
+      <TableHeader 
+        @sort="sort" 
+        :headers="headers" 
+        :sortedHeader="sortedHeader" 
+        :sortDirection="sortDirection" 
+      />
+      <!-- <tbody>
+        <template v-if="hasData">
+          <TableRow 
+            v-for="(rowData, rowIdx) in tableData[0].length" 
+            :key="rowIdx" 
+            :rowIdx="rowIdx"
+            :rowData="rowData" 
+            :headers="headers" 
+            :sortedHeader="sortedHeader" 
+            :sortDirection="sortDirection" 
+          />
+        </template>
+        <template v-else>
+          <tr>
+            <td :colspan="headers.length + 1">No results</td>
+          </tr>
+        </template>
+      </tbody> -->
       <tbody>
         <template v-if="tableData[0].length">
           <template v-for="(_, rowIdx) in tableData[0].length">
@@ -198,17 +243,52 @@ const transformData = (data, type, index) => {
       </tbody>
     </table>
 
-    <VirtualTable
-      v-else
-      @sort="sort"
-      :headers="headers"
-      :tableData="tableData"
-      :tableItemsCount="tableItemsCount"
-      :sortedHeader="sortedHeader"
-      :sortDirection="sortDirection"
-      :tableHeight="tableHeight"
-      :sortedIdxs="sortedIdxs"
-    />
+    <table v-else>
+      <thead>
+        <tr>
+          <th 
+            v-for="(head, colIdx) in headers" 
+            :key="head.id"
+            v-on="head.sortable ? { click: () => sort(head, colIdx) } : {}"
+          >
+          <!-- FIXME: align header -->
+            <div 
+              class="align-center table-name"
+            >
+              <!-- :class="head.align" -->
+              <div v-html="head.label" />
+              <div class="pl-6" v-if="head.sortable">
+                <div class="up-arrow"
+                  :class="{ 'active-up': head.columnKey === sortedHeader.columnKey && sortDirection === -1 }" />
+                <div class="down-arrow"
+                  :class="{ 'active-down': head.columnKey === sortedHeader.columnKey && sortDirection === 1 }" />
+              </div>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <template v-if="visibleItems.length">
+          <div :style="viewportStyle">
+            <div class="spacer" :style="spacerStyle">
+              <tr 
+                v-for="(item, index) in visibleItems" 
+                :key="index" 
+                class="list-item"
+              >
+                <td 
+                  v-for="(value, key, index) in item" 
+                  class="cell-item"
+                  :class="[{ 'first-cell-item': index === 0}, headers[index].align ]"
+                  :key="index.id"
+                  v-html="value"
+                />  
+              </tr>
+            </div>
+          </div>
+        </template>
+      </tbody>
+    </table>
 
   </div>
 </template>
@@ -224,39 +304,6 @@ const transformData = (data, type, index) => {
 
 .pl-30 {
   padding-left: 30px;
-}
-
-.up-arrow {
-  width: 0;
-  height: 0;
-  border: solid 5px transparent;
-  background: transparent;
-  border-bottom: solid 7px var(--disabled);
-  border-top-width: 0;
-  cursor: pointer;
-}
-
-.down-arrow {
-  width: 0;
-  height: 0;
-  border: solid 5px transparent;
-  background: transparent;
-  border-top: solid 7px var(--disabled);
-  border-bottom-width: 0;
-  margin-top: 2px;
-  cursor: pointer;
-}
-
-.active-up {
-  border-bottom: solid 7px var(--action);
-}
-
-.active-down {
-  border-top: solid 7px var(--action);
-}
-
-.text-bold {
-  font-weight: 700;
 }
 
 // HELPERS
@@ -275,9 +322,5 @@ const transformData = (data, type, index) => {
   justify-content: start;
 }
 
-.date-between {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
+
 </style>
