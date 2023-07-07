@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 
+// TODO: add clearable
+
 const props = defineProps({
   placeholder: {
     type: String,

@@ -325,3 +325,112 @@ app: Object { _uid: 0, _component: {…}, version: "3.2.31", … }
 ​set: function set(object, path, value, cb)​
 state: Object { value: undefined, newKey: undefined, remove: true }
 ```
+
+
+
+SEARCH Quokka.js
+```
+const headers = [{"columnKey":0,"charLen":0,"label":"ID","type":"number","sortable":true,"align":"end"},{"columnKey":1,"charLen":0,"label":"Name","type":"string","sortable":true,"align":"start"},{"columnKey":2,"charLen":0,"label":"Created","type":"date","sortable":true,"align":"start"},{"columnKey":3,"charLen":0,"label":"Score","type":"number","sortable":true,"align":"end"},{"columnKey":4,"charLen":0,"label":"ISO Code","type":"string","sortable":true,"align":"start"},{"columnKey":5,"charLen":0,"label":"Region","type":"string","sortable":true,"align":"start"},{"columnKey":6,"charLen":0,"label":"Num 1","type":"number","sortable":true,"align":"end"},{"columnKey":7,"charLen":0,"label":"Num 2","type":"number","sortable":true,"align":"end"}]
+const data = [[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],["Jerry Cochran","Isaac Avery","Brianna Blackwell","Bell Sawyer","Uriel Mitchell","Nadine Estrada","Randall Parrish","Palmer Mckenzie","Ivory Bradley","Jason Lancaster","Slade Middleton","Slade Mcclure","Mikayla Weaver","Jescie Chang","Bradley Madden","Yvonne Morris","Caesar Rosa","Carson Warner","Arthur Byers","Britanney Mcmillan"],[402382922396,744915092234,554849747837,1262738393359,363986680261,224928946303,1039352552622,1485401608403,1207187656709,948829960427,120712811978,931524071451,731503963608,1261376201999,1322982574863,1445956661840,1151807624459,1024933124827,674849065040,1565658438248],[73.8604,45.4756,53.2585,41.0732,73.134,17.9769,35.4128,-55.8468,62.082,35.3017,66.1707,-76.9547,87.2734,-17.3169,80.1041,40.7008,-47.9934,-49.007,99.225,10.3356],["SJ","AL","RW","DK","CK","GU","VN","RW","DE","GR","BJ","NF","CN","CK","AE","AW","LV","TJ","CM","NU"],["Basilicata","Mecklenburg-Vorpommern","West-Vlaanderen","Gangwon","Pennsylvania","Niger","Calabria","Oyo","Tomsk Oblast","Arkansas","Sicilia","West Region","Jönköpings län","Valparaíso","Andhra Pradesh","Vestfold og Telemark","Cajamarca","Central Luzon","Atacama","Zaporizhzhia oblast"],["60.8333","69.2870","-15.9504","60.7479","66.1376","-124.0868","-135.2563","80.1142","163.5784","-18.7245","-1.5773","-46.5354","-141.4133","21.6081","-137.0142","-29.9688","117.5373","158.8561","-100.7679","166.7323"],[35.339,26.05,77.7335,23.12,48.06,90.4,71.604,40.9441,66.4,88.3,1.504,15.4,35,49.16,52.5546,60.0613,97.579,59.612,54,29.602]]
+
+// get col idxs
+const colIdxs = []
+for (let i = 0; i < headers.length; i++) {
+  if (headers[i].type === 'number') colIdxs.push(i)
+}
+colIdxs
+
+
+const searchQuery = '.9441'
+// return matching row idxs
+const idxs = []
+
+const isNumber = !isNaN(searchQuery);
+
+if (isNumber) {
+  const isFloat = isNumber && searchQuery.includes('.');
+  isFloat
+  const x = isFloat && searchQuery[0] === '.' ? searchQuery.split('.')[1] : searchQuery
+  x
+  let searchValue = Number(x)
+
+  let remainingIdxs = []
+  
+  colIdxs.forEach((colIdx, idx) => {
+    // get over first array and get matching idxs
+    if (idx === 0) {
+      data[colIdx].forEach((val, rowIdx) => {
+        const gotMatch = checkForNumMatch(val, searchValue)
+        gotMatch
+        if (gotMatch) {
+          idxs.push(rowIdx)
+        } else {
+          remainingIdxs.push(rowIdx)
+        }
+      })
+    } else {
+      remainingIdxs.forEach(rowIdx => {
+        const val = data[colIdx][rowIdx]
+        const gotMatch = checkForNumMatch(val, searchValue)
+        if (gotMatch) {
+          idxs.push(rowIdx)
+        } 
+      })
+      // remainingIdxs = []
+    }
+  })
+  
+} else {
+  // string
+  const searchValue = searchQuery
+  let remainingIdxs = []
+  
+  colIdxs.forEach((colIdx, idx) => {
+    colIdx
+    // get over first array and get matching idxs
+    if (idx === 0) {
+      data[colIdx].forEach((val, rowIdx) => {
+        const gotMatch = checkForMatch(val, searchValue)
+        if (gotMatch) {
+          idxs.push(rowIdx)
+        } else {
+          remainingIdxs.push(rowIdx)
+        }
+      })
+    } else {
+      colIdx
+      remainingIdxs.forEach(rowIdx => {
+        const val = data[colIdx][rowIdx]
+        console.log(val);
+        const gotMatch = checkForMatch(val, searchValue)
+        gotMatch
+        if (gotMatch) {
+          idxs.push(rowIdx)
+        } else {
+          // remainingIdxs.push(rowIdx)
+        }
+      })
+      // remainingIdxs = []
+    }
+  })
+
+
+}
+
+idxs
+// [1,2,5,6]
+
+function checkForNumMatch(val, query, type) {
+  const currentVal = val.toString()
+  if (currentVal === '-129.7376') {
+    val
+  }
+  console.log(val);
+  console.log(query.toString());
+  return currentVal.includes(query.toString())
+}
+function checkForStrMatch(val, query, type) {
+  const currentVal = val.toLowerCase()
+  return currentVal.includes(query.toString())
+}
+```

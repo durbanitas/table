@@ -130,10 +130,13 @@ const sort = (newHeader, newDirection, headIdx) => {
 }
 
 // *==================================================*
-// *--------- FILTERING ------------------------------*
+// *--------- ORIGINAL DATA --------------------------*
 // *==================================================*
 const originalIdxs = $computed(() => [...Array(props.tableData.data[0].length).keys()]) // [0, 1, ...data[0].length ]
 
+// *==================================================*
+// *--------- FILTERING ------------------------------*
+// *==================================================*
 const filteredIdxs = $computed(() => {
   const { filterTags, tableData } = props
 
@@ -197,10 +200,9 @@ function getFilterMethod (filters, type) {
 // *==================================================*
 // *--------- SEARCHING ------------------------------*
 // *==================================================*
-
 const searchIdxs = $computed(() => {
   if (props.searchQuery.length === 0) {
-    return filteredIdxs
+    return originalIdxs
   }
   const idxs = []
 
@@ -218,29 +220,64 @@ const searchIdxs = $computed(() => {
     for (let i = 0; i < headers.length; i++) {
       if (headers[i].type === 'number') colIdxs.push(i)
     }
-    
-    colIdxs.forEach(colIdx => {
-      for (let rowIdx = 0; rowIdx < data[0].length; rowIdx++) {
-        const element = data[colIdx][rowIdx].toString();
-        if (element.includes(props.searchQuery)) {
-          idxs.push(rowIdx)
-        }
+    const isFloat = isNumber && props.searchQuery.includes('.');
+    const x = isFloat && props.searchQuery[0] === '.' ? props.searchQuery.split('.')[1] : props.searchQuery
+    let searchValue = Number(x)
+
+    let remainingIdxs = []
+
+    colIdxs.forEach((colIdx, idx) => {
+      // get over first array and get matching idxs
+      if (idx === 0) {
+        data[colIdx].forEach((val, rowIdx) => {
+          const gotMatch = checkForNumMatch(val, searchValue)
+          if (gotMatch) {
+            idxs.push(rowIdx)
+          } else {
+            remainingIdxs.push(rowIdx)
+          }
+        })
+      } else {
+        remainingIdxs.forEach(rowIdx => {
+          const val = data[colIdx][rowIdx]
+          const gotMatch = checkForNumMatch(val, searchValue)
+          if (gotMatch) {
+            idxs.push(rowIdx)
+          }
+        })
       }
     })
   } else {
     const colIdxs = []
-    const query = props.searchQuery.toLowerCase()
+    const searchValue = props.searchQuery.toLowerCase()
 
     for (let i = 0; i < headers.length; i++) {
       if (headers[i].type === 'string') colIdxs.push(i)
     }
 
-    colIdxs.forEach(colIdx => {
-      for (let rowIdx = 0; rowIdx < data[0].length; rowIdx++) {
-        const element = data[colIdx][rowIdx].toLowerCase();
-        if (element.includes(query)) {
-          idxs.push(rowIdx)
-        }
+    let remainingIdxs = []
+
+    colIdxs.forEach((colIdx, idx) => {
+      // get over first array and get matching idxs
+      if (idx === 0) {
+        data[colIdx].forEach((val, rowIdx) => {
+          const gotMatch = checkForStrMatch(val, searchValue)
+          if (gotMatch) {
+            idxs.push(rowIdx)
+          } else {
+            remainingIdxs.push(rowIdx)
+          }
+        })
+      } else {
+        remainingIdxs.forEach(rowIdx => {
+          const val = data[colIdx][rowIdx]
+          const gotMatch = checkForStrMatch(val, searchValue)
+          if (gotMatch) {
+            idxs.push(rowIdx)
+          } else {
+            // remainingIdxs.push(rowIdx)
+          }
+        })
       }
     })
   }
@@ -254,6 +291,14 @@ function isNumber(str) {
 }
 function isFloatNum (str) {
   return isNumber && str.includes('.')
+}
+function checkForNumMatch(val, query, type) {
+  const currentVal = val.toString()
+  return currentVal.includes(query.toString())
+}
+function checkForStrMatch(val, query, type) {
+  const currentVal = val.toLowerCase()
+  return currentVal.includes(query.toString())
 }
 
 // *==================================================*
@@ -311,7 +356,7 @@ const trimList = (val) => {
 // *--------- RENDERING ------------------------------*
 // *==================================================*
 const filteredData = computed(() => {
-  const rangeSortedIdxs = searchIdxs.slice(pages.startIdx, pages.endIdx);
+  const rangeSortedIdxs = sortedIdxs.slice(pages.startIdx, pages.endIdx);
   
   return props.tableData.headers.map((_, colIdx) =>
     rangeSortedIdxs.map(dataIdx => props.tableData.data[colIdx][dataIdx])
