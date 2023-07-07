@@ -18,7 +18,7 @@ if (_DEV) {
   SHOW_ROWS_PER_PAGE = 10
 } else {
   N_ROWS_PER_PAGE = 100_000
-  N_COLUMNS = 20
+  N_COLUMNS = 10
   SHOW_ROWS_PER_PAGE = 20
 }
 
