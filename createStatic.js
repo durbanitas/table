@@ -43,10 +43,10 @@ const createDataset = (userColumns, userRows) => {
     const head = {
       columnKey: i,
       charLen: 0,
-      // label: 'Col ' + i,
-      // type: 'number',
-      // sortable: true,
-      // align: 'end'
+      // label: String
+      // type: 'number' || 'date' || 'string'
+      // sortable: true || false
+      // align: 'start' || 'center' || 'end'
       label: i === 0 ? 'ID' :
         i === 1 ? 'Name' :
           i === 2 ? 'Created' :
@@ -86,7 +86,6 @@ const randomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1) + 
 
 const normalDistribution = (scale) => Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(2 * Math.PI * Math.random()) * scale
 
-// TODO: make not linear, make normaly (Glockenkurve)
 const getScoreNumber = () => {
   const flipCoin = (odds=0.85) => {
     return Math.random() < odds ? 1 : 0

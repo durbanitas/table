@@ -1,7 +1,7 @@
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
+import { onMounted } from 'vue'
 import TableHeader from './TableHeader.vue';
-import TableRow from './TableRow.vue'
+import { transformData } from './utils'
 
 const props = defineProps({
   headers: {
@@ -45,6 +45,8 @@ onMounted(() => {
   handleResize()
   window.addEventListener('resize', handleResize)
 });
+
+const virtualScrollRef = $ref(null)
 
 let innerHeight = $ref(0)
 const handleResize = () => {
@@ -106,90 +108,14 @@ const viewportStyle = $computed(() => {
   };
 })
 
-const handleScroll = (event) => {
-  scrollTop = event.target.scrollTop;
-  console.log({ scrollTop });
-}
-
-onBeforeUnmount(() => {
-  removeEventListener('scroll', handleScroll)
-})
-
-const maxZeros = 4
-const transformNum = (num) => {
-  const str = num.toString()
-  const x = str.split('.')
-  let htmlStr
-  if (x.length === 1) {
-    htmlStr = x[0] + '<span class="text-muted">.0000</span>'
-  } else {
-    const floatLen = x[1].length
-    const zeroNums = maxZeros - floatLen
-    const zeros = '0'.repeat(zeroNums)
-    htmlStr = x[0] + `.${x[1]}<span class="text-muted">${zeros}</span>`
-  }
-  return htmlStr
-}
-
-const transformNumColored = (num) => { 
-  const isPos = num > 0
-  const str = num.toString()
-  const x = str.split('.')
-  let htmlStr
-  
-  if (isPos) {
-    if (x.length === 1) {
-      htmlStr = `<span class="text-positive">${x[0]}</span><span class="text-muted-positive">.0000</span>`
-    } else {
-      const floatLen = x[1].length
-      const zeroNums = 4 - floatLen
-      const zeros = '0'.repeat(zeroNums)
-      htmlStr = `<span class="text-positive">${x[0]}.${x[1]}</span><span class="text-muted-positive">${zeros}</span>`
-    }
-  } else {
-    if (x.length === 1) {
-      htmlStr = `<span class="text-negative">${x[0]}</span><span class="text-muted-negative">.0000</span>`
-    } else {
-      const floatLen = x[1].length
-      const zeroNums = 4 - floatLen
-      const zeros = '0'.repeat(zeroNums)
-      htmlStr = `<span class="text-negative">${x[0]}.${x[1]}</span><span class="text-muted-negative">${zeros}</span>`
-    }
-  }
-  return htmlStr
-}
-
-const transformData = (data, type, index) => {
-  if (type === 'date') {
-    const dateObject = new Date(data)
-    const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
-    const timeOptions = { hour12: true, hour: 'numeric', minute: '2-digit', seconds: '2-digit' };
-    const dateDay = dateObject.toLocaleDateString('en-US', dateOptions)
-    const dateHour = dateObject.toLocaleTimeString('en-US', timeOptions)
-
-    return `${dateDay} <span class="text-muted">${dateHour}</span>`
-  } else if (index === 0) {
-    return new Intl.NumberFormat('en-US').format(data)
-  } else if (index === 3) {
-    return `${transformNumColored(data)}`
-  } else if (type === 'number') {
-    return `${transformNum(data)}`
-  } else {
-    return data
-  }
-}
-
-// TABLE INTERACTION
-const virtualScrollRef = $ref(null)
-
 const hasData = $computed(() => props.tableData[0].length > 0)
 </script>
 
 <template>
+  <!-- @scroll="handleScroll" -->
   <div 
     class="table-wrapper" 
     :style="{ 'max-height': tableHeight + 'px' }" 
-    @scroll="handleScroll"
     ref="virtualScrollRef"
   >
     <table v-if="listType === 'pagination'">
@@ -199,26 +125,8 @@ const hasData = $computed(() => props.tableData[0].length > 0)
         :sortedHeader="sortedHeader" 
         :sortDirection="sortDirection" 
       />
-      <!-- <tbody>
-        <template v-if="hasData">
-          <TableRow 
-            v-for="(rowData, rowIdx) in tableData[0].length" 
-            :key="rowIdx" 
-            :rowIdx="rowIdx"
-            :rowData="rowData" 
-            :headers="headers" 
-            :sortedHeader="sortedHeader" 
-            :sortDirection="sortDirection" 
-          />
-        </template>
-        <template v-else>
-          <tr>
-            <td :colspan="headers.length + 1">No results</td>
-          </tr>
-        </template>
-      </tbody> -->
       <tbody>
-        <template v-if="tableData[0].length">
+        <template v-if="hasData">
           <template v-for="(_, rowIdx) in tableData[0].length">
             <tr>
               <td 
@@ -234,7 +142,7 @@ const hasData = $computed(() => props.tableData[0].length > 0)
             </tr>
           </template>
         </template>
-        <!-- handle no results -->
+
         <template v-else>
           <tr>
             <td :colspan="headers.length + 1" v-text="'No results'" />
@@ -322,5 +230,9 @@ const hasData = $computed(() => props.tableData[0].length > 0)
   justify-content: start;
 }
 
-
+.date-between {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
 </style>

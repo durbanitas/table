@@ -8,7 +8,6 @@ const props = defineProps({
 const emit = defineEmits(['sort'])
 
 const sort = (head, colIdx) => {
-  console.log({ head, colIdx });
   emit('sort', { head, colIdx })
 }
 </script>

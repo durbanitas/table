@@ -14,9 +14,9 @@ const props = defineProps({
 const OPERATORS = ['==', '>', '<']
 const TIMEOUT = 400
 
-let filtersScope = $ref([])
+let filtersScope = $ref([{"columnKey":0,"operator":"==","value":""}])
 let filterTags = $ref([])
-let itemRefs = $ref([])
+let itemRefs = $ref([{"type":"text","class":"","pattern":"[0-9.]+","style":"margin-top: -1px; padding-bottom: 2px;"}])
 
 function addFilter () {
   const filterObj = {
@@ -160,7 +160,7 @@ function getFilterType (filterIdx) {
   return props.headers.find(h => h.columnKey === KEY).type
 }
 // validations
-let validInputs = $ref([])
+let validInputs = $ref([true])
 function validate (userInput, filterIdx) {
   const type = getFilterType(filterIdx)
   if (type === 'number') {
@@ -279,7 +279,7 @@ function validate (userInput, filterIdx) {
   font-size: 16px;
   letter-spacing: 1.1px;
   height: 30px;
-  margin: 4px 6px 4px 12px;
+  margin: 0px 6px 0px 12px;
 }
 
 .filter-modal {

@@ -59,6 +59,8 @@ const currentPageView = $computed(() => {
   const uptoStr = (fromEntries + selectedRows.value <= props.entries ? uptoEntries : props.entries).toLocaleString()
   return `${beginStr} - ${uptoStr}`
 })
+
+// TODO: scroll to top on pagination or select rows
 </script>
 
 <template>

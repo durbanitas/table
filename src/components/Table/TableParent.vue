@@ -48,13 +48,13 @@ const props = defineProps({
   },
   listType: {
     type: String,
-    default: 'pagination',
+    default: 'pagination', // 'pagination' || 'virtual'
     required: true
   },
   // OPTIONAL PROPS
   defaultSortDirection: {
     type: Number,
-    default: 1, // 1 or -1
+    default: 1, // 1 || -1
     validator: num => {
       if (num !== 1 && num !== -1) {
         console.error('Wrong index value for: defaultSortDirection')
@@ -84,7 +84,7 @@ const props = defineProps({
     default: [
       {
         columnKey: 'name', // column header
-        operator: '==', // '==', '<', '>'
+        operator: '==', // '==' || '<' || '>'
         value: '' // filter value
       }
     ]
@@ -92,15 +92,23 @@ const props = defineProps({
   N_ROWS_PER_PAGE: {
     type: Number,
     default: 200
-  }
+  },
+  searchQuery: {
+    type: [Number, String],
+    default: ''
+  },
 })
 
-// SORTING
-
+// *==================================================*
+// *--------- INIT and USER INTERACTION --------------*
+// *==================================================*
 let sortedHeaderIdx = $ref(0)
 let sortedHeader = $ref(getHeaderObj(props.tableData.headers))
 let sortDirection = $ref(props.defaultSortDirection)
+
+// ------------------------------------------------
 // get sorting header when creating the table
+// ------------------------------------------------
 function getHeaderObj (headers) {
   const { defaultSortByHeader } = props
   if (defaultSortByHeader) {
@@ -112,14 +120,18 @@ function getHeaderObj (headers) {
   }
 }
 
+// ------------------------------------------------
 // User interaction: sort
+// ------------------------------------------------
 const sort = (newHeader, newDirection, headIdx) => {
   sortedHeader = newHeader
   sortDirection = newDirection
   sortedHeaderIdx = headIdx
 }
 
-// FILTERING
+// *==================================================*
+// *--------- FILTERING ------------------------------*
+// *==================================================*
 const originalIdxs = $computed(() => [...Array(props.tableData.data[0].length).keys()]) // [0, 1, ...data[0].length ]
 
 const filteredIdxs = $computed(() => {
@@ -143,7 +155,10 @@ const filteredIdxs = $computed(() => {
     return idxs.filter((_, matchIdx) => matchingIdxs.indexOf(matchIdx) !== -1)
   }, [])
 })
-// mergeFilters: { columnKey: [filterIdx0, filterIdx2], columnKey: [filterIdx1] }
+
+// ------------------------------------------------
+// mergeFilters returns: { columnKey: [filterIdx0, filterIdx2], columnKey: [filterIdx1] }
+// ------------------------------------------------
 function mergeFilters(filters) {
   const helperObj = {}
   const uniqueKeys = [...new Set(filters.map(f => f.columnKey))]
@@ -160,6 +175,7 @@ function mergeFilters(filters) {
 
   return helperObj;
 }
+
 function getColFilteredIdxs (colData, filters, type) {
   const filterMethod = getFilterMethod(filters, type)
   const filterString = `return data.map((colValue, idx) => ${filterMethod} ? idx : -1)`
@@ -167,6 +183,7 @@ function getColFilteredIdxs (colData, filters, type) {
   const idxs = callFilterMethod(colData, filters)
   return idxs.filter(idx => idx !== -1)
 }
+
 function getFilterMethod (filters, type) {
   switch (type) {
     case 'number':
@@ -177,15 +194,79 @@ function getFilterMethod (filters, type) {
   }
 }
 
-// SORTING
-const sortedIdxs = $computed(() => {
-  const columnData = props.tableData.data[sortedHeaderIdx];
-  const filteredColumn = filteredIdxs.map(dataIdx => columnData[dataIdx]);
-  const sortFn = getSortMethod(filteredColumn, sortedHeader.type, sortDirection);
+// *==================================================*
+// *--------- SEARCHING ------------------------------*
+// *==================================================*
 
-  const idxRange = Array.from({ length: filteredIdxs.length }, (_, i) => i);
-  const idxs = sortedHeader.sortable ? idxRange.sort(sortFn) : idxRange;
-  return idxs.map(dataIdx => filteredIdxs[dataIdx]);
+const searchIdxs = $computed(() => {
+  if (props.searchQuery.length === 0) {
+    return filteredIdxs
+  }
+  const idxs = []
+
+  // is number?
+  // get all headers w/ type number + date
+  // search every column for matching idxs
+  // push idxs
+  // make unique and return
+  const isNum = isNumber(props.searchQuery)
+  const isFloat = isFloatNum(props.searchQuery)
+  const { headers, data } = props.tableData
+  if (isNum || isFloat) {
+    const colIdxs = []
+
+    for (let i = 0; i < headers.length; i++) {
+      if (headers[i].type === 'number') colIdxs.push(i)
+    }
+    
+    colIdxs.forEach(colIdx => {
+      for (let rowIdx = 0; rowIdx < data[0].length; rowIdx++) {
+        const element = data[colIdx][rowIdx].toString();
+        if (element.includes(props.searchQuery)) {
+          idxs.push(rowIdx)
+        }
+      }
+    })
+  } else {
+    const colIdxs = []
+    const query = props.searchQuery.toLowerCase()
+
+    for (let i = 0; i < headers.length; i++) {
+      if (headers[i].type === 'string') colIdxs.push(i)
+    }
+
+    colIdxs.forEach(colIdx => {
+      for (let rowIdx = 0; rowIdx < data[0].length; rowIdx++) {
+        const element = data[colIdx][rowIdx].toLowerCase();
+        if (element.includes(query)) {
+          idxs.push(rowIdx)
+        }
+      }
+    })
+  }
+  
+  // TODO: optimize
+  return [...new Set(idxs)]
+})
+
+function isNumber(str) {
+  return !isNaN(str)
+}
+function isFloatNum (str) {
+  return isNumber && str.includes('.')
+}
+
+// *==================================================*
+// *--------- SORTING --------------------------------*
+// *==================================================*
+const sortedIdxs = $computed(() => {
+  const columnData = props.tableData.data[sortedHeaderIdx]
+  const filteredColumn = searchIdxs.map(dataIdx => columnData[dataIdx])
+  const sortFn = getSortMethod(filteredColumn, sortedHeader.type, sortDirection)
+
+  const idxRange = Array.from({ length: searchIdxs.length }, (_, i) => i)
+  const idxs = sortedHeader.sortable ? idxRange.sort(sortFn) : idxRange
+  return idxs.map(dataIdx => searchIdxs[dataIdx])
 });
 
 function getSortMethod(col, type, direction) {
@@ -200,15 +281,17 @@ function getSortMethod(col, type, direction) {
         const valueA = col[a].toLowerCase();
         const valueB = col[b].toLowerCase();
         if (direction === 1) {
-          return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+          return valueA < valueB ? -1 : valueA > valueB ? 1 : 0
         } else {
-          return valueB < valueA ? -1 : valueB > valueA ? 1 : 0;
+          return valueB < valueA ? -1 : valueB > valueA ? 1 : 0
         }
       }
   }
 }
 
-// PAGINATION
+// *==================================================*
+// *--------- PAGINATION -----------------------------*
+// *==================================================*
 // slice filtered data
 let selectedRows = $ref(props.rowsPerPage)
 let pages = reactive({
@@ -224,9 +307,11 @@ const trimList = (val) => {
   Object.assign(pages, val)
 }
 
-// RENDERING
+// *==================================================*
+// *--------- RENDERING ------------------------------*
+// *==================================================*
 const filteredData = computed(() => {
-  const rangeSortedIdxs = sortedIdxs.slice(pages.startIdx, pages.endIdx);
+  const rangeSortedIdxs = searchIdxs.slice(pages.startIdx, pages.endIdx);
   
   return props.tableData.headers.map((_, colIdx) =>
     rangeSortedIdxs.map(dataIdx => props.tableData.data[colIdx][dataIdx])
@@ -256,13 +341,13 @@ watch(
     :sortDirection="sortDirection" 
     :defaultSortDirection="defaultSortDirection"
     :listType="listType"
-    :tableItemsCount="filteredIdxs.length"
+    :tableItemsCount="searchIdxs.length"
     :sortedIdxs="sortedIdxs"
   />
   <Pagination 
     v-if="listType == 'pagination'"
     @onChangePage="changePage" 
-    :entries="filteredIdxs.length" 
+    :entries="searchIdxs.length" 
     :rowsPerPage="rowsPerPage" 
   />
 </template>

@@ -1,6 +1,7 @@
 <script setup>
 import TableParent from '../components/Table/TableParent.vue'
 import Filtering from '../components/Filtering.vue'
+import SearchBar from '../components/SearchBar.vue'
 import { onBeforeMount } from 'vue'
 import { createDataset } from '../utils/demo_data.js'
 
@@ -47,6 +48,11 @@ const useFilterTags = (filters) => {
   filterTags = filters
 }
 
+const searchQuery = $ref('')
+const handleSearch = (val) => {
+  searchQuery = val
+}
+
 // select pagination or virtual list
 let listType = $ref('pagination')
 // TODO: add loading state for switching table types
@@ -58,10 +64,14 @@ const changeType = (newType) => {
 <template>
   <div class="container pl-12 pr-12">
     <div class="table-header">
-      <Filtering 
-        @submit="useFilterTags"
-        :headers="tableData.headers" 
-      />
+      <div class="space-between">
+        <Filtering 
+          @submit="useFilterTags"
+          :headers="tableData.headers" 
+        />
+  
+        <SearchBar @search="handleSearch" />
+      </div>
   
       <div class="space-between">
         <button @click="changeType('pagination')" :class="{ 'active': listType === 'pagination' }">Pagination</button>
@@ -84,6 +94,7 @@ const changeType = (newType) => {
       :N_ROWS_PER_PAGE="N_ROWS_PER_PAGE"
       :filterTags="filterTags"
       :listType="listType"
+      :searchQuery="searchQuery"
     />
   </div>
 </template>
