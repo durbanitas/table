@@ -228,7 +228,8 @@ input {
   font-size: 16px;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="search"] {
   background-color: var(--btn-color);
 }
 input:focus {
@@ -473,4 +474,10 @@ input {
 
 .pointer {
   cursor: pointer;
+}
+
+@media only screen and (max-width: 550px) {
+  .btn-group-switch {
+    display: none;
+  }
 }

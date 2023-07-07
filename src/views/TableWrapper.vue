@@ -73,7 +73,7 @@ const changeType = (newType) => {
         <SearchBar @search="handleSearch" />
       </div>
   
-      <div class="space-between">
+      <div class="btn-group-switch space-between">
         <button @click="changeType('pagination')" :class="{ 'active': listType === 'pagination' }">Pagination</button>
         <button 
           @click="changeType('virtual')" 

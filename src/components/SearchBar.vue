@@ -27,7 +27,3 @@ const handleInput = () => {
     @input="handleInput"
   />
 </template>
-
-<style lang="css" scoped>
-
-</style>
