@@ -200,17 +200,19 @@ function getFilterMethod (filters, type) {
 // *==================================================*
 // *--------- SEARCHING ------------------------------*
 // *==================================================*
+const searchType = $computed(() => {
+  const { searchQuery } = props
+  const isNumber = !isNaN(searchQuery)
+  const isFloat = isNumber && searchQuery.includes('.')
+  return (isNumber || isFloat) ? 'number' : 'string'
+})
+
 const searchIdxs = $computed(() => {
   if (props.searchQuery.length === 0) {
-    return originalIdxs
+    return filteredIdxs
   }
   const idxs = []
 
-  // is number?
-  // get all headers w/ type number + date
-  // search every column for matching idxs
-  // push idxs
-  // make unique and return
   const isNum = isNumber(props.searchQuery)
   const isFloat = isFloatNum(props.searchQuery)
   const { headers, data } = props.tableData
@@ -229,7 +231,7 @@ const searchIdxs = $computed(() => {
     colIdxs.forEach((colIdx, idx) => {
       // get over first array and get matching idxs
       if (idx === 0) {
-        data[colIdx].forEach((val, rowIdx) => {
+        filteredIdxs.forEach((val, rowIdx) => {
           const gotMatch = checkForNumMatch(val, searchValue)
           if (gotMatch) {
             idxs.push(rowIdx)
@@ -388,6 +390,8 @@ watch(
     :listType="listType"
     :tableItemsCount="searchIdxs.length"
     :sortedIdxs="sortedIdxs"
+    :searchQuery="searchQuery"
+    :searchType="searchType"
   />
   <Pagination 
     v-if="listType == 'pagination'"

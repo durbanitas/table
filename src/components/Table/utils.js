@@ -42,7 +42,16 @@ const transformNumColored = (num) => {
   return htmlStr
 }
 
-export const transformData = (data, type, index) => {
+const emphasieString = (str, searchQuery) => {
+  const emphasizedString = str.replace(
+    new RegExp(searchQuery, 'gi'),
+    (match) => `<span class="text-emphasis">${match}</span>`
+  )
+  
+  return emphasizedString
+}
+
+export const transformData = (data, type, index, searchQuery, searchType) => {
   if (type === 'date') {
     const dateObject = new Date(data)
     const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
@@ -54,10 +63,25 @@ export const transformData = (data, type, index) => {
   } else if (index === 0) {
     return new Intl.NumberFormat('en-US').format(data)
   } else if (index === 3) {
-    return `${transformNumColored(data)}`
+    const numStr = `${transformNumColored(data)}`
+    
+    if (searchQuery.length === 0 || searchType === 'string') {
+      return numStr
+    }
+    
+    return emphasieString(numStr, searchQuery)
   } else if (type === 'number') {
-    return `${transformNum(data)}`
+    const numStr = `${transformNum(data)}`
+    
+    if (searchQuery.length === 0 || searchType === 'string') {
+      return numStr
+    }
+    
+    return emphasieString(numStr, searchQuery)
   } else {
-    return data
+    if (searchQuery.length === 0 || searchType === 'number') return data
+    
+    return emphasieString(data, searchQuery)
   }
 }
+

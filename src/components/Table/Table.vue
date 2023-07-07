@@ -38,7 +38,15 @@ const props = defineProps({
   sortedIdxs: {
     type: Array,
     required: true
-  }
+  },
+  searchQuery: {
+    type: String,
+    default: ''
+  },
+  searchType: {
+    type: String,
+    default: 'string'
+  },
 })
 
 onMounted(() => {
@@ -137,7 +145,7 @@ const hasData = $computed(() => props.tableData[0].length > 0)
                   { 'text-bold': colIdx === sortedHeader.columnKey },
                   { 'date-between': colIdx === 2 }
                 ]"
-                :key="data.id" v-html="transformData(data[rowIdx], headers[colIdx].type, colIdx)"
+                :key="data.id" v-html="transformData(data[rowIdx], headers[colIdx].type, colIdx, searchQuery, searchType)"
               />
             </tr>
           </template>
@@ -235,4 +243,6 @@ const hasData = $computed(() => props.tableData[0].length > 0)
   justify-content: space-between;
   gap: 8px;
 }
+
+
 </style>
