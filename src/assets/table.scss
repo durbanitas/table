@@ -1,0 +1,133 @@
+[data-theme="light"] {
+  --table-header: #1c1c1c;
+  --table-header-bg: #e2e2e0;
+  --table-cell-bg: #fff;
+  --text-color-base: #121416;
+  --table-text: #fff;
+  --table-divider: #c4c6c8;
+  --table-row-hover: #68c1ee;
+  --table-first-cell-hover: #3fa6da;
+  --action: #0f6894;
+  --disabled: #969ea9;
+}
+
+[data-theme="dark"] {
+  --table-header: #f6f7f9;
+  --table-header-bg: #2f343c;
+  --table-cell-bg: #1C2127;
+  --text-color-base: #f4f4f4;
+  --table-text: #fff;
+  --table-divider: #2f343c;
+  --table-row-hover: #0c5174;
+  --table-first-cell-hover: #0f6894;
+  --action: #68c1ee;
+  --disabled: #7d838f;
+}
+
+table {
+  border-collapse: collapse; // removes border-spacing
+  width: 100%;
+
+  // cell settings & sizes
+  th,
+  td {
+    padding: 10px 10px 10px 30px;
+    min-width: auto;
+    box-sizing: border-box;
+  }
+
+  th {
+    padding: 0px;
+    cursor: pointer;
+  }
+
+  // thead tr {
+  //   display: flex;
+  // }
+
+  // custom headers
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--table-header-bg);
+    color: var(--table-header);
+    white-space: nowrap;
+    user-select: none;
+    font-weight: 700;
+    min-width: 110px;
+
+    &:first-child {
+      left: 0px;
+      z-index: 3;
+    }
+
+    &:hover {
+      background-color: var(--table-first-cell-hover);
+    }
+
+    .table-name {
+      padding: 10px;
+      margin-left: 20px;
+      gap: 4px;
+    }
+
+    &:last-child {
+      padding-right: 10px;
+    }
+  }
+
+  // border settings & sizes
+  tbody {
+    overflow: scroll;
+    // height: 200px;
+    text-transform: capitalize;
+    white-space: nowrap;
+
+    tr {
+      border-bottom: 1px solid var(--table-divider);
+      background: var(--table-cell-bg);
+    }
+
+    // sticky left row
+    tr > :first-child {
+      position: sticky;
+      background-color: var(--table-header-bg);
+      left: 0;
+      font-weight: 700;
+      z-index: 2;
+    }
+
+    // striped effect
+    // & tr:nth-child(odd) {
+    //   background: var(--table-cell-bg);
+    // }
+
+    // inner cells
+    & tr:hover {
+      background: var(--table-row-hover);
+      color: var(--text-color-base);
+
+      // left first row cell
+      & td:first-child {
+        background: var(--table-first-cell-hover);
+      }
+    }
+
+    & td:last-child{
+      padding-right: 20px;
+    }
+  }
+}
+
+// PAGINATION
+.icon {
+  height: 16px;
+  width: auto;
+  cursor: pointer;
+  user-select: none;
+
+  &.--pagination {
+    height: 20px;
+  }
+}
