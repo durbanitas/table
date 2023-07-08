@@ -48,18 +48,16 @@ const handleSearch = query => {
 <template>
   <div class="container pl-12 pr-12">
     <div class="table-header">
-      <div class="space-between">
-        <Filtering 
-          @submit="useFilterTags"
-          :headers="tableData.headers" 
-        />
-  
-        <SearchBar @search="handleSearch" />
-      </div>
+      <Filtering 
+        @submit="useFilterTags"
+        :headers="tableData.headers" 
+      />
+
+      <SearchBar @search="handleSearch" />
     </div>
   </div>
 
-  <div v-if="showTable" class="table-bg container">
+  <div v-if="showTable" class="container table-bg">
     <TableParent 
       :tableData="tableData" 
       :defaultSortDirection="1" 
