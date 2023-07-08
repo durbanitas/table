@@ -46,11 +46,6 @@ const props = defineProps({
       return equalHeadersColumnsLength && equalRowsLength
     }
   },
-  listType: {
-    type: String,
-    default: 'pagination', // 'pagination' || 'virtual'
-    required: true
-  },
   // OPTIONAL PROPS
   defaultSortDirection: {
     type: Number,
@@ -374,19 +369,6 @@ const filteredData = computed(() => {
     rangeSortedIdxs.map(dataIdx => props.tableData.data[colIdx][dataIdx])
   )
 })
-
-// unused
-watch(
-  () => props.listType,
-  (newVal) => {
-    if (newVal === 'pagination') {
-      pages.startIdx = 0,
-      pages.endIdx = props.rowsPerPage
-    } else {
-      pages.endIdx = props.N_ROWS_PER_PAGE
-    }
-  }
-)
 </script>
 
 <template>
@@ -397,14 +379,12 @@ watch(
     :sortedHeader="sortedHeader"
     :sortDirection="sortDirection" 
     :defaultSortDirection="defaultSortDirection"
-    :listType="listType"
     :tableItemsCount="searchIdxs.length"
     :sortedIdxs="sortedIdxs"
     :searchQuery="searchQuery"
     :searchType="searchType"
   />
   <Pagination 
-    v-if="listType == 'pagination'"
     @onChangePage="changePage" 
     :entries="searchIdxs.length" 
     :rowsPerPage="rowsPerPage" 

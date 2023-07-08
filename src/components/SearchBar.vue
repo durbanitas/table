@@ -21,9 +21,16 @@ const handleInput = () => {
 
 <template>
   <input 
-    type="text" 
+    @input="handleInput"
     v-model="searchQuery"
     :placeholder="placeholder"
-    @input="handleInput"
+    type="text"
+    class="search-bar" 
   />
 </template>
+
+<style lang="scss" scoped>
+.search-bar {
+  max-width: 160px;
+}
+</style>

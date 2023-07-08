@@ -25,11 +25,6 @@ const props = defineProps({
     type: Number,
     default: 1
   },
-  listType: {
-    type: String,
-    default: 'pagination',
-    required: true
-  },
   tableItemsCount: {
     type: Number,
     default: 100,
@@ -54,7 +49,7 @@ onMounted(() => {
   window.addEventListener('resize', handleResize)
 });
 
-const virtualScrollRef = $ref(null)
+const tableWrapperRef = $ref(null)
 
 let innerHeight = $ref(0)
 const handleResize = () => {
@@ -62,10 +57,10 @@ const handleResize = () => {
 }
 const navH = 40
 const filterH = 60
-const bottomH = 100
+const bottomH = 110
 const tableHeight = $computed(() => {
   const deg = navH + filterH + bottomH
-  return props.listType === 'pagination' ? innerHeight - deg : innerHeight - (deg - 61)
+  return innerHeight - deg
 })
 
 // *==================================================*
@@ -77,7 +72,7 @@ function sort({ head, colIdx }) {
   const newHeader = head !== sortedHeader
   const newDirection = newHeader ? defaultSortDirection : sortDirection * -1
   emit('onHeaderSort', head, newDirection, colIdx)
-  virtualScrollRef.scrollTop = 0
+  tableWrapperRef.scrollTop = 0
 }
 
 // *==================================================*
@@ -90,9 +85,9 @@ const hasData = $computed(() => props.tableData[0].length > 0)
   <div 
     class="table-wrapper" 
     :style="{ 'max-height': tableHeight + 'px' }" 
-    ref="virtualScrollRef"
+    ref="tableWrapperRef"
   >
-    <table v-if="listType === 'pagination'">
+    <table>
 
       <TableHeader 
         @sort="sort" 

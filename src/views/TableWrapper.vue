@@ -43,13 +43,6 @@ const searchQuery = $ref('')
 const handleSearch = query => {
   searchQuery = query
 }
-
-// select pagination or virtual list
-let listType = $ref('pagination')
-// TODO: add loading state for switching table types
-const changeType = (newType) => {
-  console.log(newType);
-}
 </script>
 
 <template>
@@ -63,22 +56,6 @@ const changeType = (newType) => {
   
         <SearchBar @search="handleSearch" />
       </div>
-  
-      <div class="btn-group-switch space-between">
-        <button 
-          @click="changeType('pagination')" 
-          :class="{ 'active': listType === 'pagination' }"
-          v-text="'Pagination'"
-        />
-
-        <button 
-          @click="changeType('virtual')" 
-          :class="{ 'active': listType === 'virtual' }"
-          class="disabled"
-          v-text="'Virtual'"
-          disabled 
-        />
-      </div>
     </div>
   </div>
 
@@ -89,7 +66,6 @@ const changeType = (newType) => {
       :rowsPerPage="SHOW_ROWS_PER_PAGE"
       :N_ROWS_PER_PAGE="N_ROWS_PER_PAGE"
       :filterTags="filterTags"
-      :listType="listType"
       :searchQuery="searchQuery"
     />
   </div>

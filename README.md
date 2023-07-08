@@ -9,18 +9,10 @@ Current benchmark to filter, sort and render  ROWS x Cols in MS.
 
 - css classes / remove unused divs
 
-- organize template nestedness
-
 ## ideas
 
 - create .json file w/ static data
 - user can choose the length of the dataset...
-
-- table head
-  - filter
-  - searchbar
-  - button group: Virtal || Pagination
-  - button group: add zeros / hide zeros
 
 ## Todo:
 
@@ -57,7 +49,6 @@ Current benchmark to filter, sort and render  ROWS x Cols in MS.
 
 
   - https://github.com/quasarframework/quasar/blob/dev/ui/src/components/table/QTable.js
-
 
 - url, add queries
   - share table with applied filters, pagination, sorting
