@@ -47,20 +47,20 @@ export const createDataset = (userColumns, userRows) => {
             i === 3 ? 'Score' :
               i === 4 ? 'ISO' :
                 i === 5 ? 'Region' :
-                'Num ' + (i - 5),
+                  'Num ' + (i - 5),
       type: i === 0 ? 'number' :
         i === 1 ? 'string' :
           i === 2 ? 'date' :
             i === 3 ? 'number' :
               i === 4 ? 'string' :
                 i === 5 ? 'string' :
-                'number',
+                  'number',
       sortable: true,
       align:
         i === 0 ? 'end' :
           i === 3 ? 'end' :
             i === 5 ? 'start' :
-            i < 6 ? 'start' :
+              i < 6 ? 'start' :
                 'end',
       maxChar: getMaxStringChar(data[i])
     }
@@ -82,11 +82,11 @@ const randomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1) + 
 const normalDistribution = (scale) => Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(2 * Math.PI * Math.random()) * scale
 
 const getScoreNumber = () => {
-  const flipCoin = (odds=0.85) => {
+  const flipCoin = (odds = 0.85) => {
     return Math.random() < odds ? 1 : 0
   }
-  const posNumber = (trim=4) => Number((Math.random() * 100).toFixed(trim)) 
-  const negNumber = (trim=4) => Number((Math.random() * -100).toFixed(trim)) 
+  const posNumber = (trim = 4) => Number((Math.random() * 100).toFixed(trim))
+  const negNumber = (trim = 4) => Number((Math.random() * -100).toFixed(trim))
 
   // 75% chance pos number 30% chance neg number
   return flipCoin() ? posNumber() : negNumber()

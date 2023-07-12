@@ -1,31 +1,31 @@
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 // TODO: add clearable
 
 const props = defineProps({
   placeholder: {
     type: String,
-    default: 'Search...'
-  }
-})
+    default: 'Search...',
+  },
+});
 
-const emit = defineEmits(['search'])
+const emit = defineEmits(['search']);
 
-const searchQuery = ref(null)
+const searchQuery = ref(null);
 
 const handleInput = () => {
-  emit('search', searchQuery.value)
-}
+  emit('search', searchQuery.value);
+};
 </script>
 
 <template>
-  <input 
+  <input
     @input="handleInput"
     v-model="searchQuery"
     :placeholder="placeholder"
     type="text"
-    class="search-bar" 
+    class="search-bar"
   />
 </template>
 

@@ -1,5 +1,5 @@
 <script setup>
-import { transformData } from './utils'
+import { transformData } from './utils';
 
 const props = defineProps({
   tableData: Array,
@@ -9,22 +9,17 @@ const props = defineProps({
   searchQuery: String,
   searchType: {
     type: String,
-    default: 'string'
+    default: 'string',
   },
-})
+});
 </script>
 
 <template>
   <tr>
-    <td 
-      v-for="(data, colIdx) in tableData" 
-      :class="[
-        headers[colIdx].align, 
-        { 'parent': colIdx === 0 }, 
-        { 'text-bold': colIdx === sortedHeader.columnKey },
-        { 'date-between': colIdx === 2 }
-      ]"
-      :key="data.id" 
+    <td
+      v-for="(data, colIdx) in tableData"
+      :class="[headers[colIdx].align, { parent: colIdx === 0 }, { 'text-bold': colIdx === sortedHeader.columnKey }, { 'date-between': colIdx === 2 }]"
+      :key="data.id"
       v-html="transformData(data[rowIdx], headers[colIdx].type, colIdx, searchQuery, searchType)"
     />
   </tr>

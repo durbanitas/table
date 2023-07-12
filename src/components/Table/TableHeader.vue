@@ -2,44 +2,47 @@
 const props = defineProps({
   headers: Array,
   sortedHeader: Object,
-  sortDirection: Number
-})
+  sortDirection: Number,
+});
 
-const emit = defineEmits(['sort'])
+const emit = defineEmits(['sort']);
 
 const sort = (head, colIdx) => {
-  emit('sort', { head, colIdx })
-}
+  emit('sort', { head, colIdx });
+};
 </script>
 
 <template>
-<thead>
-  <tr>
-    <th 
-      v-for="(head, colIdx) in headers" 
+  <thead>
+    <tr>
+      <th
+        v-for="(head, colIdx) in headers"
         :key="head.id"
         v-on="head.sortable ? { click: () => sort(head, colIdx) } : {}"
       >
-      <div 
-        class="align-center table-name"
-        :class="head.align"
-        :style="{ 'width': `${(head.maxChar * 10) + 20}px` }"
-      >
-        <div v-html="head.label" />
-        <div class="pl-6" v-if="head.sortable">
-          <div 
-            class="up-arrow"
-            :class="{ 'active-up': head.columnKey === sortedHeader.columnKey && sortDirection === -1 }" 
-          />
-          <div 
-            class="down-arrow"
-            :class="{ 'active-down': head.columnKey === sortedHeader.columnKey && sortDirection === 1 }" 
-          />
+        <div
+          class="align-center table-name"
+          :class="head.align"
+          :style="{ width: `${head.maxChar * 10 + 20}px` }"
+        >
+          <div v-html="head.label" />
+          <div
+            class="pl-6"
+            v-if="head.sortable"
+          >
+            <div
+              class="up-arrow"
+              :class="{ 'active-up': head.columnKey === sortedHeader.columnKey && sortDirection === -1 }"
+            />
+            <div
+              class="down-arrow"
+              :class="{ 'active-down': head.columnKey === sortedHeader.columnKey && sortDirection === 1 }"
+            />
+          </div>
         </div>
-      </div>
-    </th>
-  </tr>
-</thead>
+      </th>
+    </tr>
+  </thead>
 </template>
 
 <style lang="scss" scoped>

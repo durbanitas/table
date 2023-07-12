@@ -19,12 +19,12 @@ const transformNum = (num) => {
   return htmlStr
 }
 
-const transformNumColored = (num) => { 
+const transformNumColored = (num) => {
   const isPos = num > 0
   const str = num.toString()
   const x = str.split('.')
   let htmlStr
-  
+
   if (isPos) {
     if (x.length === 1) {
       htmlStr = `<span class="text-positive">${x[0]}</span><span class="text-muted-positive">.0000</span>`
@@ -53,7 +53,7 @@ const emphasieString = (str, searchQuery) => {
     new RegExp(searchQuery.replace('.', '\\.'), 'gi'),
     (match) => `<span class="text-emphasis">${match}</span>`
   )
-  
+
   return emphasizedString
 }
 
@@ -70,23 +70,23 @@ export const transformData = (data, type, index, searchQuery, searchType) => {
     return new Intl.NumberFormat('en-US').format(data)
   } else if (index === 3) {
     const numStr = `${transformNumColored(data)}`
-    
+
     if (searchQuery.length === 0 || searchType === 'string') {
       return numStr
     }
-    
+
     return emphasieString(numStr, searchQuery)
   } else if (type === 'number' || index === 6) {
     const numStr = `${transformNum(data, index)}`
-    
+
     if (searchQuery.length === 0 || searchType === 'string') {
       return numStr
     }
-    
+
     return emphasieString(numStr, searchQuery)
   } else {
     if (searchQuery.length === 0 || searchType === 'number') return data
-    
+
     return emphasieString(data, searchQuery)
   }
 }

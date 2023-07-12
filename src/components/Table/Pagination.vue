@@ -1,130 +1,130 @@
 <script setup>
-import { ref, watch } from 'vue'
-import IconBackward from '../../assets/svgs/chevron-backward.svg'
-import IconLeft from '../../assets/svgs/chevron-left.svg'
-import IconRight from '../../assets/svgs/chevron-right.svg'
-import IconForward from '../../assets/svgs/chevron-forward.svg'
+import { ref, watch } from 'vue';
+import IconBackward from '../../assets/svgs/chevron-backward.svg';
+import IconLeft from '../../assets/svgs/chevron-left.svg';
+import IconRight from '../../assets/svgs/chevron-right.svg';
+import IconForward from '../../assets/svgs/chevron-forward.svg';
 
 const props = defineProps({
   entries: {
     type: Number,
-    required: true
+    required: true,
   },
   rowsPerPage: {
     type: Number,
-    default: 10
-  }
-})
+    default: 10,
+  },
+});
 
 // ------------------------------------------------
 // custom rows per page
 // ------------------------------------------------
-let currentPage = $ref(0)
-let rowsOptions = $ref([5, 10, 20, 50])
-let selectedRows = ref(props.rowsPerPage)
+let currentPage = $ref(0);
+let rowsOptions = $ref([5, 10, 20, 50]);
+let selectedRows = ref(props.rowsPerPage);
 
-function prevPage () {
+function prevPage() {
   if (currentPage > 0) {
-    currentPage--
-    changePage(currentPage)
+    currentPage--;
+    changePage(currentPage);
   }
 }
-function nextPage () {
+function nextPage() {
   if (currentPage < numPages) {
-    currentPage++
-    changePage(currentPage)
+    currentPage++;
+    changePage(currentPage);
   }
 }
 
 // ------------------------------------------------
 // emit page change to TableParent.vue
 // ------------------------------------------------
-const emit = defineEmits(['onChangePage'])
-function changePage (page) {
-  if (page < 1) { // validate page
-    currentPage = 0
+const emit = defineEmits(['onChangePage']);
+function changePage(page) {
+  if (page < 1) {
+    // validate page
+    currentPage = 0;
   } else if (page >= numPages) {
-    currentPage = numPages
+    currentPage = numPages;
   }
-  const startIdx = selectedRows.value * currentPage
-  const endIdx = startIdx + selectedRows.value
-  emit('onChangePage', { startIdx, endIdx })
+  const startIdx = selectedRows.value * currentPage;
+  const endIdx = startIdx + selectedRows.value;
+  emit('onChangePage', { startIdx, endIdx });
 }
 
-watch(selectedRows, () => changePage(currentPage))
-watch(() => props.entries, () => changePage(0))
+watch(selectedRows, () => changePage(currentPage));
+watch(
+  () => props.entries,
+  () => changePage(0),
+);
 
 // ------------------------------------------------
 // show all n results and current page in template
 // ------------------------------------------------
-const numPages = $computed(() => Math.ceil(props.entries / selectedRows.value) - 1)
+const numPages = $computed(() => Math.ceil(props.entries / selectedRows.value) - 1);
 
 const currentPageView = $computed(() => {
-  const fromEntries = selectedRows.value * currentPage
-  const uptoEntries = fromEntries + selectedRows.value
-  const beginStr = (fromEntries + 1).toLocaleString()
-  const uptoStr = (fromEntries + selectedRows.value <= props.entries ? uptoEntries : props.entries).toLocaleString()
-  return `${beginStr}-${uptoStr}`
-})
+  const fromEntries = selectedRows.value * currentPage;
+  const uptoEntries = fromEntries + selectedRows.value;
+  const beginStr = (fromEntries + 1).toLocaleString();
+  const uptoStr = (fromEntries + selectedRows.value <= props.entries ? uptoEntries : props.entries).toLocaleString();
+  return `${beginStr}-${uptoStr}`;
+});
 
 // TODO: scroll to top on pagination or select rows
 </script>
 
 <template>
   <div class="pagination-wrapper space-between">
-
     <div class="inline-center rows-controls">
       <div class="dropdown">
-        <select 
-          v-model="selectedRows" 
+        <select
+          v-model="selectedRows"
           @change="changePage(currentPage)"
         >
-          <option 
-            v-for="rowOption in rowsOptions" 
-            :key="rowOption.id" 
-            :value="rowOption" 
-            v-text="`${rowOption} rows`" 
+          <option
+            v-for="rowOption in rowsOptions"
+            :key="rowOption.id"
+            :value="rowOption"
+            v-text="`${rowOption} rows`"
           />
         </select>
       </div>
     </div>
 
     <div class="controls-wrapper">
-        <p class="page-position">
-          {{ currentPageView }} <span class="text-muted">of</span> {{ entries.toLocaleString() }}
-        </p>
+      <p class="page-position">{{ currentPageView }} <span class="text-muted">of</span> {{ entries.toLocaleString() }}</p>
 
       <div class="pagination-group">
-        <span 
-          @click="changePage(0)" 
-          class="icon-btn align-center" 
-          :class="{ 'disabled': currentPage === 0 }"
+        <span
+          @click="changePage(0)"
+          class="icon-btn align-center"
+          :class="{ disabled: currentPage === 0 }"
         >
           <IconBackward class="icon --pagination" />
         </span>
-        <span 
-          @click="prevPage()" 
-          class="icon-btn align-center" 
-          :class="{ 'disabled': currentPage === 0 }"
+        <span
+          @click="prevPage()"
+          class="icon-btn align-center"
+          :class="{ disabled: currentPage === 0 }"
         >
           <IconLeft class="icon --pagination" />
         </span>
-        <span 
-          @click="nextPage()" 
-          class="icon-btn align-center" 
-          :class="{ 'disabled': currentPage === numPages }"
+        <span
+          @click="nextPage()"
+          class="icon-btn align-center"
+          :class="{ disabled: currentPage === numPages }"
         >
           <IconRight class="icon --pagination" />
         </span>
-        <span 
-          @click="changePage(numPages)" 
+        <span
+          @click="changePage(numPages)"
           class="icon-btn align-center"
-          :class="{ 'disabled': currentPage === numPages }"
+          :class="{ disabled: currentPage === numPages }"
         >
           <IconForward class="icon --pagination" />
         </span>
       </div>
-
     </div>
   </div>
 </template>
