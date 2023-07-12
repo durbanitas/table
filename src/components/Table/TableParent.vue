@@ -132,6 +132,7 @@ const originalIdxs = $computed(() => [...Array(props.tableData.data[0].length).k
 // *==================================================*
 // *--------- FILTERING ------------------------------*
 // *==================================================*
+// FIXME: remove applied w/ searchQuery shows old values
 const filteredIdxs = $computed(() => {
   const { filterTags, tableData } = props;
 
@@ -210,8 +211,7 @@ const searchType = $computed(() => {
 // ------------------------------------------------
 // get indexes with matching characters
 // ------------------------------------------------
-// TODO: clear array
-let gotMatchedIdxs = new Array(props.tableData.data[0].length).fill(false);
+let gotMatchedIdxs = new Array(filteredIdxs.length).fill(false);
 
 const searchIdxs = $computed(() => {
   if (props.searchQuery.length === 0) {
@@ -234,12 +234,14 @@ const searchIdxs = $computed(() => {
     const floatValue = isFloat && props.searchQuery[0] === '.' ? props.searchQuery.split('.')[1] : props.searchQuery;
     let searchValue = Number(floatValue);
 
-    colIdxs.forEach((colIdx, idx) => {
-      data[colIdx].forEach((val, rowIdx) => {
+    colIdxs.forEach((colIdx) => {
+      filteredIdxs.forEach((rowIdx) => {
+        const rowData = data[colIdx][rowIdx];
         const isChecked = gotMatchedIdxs[rowIdx];
+
         if (isChecked) return;
 
-        const gotMatch = checkForNumMatch(val, searchValue);
+        const gotMatch = checkForNumMatch(rowData, searchValue);
         if (gotMatch) {
           idxs.push(rowIdx);
           gotMatchedIdxs[rowIdx] = true;
@@ -255,16 +257,15 @@ const searchIdxs = $computed(() => {
     }
 
     colIdxs.forEach((colIdx, idx) => {
-      data[colIdx].forEach((val, rowIdx) => {
+      filteredIdxs.forEach((rowIdx) => {
+        const rowData = data[colIdx][rowIdx];
         const isChecked = gotMatchedIdxs[rowIdx];
         if (isChecked) return;
 
-        const gotMatch = checkForStrMatch(val, searchValue);
+        const gotMatch = checkForStrMatch(rowData, searchValue);
         if (gotMatch) {
           idxs.push(rowIdx);
           gotMatchedIdxs[rowIdx] = true;
-        } else {
-          gotMatchedIdxs[rowIdx] = false;
         }
       });
     });
@@ -352,7 +353,7 @@ const filteredData = computed(() => {
 
 watch(
   () => props.searchQuery,
-  () => (gotMatchedIdxs = new Array(props.tableData.data[0].length).fill(false)),
+  () => (gotMatchedIdxs = new Array(filteredIdxs.length).fill(false)),
 );
 </script>
 
