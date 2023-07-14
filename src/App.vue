@@ -39,7 +39,9 @@ onMounted(() => {
 
 const initTable = () => {
   tableData = createDataset(N_COLUMNS, N_ROWS_PER_PAGE);
-  showTable = true
+  setTimeout(() => {
+    showTable = true
+  }, 500);
 };
 
 // add filter tags
