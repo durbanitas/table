@@ -27,7 +27,7 @@ if (_DEV) {
   N_COLUMNS = 15;
   SHOW_ROWS_PER_PAGE = 10;
 } else {
-  N_ROWS_PER_PAGE = 5_000;
+  N_ROWS_PER_PAGE = 50_000;
   N_COLUMNS = 15;
   SHOW_ROWS_PER_PAGE = 10;
 }
@@ -96,10 +96,6 @@ const handleSearch = (query) => {
       :filterTags="filterTags"
       :searchQuery="searchQuery"
     />
-    <br>
-    <pre>
-      {{ tableData.headers }}
-    </pre>
   </div>
 </template>
 
