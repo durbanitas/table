@@ -2,11 +2,55 @@
 import IconSun from './assets/svgs/sun.svg';
 import IconMoon from './assets/svgs/moon.svg';
 
+import TableParent from './components/Table/TableParent.vue';
+import Filtering from './components/Filtering.vue';
+import SearchBar from './components/SearchBar.vue';
+import { onBeforeMount, onMounted } from 'vue';
+import { createDataset } from './utils/demo_data.js';
+
 let theme = $ref(true);
 const changeTheme = () => {
   theme = !theme;
   const strTheme = theme ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', strTheme);
+};
+
+let tableData = $ref({});
+let showTable = $ref(false);
+
+let N_ROWS_PER_PAGE;
+let N_COLUMNS;
+let SHOW_ROWS_PER_PAGE;
+const _DEV = import.meta.env.DEV;
+if (_DEV) {
+  N_ROWS_PER_PAGE = 200;
+  N_COLUMNS = 15;
+  SHOW_ROWS_PER_PAGE = 10;
+} else {
+  N_ROWS_PER_PAGE = 50_000;
+  N_COLUMNS = 15;
+  SHOW_ROWS_PER_PAGE = 10;
+}
+
+// TODO: input validate 00045 values
+onMounted(() => {
+  initTable();
+})
+
+const initTable = () => {
+  tableData = createDataset(N_COLUMNS, N_ROWS_PER_PAGE);
+  showTable = true
+};
+
+// add filter tags
+let filterTags = $ref([]);
+const useFilterTags = (filters) => {
+  filterTags = filters;
+};
+
+let searchQuery = $ref('');
+const handleSearch = (query) => {
+  searchQuery = query;
 };
 </script>
 
@@ -30,8 +74,26 @@ const changeTheme = () => {
     </div>
   </nav>
 
-  <div>
-    <router-view />
+  <div class="container pl-12 pr-12">
+    <div class="table-header" v-if="showTable">
+      <Filtering
+        @submit="useFilterTags"
+        :headers="tableData.headers"
+      />
+
+      <SearchBar @search="handleSearch" />
+    </div>
+  </div>
+
+  <div class="container table-bg" v-if="showTable">
+    <TableParent
+      :tableData="tableData"
+      :defaultSortDirection="1"
+      :rowsPerPage="SHOW_ROWS_PER_PAGE"
+      :N_ROWS_PER_PAGE="N_ROWS_PER_PAGE"
+      :filterTags="filterTags"
+      :searchQuery="searchQuery"
+    />
   </div>
 </template>
 
