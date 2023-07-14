@@ -27,9 +27,9 @@ if (_DEV) {
   N_COLUMNS = 15;
   SHOW_ROWS_PER_PAGE = 10;
 } else {
-  N_ROWS_PER_PAGE = 100_000;
-  N_COLUMNS = 10;
-  SHOW_ROWS_PER_PAGE = 20;
+  N_ROWS_PER_PAGE = 5_000;
+  N_COLUMNS = 15;
+  SHOW_ROWS_PER_PAGE = 10;
 }
 
 // TODO: input validate 00045 values
@@ -96,6 +96,10 @@ const handleSearch = (query) => {
       :filterTags="filterTags"
       :searchQuery="searchQuery"
     />
+    <br>
+    <pre>
+      {{ tableData.headers }}
+    </pre>
   </div>
 </template>
 
