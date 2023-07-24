@@ -23,7 +23,6 @@ const sort = (head, colIdx) => {
         <div
           class="align-center table-name"
           :class="head.align"
-          :style="{ width: `${head.maxChar * 10 + 20}px` }"
         >
           <div v-html="head.label" />
           <div

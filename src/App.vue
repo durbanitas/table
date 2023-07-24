@@ -29,7 +29,7 @@ if (_DEV) {
 } else {
   N_ROWS_PER_PAGE = 50_000;
   N_COLUMNS = 15;
-  SHOW_ROWS_PER_PAGE = 10;
+  SHOW_ROWS_PER_PAGE = 20;
 }
 
 // TODO: input validate 00045 values
