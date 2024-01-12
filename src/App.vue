@@ -5,7 +5,7 @@ import IconMoon from './assets/svgs/moon.svg';
 import TableParent from './components/Table/TableParent.vue';
 import Filtering from './components/Filtering.vue';
 import SearchBar from './components/SearchBar.vue';
-import { onBeforeMount, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { createDataset } from './utils/demo_data.js';
 
 let theme = $ref(true);
@@ -21,6 +21,7 @@ let showTable = $ref(false);
 let N_ROWS_PER_PAGE;
 let N_COLUMNS;
 let SHOW_ROWS_PER_PAGE;
+
 const _DEV = import.meta.env.DEV;
 if (_DEV) {
   N_ROWS_PER_PAGE = 200;
@@ -35,11 +36,11 @@ if (_DEV) {
 // TODO: input validate 00045 values
 onMounted(() => {
   initTable();
-})
+});
 
 const initTable = () => {
   tableData = createDataset(N_COLUMNS, N_ROWS_PER_PAGE);
-  showTable = true
+  showTable = true;
 };
 
 // add filter tags
@@ -57,7 +58,7 @@ const handleSearch = (query) => {
 <template>
   <nav>
     <div class="nav-container">
-      <h1>Table demo</h1>
+      <h1>Table Demo</h1>
       <div
         @click="changeTheme()"
         class="nav-theme inline-center"
@@ -75,7 +76,10 @@ const handleSearch = (query) => {
   </nav>
 
   <div class="container pl-12 pr-12">
-    <div class="table-header" v-if="showTable">
+    <div
+      v-if="showTable"
+      class="table-header"
+    >
       <Filtering
         @submit="useFilterTags"
         :headers="tableData.headers"
@@ -85,7 +89,10 @@ const handleSearch = (query) => {
     </div>
   </div>
 
-  <div class="container table-bg" v-if="showTable">
+  <div
+    v-if="showTable"
+    class="container table-bg"
+  >
     <TableParent
       :tableData="tableData"
       :defaultSortDirection="1"

@@ -79,6 +79,34 @@ function sort({ head, colIdx }) {
 // *--------- HANDLE RESULTS -------------------------*
 // *==================================================*
 const hasData = $computed(() => props.tableData[0].length > 0);
+
+// *==================================================*
+// *--------- MOUSE MOVE -------------------------*
+// *==================================================*
+let activeColIndex = $ref(-1);
+
+// onMounted(() => {
+//   initHover();
+// });
+
+// function initHover() {
+//   const table = document.getElementById('table');
+
+//   table.addEventListener('mouseover', (event) => {
+//     const target = event.target;
+//     let columnIndex;
+//     if (target.nodeName === 'SPAN') {
+//       columnIndex = target.parentNode.cellIndex;
+//     } else {
+//       columnIndex = target.cellIndex;
+//     }
+//     activeColIndex = columnIndex;
+//   });
+
+//   tableWrapperRef.addEventListener('mouseout', () => {
+//     activeColIndex = -1;
+//   });
+// }
 </script>
 
 <template>
@@ -87,12 +115,13 @@ const hasData = $computed(() => props.tableData[0].length > 0);
     :style="{ 'max-height': tableHeight + 'px' }"
     ref="tableWrapperRef"
   >
-    <table>
+    <table id="table">
       <TableHeader
         @sort="sort"
         :headers="headers"
         :sortedHeader="sortedHeader"
         :sortDirection="sortDirection"
+        :activeColIndex="activeColIndex"
       />
 
       <tbody>
@@ -105,6 +134,7 @@ const hasData = $computed(() => props.tableData[0].length > 0);
               :rowIdx="rowIdx"
               :searchQuery="searchQuery"
               :searchType="searchType"
+              :activeColIndex="activeColIndex"
             />
           </template>
         </template>

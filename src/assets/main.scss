@@ -98,6 +98,7 @@ label {
   --text-color-negative: #e76a6e;
   --text-color-muted-negative: #b34e51;
   --text-color-dark: #111418;
+  --text-color-inverted: #1c2127;
   // Button colors
   --btn-color: #454d58;
   --btn-border: #22272d;
@@ -136,6 +137,7 @@ label {
   --text-color-negative: #d53d3d;
   --text-color-muted-negative: #ca7575;
   --text-color-dark: #111418;
+  --text-color-inverted: #f6f7f9;
   // button colors
   --btn-color: #dee2e6;
   --btn-border: #c4c6c8;
@@ -486,7 +488,9 @@ input {
   text-decoration-line: underline;
   text-decoration-thickness: 2px;
   text-decoration-color: var(--highlight);
-  text-underline-offset: 2px;
+  text-underline-offset: 4px;
+  background-color: var(--highlight);
+  color: var(--text-color-inverted);
 }
 
 .text-muted {

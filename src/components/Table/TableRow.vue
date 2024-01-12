@@ -11,6 +11,7 @@ const props = defineProps({
     type: String,
     default: 'string',
   },
+  activeColIndex: Number,
 });
 </script>
 
@@ -18,7 +19,15 @@ const props = defineProps({
   <tr>
     <td
       v-for="(data, colIdx) in tableData"
-      :class="[headers[colIdx].align, { parent: colIdx === 0 }, { 'text-bold': colIdx === sortedHeader.columnKey }, { 'date-between': colIdx === 2 }]"
+      :class="[
+        headers[colIdx].align,
+        {
+          parent: colIdx === 0,
+          'text-bold': colIdx === sortedHeader.columnKey,
+          'date-between': colIdx === 2,
+          'active-cell': activeColIndex === colIdx,
+        },
+      ]"
       :key="data.id"
       v-html="transformData(data[rowIdx], headers[colIdx].type, colIdx, searchQuery, searchType)"
     />
@@ -42,5 +51,8 @@ const props = defineProps({
   display: flex;
   justify-content: space-between;
   gap: 16px;
+}
+.active-cell {
+  background-color: var(--table-row-hover);
 }
 </style>
