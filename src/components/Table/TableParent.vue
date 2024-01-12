@@ -13,7 +13,7 @@ const props = defineProps({
         {
           columnKey: 'name', // represents data[[key1], [key2]]
           type: 'string', // string, number, date
-          label: 'Name', // TODO: handle text overflow
+          label: 'Name',
           align: 'start', // start, center, end
           sortable: true,
         },
@@ -39,11 +39,21 @@ const props = defineProps({
       ],
     },
     validator: (obj) => {
-      const equalHeadersColumnsLength = obj.headers.length === obj.data.length;
-      const equalRowsLength = [...new Set(obj.data.map((el) => el.length))].length === 1;
-      if (!equalHeadersColumnsLength) console.error('headers and data must be the same length');
-      if (!equalRowsLength) console.error('row entries must be the same length');
-      return equalHeadersColumnsLength && equalRowsLength;
+      // check if headers and data have the same length
+      const isHeadersColumnsLengthEqual = obj.headers.length === obj.data.length;
+      if (!isHeadersColumnsLengthEqual) {
+        console.error('Error: Headers and data must be the same length.');
+        return false;
+      }
+
+      // check if all rows have the same length
+      const isRowsLengthEqual = [...new Set(obj.data.map((row) => row.length))].length === 1;
+      if (!isRowsLengthEqual) {
+        console.error('Error: Row entries must be the same length.');
+        return false;
+      }
+
+      return true;
     },
   },
   // OPTIONAL PROPS
@@ -61,7 +71,6 @@ const props = defineProps({
   defaultSortByHeader: {
     type: [String, Number],
     // default: 'name' // headers[idx].key
-    // TODO: default values for optional properties?
   },
   rowsPerPage: {
     type: Number,
@@ -106,11 +115,14 @@ let sortDirection = $ref(props.defaultSortDirection);
 // ------------------------------------------------
 function getHeaderObj(headers) {
   const { defaultSortByHeader } = props;
+
+  // Iif there's a defaultSortByHeader, find and return the corresponding header object
   if (defaultSortByHeader) {
-    sortedHeaderIdx = headers.findIndex((head) => head.columnKey === defaultSortByHeader);
-    return headers.find((head) => head.columnKey === defaultSortByHeader);
+    const defaultSortHeader = headers.find((head) => head.columnKey === defaultSortByHeader);
+    sortedHeaderIdx = headers.indexOf(defaultSortHeader);
+    return defaultSortHeader;
   } else {
-    // return first header element to be sorted by
+    // if no defaultSortByHeader, return the first header element to be sorted by
     return headers[0];
   }
 }
@@ -132,7 +144,6 @@ const originalIdxs = $computed(() => [...Array(props.tableData.data[0].length).k
 // *==================================================*
 // *--------- FILTERING ------------------------------*
 // *==================================================*
-// FIXME: remove applied w/ searchQuery shows old values
 const filteredIdxs = $computed(() => {
   const { filterTags, tableData } = props;
 
@@ -160,16 +171,16 @@ const filteredIdxs = $computed(() => {
 // ------------------------------------------------
 function mergeFilters(filters) {
   const helperObj = {};
-  const uniqueKeys = [...new Set(filters.map((f) => f.columnKey))];
+  const uniqueKeys = [...new Set(filters.map((filter) => filter.columnKey))];
 
   for (const key of uniqueKeys) {
     helperObj[key] = [];
   }
 
-  for (let i = 0; i < filters.length; i++) {
-    const filter = filters[i];
+  for (let idx = 0; idx < filters.length; idx++) {
+    const filter = filters[idx];
     helperObj[filter.columnKey] ??= []; // use nullish coalescing operator (??=) to assign an empty array if the key does not exist
-    helperObj[filter.columnKey].push(i);
+    helperObj[filter.columnKey].push(idx);
   }
 
   return helperObj;
@@ -203,8 +214,10 @@ function getFilterMethod(filters, type) {
 // ------------------------------------------------
 const searchType = $computed(() => {
   const { searchQuery } = props;
+
   const isNumber = !isNaN(searchQuery);
   const isFloat = isNumber && searchQuery.includes('.');
+
   return isNumber || isFloat ? 'number' : 'string';
 });
 
@@ -214,24 +227,28 @@ const searchType = $computed(() => {
 let gotMatchedIdxs = new Array(filteredIdxs.length).fill(false);
 
 const searchIdxs = $computed(() => {
-  if (props.searchQuery.length === 0) {
+  const { searchQuery } = props;
+
+  if (searchQuery.length === 0) {
     return filteredIdxs;
   }
-  const idxs = [];
 
-  const isNum = isNumber(props.searchQuery);
-  const isFloat = isFloatNum(props.searchQuery);
+  const idxs = [];
   const { headers, data } = props.tableData;
+  const isNum = isNumber(searchQuery);
+  const isFloat = isFloatNum(searchQuery);
+
   if (isNum || isFloat) {
     const colIdxs = [];
 
-    for (let i = 0; i < headers.length; i++) {
-      if (headers[i].type === 'number') colIdxs.push(i);
+    for (let idx = 0; idx < headers.length; idx++) {
+      if (headers[idx].type === 'number') {
+        colIdxs.push(idx);
+      }
     }
 
-    const isFloat = isNumber && props.searchQuery.includes('.');
-    isFloat;
-    const floatValue = isFloat && props.searchQuery[0] === '.' ? props.searchQuery.split('.')[1] : props.searchQuery;
+    const isFloat = isNumber && searchQuery.includes('.');
+    const floatValue = isFloat && searchQuery[0] === '.' ? searchQuery.split('.')[1] : searchQuery;
     let searchValue = Number(floatValue);
 
     colIdxs.forEach((colIdx) => {
@@ -239,7 +256,9 @@ const searchIdxs = $computed(() => {
         const rowData = data[colIdx][rowIdx];
         const isChecked = gotMatchedIdxs[rowIdx];
 
-        if (isChecked) return;
+        if (isChecked) {
+          return;
+        }
 
         const gotMatch = checkForNumMatch(rowData, searchValue);
         if (gotMatch) {
@@ -250,7 +269,7 @@ const searchIdxs = $computed(() => {
     });
   } else {
     const colIdxs = [];
-    const searchValue = props.searchQuery.toLowerCase();
+    const searchValue = searchQuery.toLowerCase();
 
     for (let i = 0; i < headers.length; i++) {
       if (headers[i].type === 'string') colIdxs.push(i);
@@ -260,7 +279,10 @@ const searchIdxs = $computed(() => {
       filteredIdxs.forEach((rowIdx) => {
         const rowData = data[colIdx][rowIdx];
         const isChecked = gotMatchedIdxs[rowIdx];
-        if (isChecked) return;
+
+        if (isChecked) {
+          return;
+        }
 
         const gotMatch = checkForStrMatch(rowData, searchValue);
         if (gotMatch) {
@@ -277,13 +299,16 @@ const searchIdxs = $computed(() => {
 function isNumber(str) {
   return !isNaN(str);
 }
+
 function isFloatNum(str) {
   return isNumber && str.includes('.');
 }
+
 function checkForNumMatch(val, query) {
   const currentVal = val.toString();
   return currentVal.includes(query.toString());
 }
+
 function checkForStrMatch(val, query) {
   const currentVal = val.toLowerCase();
   return currentVal.includes(query.toString());
@@ -348,7 +373,7 @@ const changePage = (newPages) => {
 const filteredData = computed(() => {
   const rangeSortedIdxs = sortedIdxs.slice(pages.startIdx, pages.endIdx);
 
-  return props.tableData.headers.map((_, colIdx) => rangeSortedIdxs.map((dataIdx) => props.tableData.data[colIdx][dataIdx]));
+  return props.tableData.headers.map((_, colIdx) => rangeSortedIdxs.map((rowIdx) => props.tableData.data[colIdx][rowIdx]));
 });
 
 watch(

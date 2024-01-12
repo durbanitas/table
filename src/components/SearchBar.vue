@@ -31,6 +31,6 @@ const handleInput = () => {
 
 <style lang="scss" scoped>
 .search-bar {
-  max-width: 160px;
+  max-width: 190px;
 }
 </style>
