@@ -1,53 +1,79 @@
-const maxZeros = 4
+const MAX_DECIMALS = 4
+
+// *==================================================*
+// *--------- STYLE TEMPLATE VALUES ------------------*
+// *==================================================*
+
+// ------------------------------------------------
+// build non-colored template string for num values
+// ------------------------------------------------
 const transformNum = (num) => {
   const str = num.toString()
-  const x = str.split('.')
+  const [integerPart, decimalPart] = str.split('.');
+
   let htmlStr
-  if (x.length === 1) {
-    htmlStr = x[0] + '<span class="text-muted">.0000</span>'
+
+  if (decimalPart === undefined) {
+    htmlStr = `${integerPart}<span class="text-muted">.0000</span>`
   } else {
-    const floatLen = x[1].length
-    const zeroNums = maxZeros - floatLen
+    const floatLen = decimalPart.length
+    const zeroNums = MAX_DECIMALS - floatLen
     const zeros = '0'.repeat(zeroNums)
-    if (floatLen === maxZeros) {
+    if (floatLen === MAX_DECIMALS) {
       htmlStr = str
     } else {
-      htmlStr = x[0] + `.${x[1]}<span class="text-muted">${zeros}</span>`
+      htmlStr = `${integerPart}.${decimalPart}<span class="text-muted">${zeros}</span>`
     }
   }
 
   return htmlStr
+}
+
+// ------------------------------------------------
+// build colored template string for num values
+// ------------------------------------------------
+const getColoredTemplateString = (integerPart, decimalPart, sign='positive') => {
+  if (decimalPart === undefined) {
+    return `<span class="text-${sign}">${integerPart}</span><span class="text-muted-${sign}">.0000</span>`
+  } else {
+    const floatLen = decimalPart.length
+    const zeroNums = MAX_DECIMALS - floatLen
+    const zeros = '0'.repeat(zeroNums)
+    return `<span class="text-${sign}">${integerPart}.${decimalPart}</span><span class="text-muted-${sign}">${zeros}</span>`
+  }
 }
 
 const transformNumColored = (num) => {
   const isPos = num > 0
+
   const str = num.toString()
-  const x = str.split('.')
-  let htmlStr
+  const [integerPart, decimalPart] = str.split('.');
 
   if (isPos) {
-    if (x.length === 1) {
-      htmlStr = `<span class="text-positive">${x[0]}</span><span class="text-muted-positive">.0000</span>`
-    } else {
-      const floatLen = x[1].length
-      const zeroNums = 4 - floatLen
-      const zeros = '0'.repeat(zeroNums)
-      htmlStr = `<span class="text-positive">${x[0]}.${x[1]}</span><span class="text-muted-positive">${zeros}</span>`
-    }
+    return getColoredTemplateString(integerPart, decimalPart, 'positive')
   } else {
-    if (x.length === 1) {
-      htmlStr = `<span class="text-negative">${x[0]}</span><span class="text-muted-negative">.0000</span>`
-    } else {
-      const floatLen = x[1].length
-      const zeroNums = 4 - floatLen
-      const zeros = '0'.repeat(zeroNums)
-      htmlStr = `<span class="text-negative">${x[0]}.${x[1]}</span><span class="text-muted-negative">${zeros}</span>`
-    }
+    return getColoredTemplateString(integerPart, decimalPart, 'negative')
   }
-
-  return htmlStr
 }
 
+// ------------------------------------------------
+// make dates readable
+// ------------------------------------------------
+const transformDateString = (data) => {
+  const dateObject = new Date(data)
+
+  const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+  const timeOptions = { hour12: true, hour: 'numeric', minute: '2-digit', seconds: '2-digit' };
+
+  const dateDay = dateObject.toLocaleDateString('en-US', dateOptions)
+  const dateHour = dateObject.toLocaleTimeString('en-US', timeOptions)
+
+  return `${dateDay} <span class="text-muted">${dateHour}</span>`
+}
+
+// ------------------------------------------------
+// highlight/emphasize characters if searching
+// ------------------------------------------------
 const emphasieString = (str, searchQuery) => {
   const emphasizedString = str.replace(
     new RegExp(searchQuery.replace('.', '\\.'), 'gi'),
@@ -57,27 +83,30 @@ const emphasieString = (str, searchQuery) => {
   return emphasizedString
 }
 
-export const transformData = (data, type, index, searchQuery, searchType) => {
+// *==================================================*
+// *------- CHOOSE METHOD AND RETURN TEMPLATE STRING -*
+// *==================================================*
+export const transformData = (value, type, index, searchQuery, searchType) => {
   if (type === 'date') {
-    const dateObject = new Date(data)
-    const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
-    const timeOptions = { hour12: true, hour: 'numeric', minute: '2-digit', seconds: '2-digit' };
-    const dateDay = dateObject.toLocaleDateString('en-US', dateOptions)
-    const dateHour = dateObject.toLocaleTimeString('en-US', timeOptions)
-
-    return `${dateDay} <span class="text-muted">${dateHour}</span>`
-  } else if (index === 0) {
-    return new Intl.NumberFormat('en-US').format(data)
-  } else if (index === 3) {
-    const numStr = `${transformNumColored(data)}`
+    return transformDateString(value)
+  }
+  
+  if (index === 0) {
+    return value
+  }
+  
+  if (index === 3) {
+    const numStr = `${transformNumColored(value)}`
 
     if (searchQuery.length === 0 || searchType === 'string') {
       return numStr
     }
 
     return emphasieString(numStr, searchQuery)
-  } else if (type === 'number' || index === 6) {
-    const numStr = `${transformNum(data, index)}`
+  }
+  
+  if (type === 'number' || index === 6) {
+    const numStr = `${transformNum(value, index)}`
 
     if (searchQuery.length === 0 || searchType === 'string') {
       return numStr
@@ -85,9 +114,8 @@ export const transformData = (data, type, index, searchQuery, searchType) => {
 
     return emphasieString(numStr, searchQuery)
   } else {
-    if (searchQuery.length === 0 || searchType === 'number') return data
+    if (searchQuery.length === 0 || searchType === 'number') return value
 
-    return emphasieString(data, searchQuery)
+    return emphasieString(value, searchQuery)
   }
 }
-

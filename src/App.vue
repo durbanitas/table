@@ -8,10 +8,10 @@ import SearchBar from './components/SearchBar.vue';
 import { onMounted } from 'vue';
 import { createDataset } from './utils/demo_data.js';
 
-let theme = $ref(true);
+let isDarkTheme = $ref(true);
 const changeTheme = () => {
-  theme = !theme;
-  const strTheme = theme ? 'dark' : 'light';
+  isDarkTheme = !isDarkTheme;
+  const strTheme = isDarkTheme ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', strTheme);
 };
 
@@ -33,7 +33,6 @@ if (_DEV) {
   SHOW_ROWS_PER_PAGE = 20;
 }
 
-// TODO: input validate 00045 values
 onMounted(() => {
   initTable();
 });
@@ -50,7 +49,7 @@ const useFilterTags = (filters) => {
 };
 
 let searchQuery = $ref('');
-const handleSearch = (query) => {
+const setSearchQuery = (query) => {
   searchQuery = query;
 };
 </script>
@@ -64,12 +63,12 @@ const handleSearch = (query) => {
         class="nav-theme inline-center"
       >
         <IconSun
+          v-if="isDarkTheme"
           class="icon"
-          v-if="theme"
         />
         <IconMoon
-          class="icon"
           v-else
+          class="icon"
         />
       </div>
     </div>
@@ -84,8 +83,7 @@ const handleSearch = (query) => {
         @submit="useFilterTags"
         :headers="tableData.headers"
       />
-
-      <SearchBar @search="handleSearch" />
+      <SearchBar @search="setSearchQuery" />
     </div>
   </div>
 
@@ -94,10 +92,10 @@ const handleSearch = (query) => {
     class="container table-bg"
   >
     <TableParent
+      :N_ROWS_PER_PAGE="N_ROWS_PER_PAGE"
       :tableData="tableData"
       :defaultSortDirection="1"
       :rowsPerPage="SHOW_ROWS_PER_PAGE"
-      :N_ROWS_PER_PAGE="N_ROWS_PER_PAGE"
       :filterTags="filterTags"
       :searchQuery="searchQuery"
     />

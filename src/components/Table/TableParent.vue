@@ -14,21 +14,21 @@ const props = defineProps({
           columnKey: 'name', // represents data[[key1], [key2]]
           type: 'string', // string, number, date
           label: 'Name',
-          align: 'start', // start, center, end
+          align: 'text-start', // text-start, text-center, text-end
           sortable: true,
         },
         {
           columnKey: 'height',
           type: 'number',
           label: 'Height',
-          align: 'end',
+          align: 'text-end',
           sortable: true,
         },
         {
           columnKey: 'created',
           type: 'date',
           label: 'Created',
-          align: 'center',
+          align: 'text-center',
           sortable: false,
         },
       ],
@@ -249,6 +249,7 @@ const searchIdxs = $computed(() => {
 
     const isFloat = isNumber && searchQuery.includes('.');
     const floatValue = isFloat && searchQuery[0] === '.' ? searchQuery.split('.')[1] : searchQuery;
+
     let searchValue = Number(floatValue);
 
     colIdxs.forEach((colIdx) => {

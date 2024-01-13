@@ -185,7 +185,7 @@ function validate(userInput, filterIdx) {
     :class="{ active: showFilterMenu }"
   >
     <IconFilter class="icon" />
-    <span class="pl-6">Filter</span>
+    <span class="pl-6">Filters</span>
     <span
       class="pill"
       :class="{ 'warning-pill': filterTags.length > 0 }"
@@ -206,9 +206,10 @@ function validate(userInput, filterIdx) {
         <IconClose class="icon" />
       </button>
     </div>
-    <!-- TODO: show filter input on opening -->
+
     <!-- message -->
     <div v-if="filtersScope.length === 0">No filters applied</div>
+
     <!-- filter inputs -->
     <div
       v-for="(filter, idx) in filtersScope"
@@ -228,6 +229,7 @@ function validate(userInput, filterIdx) {
             {{ head.label }} <span class="text-muted subtitle">({{ head.type }})</span>
           </option>
         </select>
+
         <!-- choose an operator -->
         <select
           v-model="filter.operator"
@@ -239,9 +241,8 @@ function validate(userInput, filterIdx) {
             v-text="operator"
           />
         </select>
-        <!-- filter by value -->
-        <!-- TODO: inputmode="numeric" with floats? -->
 
+        <!-- filter by value -->
         <template v-if="getFilterType(idx) === 'number'">
           <input
             type="text"
@@ -289,8 +290,8 @@ function validate(userInput, filterIdx) {
           <IconTrash class="icon" />
         </button>
       </div>
+
       <!-- show invalid message -->
-      <!-- TODO: show detailed error message. By type - what went wrong -->
       <div
         class="error"
         v-if="!validInputs[idx]"
@@ -312,7 +313,7 @@ function validate(userInput, filterIdx) {
         class="remove-btn"
       >
         <IconMinus class="icon" />
-        <span class="pl-6">Remove all filter</span>
+        <span class="pl-6">Remove all filters</span>
       </button>
     </div>
   </div>
@@ -345,7 +346,7 @@ function validate(userInput, filterIdx) {
   border-radius: var(--border-radius);
   border-color: var(--btn-border);
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  min-width: 350px;
+  min-width: 402px;
   margin-left: 12px;
   margin-top: 34px;
 }
@@ -359,5 +360,11 @@ input:invalid,
 input:invalid:focus {
   border-color: var(--remove);
   outline: none;
+}
+
+@media only screen and (max-width: 550px) {
+  .filter-modal {
+    min-width: 350px;
+  }
 }
 </style>
