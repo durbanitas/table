@@ -2,8 +2,10 @@
 const props = defineProps({
   headers: Array,
   sortedHeader: Object,
-  sortDirection: Number,
-  activeColIndex: Number,
+  sortDirection: {
+    type: Number,
+    default: 1,
+  },
 });
 
 const emit = defineEmits(['sort']);
@@ -20,7 +22,6 @@ const sort = (head, colIdx) => {
         v-for="(head, colIdx) in headers"
         :key="head.id"
         v-on="head.sortable ? { click: () => sort(head, colIdx) } : {}"
-        :class="{ 'active-col': activeColIndex == colIdx }"
       >
         <div
           class="align-center table-name"
@@ -76,19 +77,15 @@ const sort = (head, colIdx) => {
   border-top: solid 7px var(--action);
 }
 
-.end {
+.text-end {
   justify-content: right;
 }
 
-.center {
+.text-center {
   justify-content: center;
 }
 
-.start {
+.text-start {
   justify-content: left;
-}
-
-.active-col {
-  background-color: var(--table-first-cell-hover);
 }
 </style>

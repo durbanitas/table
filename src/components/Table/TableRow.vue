@@ -5,13 +5,18 @@ const props = defineProps({
   tableData: Array,
   sortedHeader: Object,
   headers: Array,
-  rowIdx: Number,
-  searchQuery: String,
+  rowIdx: {
+    type: Number,
+    default: 0,
+  },
+  searchQuery: {
+    type: String,
+    default: '',
+  },
   searchType: {
     type: String,
     default: 'string',
   },
-  activeColIndex: Number,
 });
 </script>
 
@@ -25,7 +30,6 @@ const props = defineProps({
           parent: colIdx === 0,
           'text-bold': colIdx === sortedHeader.columnKey,
           'date-between': colIdx === 2,
-          'active-cell': activeColIndex === colIdx,
         },
       ]"
       :key="data.id"
@@ -35,15 +39,15 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-.end {
+.text-end {
   text-align: right;
 }
 
-.center {
+.text-center {
   text-align: center;
 }
 
-.start {
+.text-start {
   text-align: left;
 }
 
@@ -51,8 +55,5 @@ const props = defineProps({
   display: flex;
   justify-content: space-between;
   gap: 16px;
-}
-.active-cell {
-  background-color: var(--table-row-hover);
 }
 </style>

@@ -2,68 +2,69 @@
 export const createDataset = (userColumns, userRows) => {
   const data = []
   const headers = []
-  for (let i = 0; i < userColumns; i++) {
+  
+  for (let colIdx = 0; colIdx < userColumns; colIdx++) {
     const col = new Array(userRows).fill(null)
-    for (let idx = 0; idx < col.length; idx++) {
+
+    for (let rowIdx = 0; rowIdx < col.length; rowIdx++) {
       // create first column strings
-      if (i === 0) {
-        col[idx] = idx + 1
+      if (colIdx === 0) {
+        col[rowIdx] = rowIdx + 1
       }
-      else if (i === 1) {
-        col[idx] = PERSONS[Math.floor(Math.random() * PERSONS.length)].name
+      else if (colIdx === 1) {
+        col[rowIdx] = PERSONS[Math.floor(Math.random() * PERSONS.length)].name
       }
-      else if (i === 2) { // create second column dates
-        col[idx] = createDate()
+      else if (colIdx === 2) { // create second column dates
+        col[rowIdx] = createDate()
       }
-      else if (i === 3) {
-        col[idx] = getScoreNumber()
+      else if (colIdx === 3) {
+        col[rowIdx] = getScoreNumber()
       }
-      else if (i === 4) {
-        col[idx] = COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)].code
+      else if (colIdx === 4) {
+        col[rowIdx] = COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)].code
       }
-      else if (i === 5) {
-        col[idx] = REGIONS[Math.floor(Math.random() * REGIONS.length)].region
-      } else if (i === 6) {
-        col[idx] = normalDistribution(100).toFixed(4)
+      else if (colIdx === 5) {
+        col[rowIdx] = REGIONS[Math.floor(Math.random() * REGIONS.length)].region
+      } else if (colIdx === 6) {
+        col[rowIdx] = normalDistribution(100).toFixed(4)
       }
       // create another columns as numbers
       else {
-        col[idx] = createNumber(randomNumber(0, 4))
+        col[rowIdx] = createNumber(randomNumber(0, 4))
       }
     }
     data.push(col)
 
     // create string header
     const head = {
-      columnKey: i,
-      charLen: 0,
+      columnKey: colIdx,
       // label: 'Col ' + i,
       // type: 'number',
       // sortable: true,
-      // align: 'end'
-      label: i === 0 ? 'ID' :
-        i === 1 ? 'Name' :
-          i === 2 ? 'Created' :
-            i === 3 ? 'Score' :
-              i === 4 ? 'ISO' :
-                i === 5 ? 'Region' :
-                  'Num ' + (i - 5),
-      type: i === 0 ? 'number' :
-        i === 1 ? 'string' :
-          i === 2 ? 'date' :
-            i === 3 ? 'number' :
-              i === 4 ? 'string' :
-                i === 5 ? 'string' :
+      // align: 'text-end'
+      label: colIdx === 0 ? 'ID' :
+        colIdx === 1 ? 'Name' :
+          colIdx === 2 ? 'Created' :
+            colIdx === 3 ? 'Score' :
+              colIdx === 4 ? 'ISO' :
+                colIdx === 5 ? 'Region' :
+                  'Num ' + (colIdx - 5),
+      type: colIdx === 0 ? 'number' :
+        colIdx === 1 ? 'string' :
+          colIdx === 2 ? 'date' :
+            colIdx === 3 ? 'number' :
+              colIdx === 4 ? 'string' :
+                colIdx === 5 ? 'string' :
                   'number',
       sortable: true,
       align:
-        i === 0 ? 'end' :
-          i === 3 ? 'end' :
-            i === 5 ? 'start' :
-              i < 6 ? 'start' :
-                'end',
-      maxChar: getMaxStringChar(data[i])
+        colIdx === 0 ? 'text-end' :
+          colIdx === 3 ? 'text-end' :
+            colIdx === 5 ? 'text-start' :
+              colIdx < 6 ? 'text-start' :
+                'text-end',
     }
+    
     headers.push(head)
   }
 
@@ -73,8 +74,12 @@ export const createDataset = (userColumns, userRows) => {
     return randomNumber(0, unixToday)
   }
 
-  return { data, headers }
+  return { 
+    data, 
+    headers 
+  }
 }
+
 const createNumber = (trim) => Number((Math.random() * 100).toFixed(trim))
 
 const randomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
@@ -90,28 +95,6 @@ const getScoreNumber = () => {
 
   // 75% chance pos number 30% chance neg number
   return flipCoin() ? posNumber() : negNumber()
-}
-
-const getMaxStringChar = (arr) => {
-  return Math.max(...(arr.map(el => el.toString().length)));
-}
-
-// create randomized filters
-const OPERATORS = ['==', '>', '<']
-export const randomFilters = (userColumns, useValid) => {
-  const filters = []
-  const nFilters = randomNumber(1, 5)
-  for (let i = 0; i < nFilters; i++) {
-    const colIdx = randomNumber(0, userColumns)
-    const opIdx = randomNumber(0, OPERATORS.length - 1)
-    const filter = {
-      columnKey: colIdx,
-      operator: OPERATORS[opIdx],
-      value: createNumber(randomNumber(0, 4))
-    }
-    filters.push(filter)
-  }
-  return filters
 }
 
 const COUNTRIES = [
